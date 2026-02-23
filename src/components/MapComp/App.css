@@ -1,0 +1,49 @@
+.container {
+    display: flex;
+    height: 500vh;
+  }
+  
+  .sidebar {
+    flex: 1;
+    overflow-y: auto; /* Make the sidebar scrollable */
+    top: 0;
+    padding: 10px;
+    width: 20%;
+  }
+  
+  .map {
+    flex: 4; /* Adjust the ratio to fit your design */
+    position: fixed; /* Make the map fixed */
+    top: 0;
+    left: 25%; /* Adjust the sidebar width */
+    right: 0;
+    bottom: 0;
+    z-index: 0; /* Ensure the map is behind the sidebar */
+    padding-top: 100px; /* Adjust the value as needed */
+    padding-bottom: 45px; /* Adjust the value as needed */
+    padding-left: 50px; /* Adjust the value as needed */
+    padding-right: 55px; /* Adjust the value as needed */
+    box-shadow: 0 0 10px rgba(0, 0, 5, 0.5); /* Add shadow */
+    border: 1px solid #ccc; /* Add border */
+}
+
+  
+  body {
+    margin: 0; /* Remove default body margin */
+  }
+
+  .container {
+    display: flex;
+  }
+  
+  .sidebar {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .map-container {
+    flex: 2;
+    height: 100vh; /* Full height */
+  }
+  
+  

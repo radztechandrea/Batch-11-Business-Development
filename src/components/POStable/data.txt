@@ -1,0 +1,498 @@
+import React from "react";
+import { ResizableBox } from "react-resizable";
+import "react-resizable/css/styles.css"; // Import the default styles
+import data from "./DataJson.json";
+
+const POSTable = () => {
+  const tableStyle = `
+    .po-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 1em;
+      font-family: 'Arial', sans-serif;
+      min-width: 500px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .po-table thead tr {
+      background-color: #FF7704;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+    }
+    
+    .po-table th, .po-table td {
+      padding: 12px 15px;
+    }
+    
+    .po-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+    
+    .po-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+    
+    .po-table tbody tr:last-of-type {
+      border-bottom: 2px solid #FF7704;
+    }
+    
+    .po-table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+  `;
+
+  return (
+    <div>
+      <style>{tableStyle}</style>
+      <table className="po-table">
+        <thead>
+          <tr>
+            {[
+              "Product Code",
+              "Description",
+              "Category",
+              "Sub Category",
+              "Sale Code",
+              "Purchase Code",
+            ].map((header, index) => (
+              <th key={index}>
+                <ResizableBox
+                  width={100}
+                  height={20}
+                  axis="x"
+                  minConstraints={[50, 20]}
+                  maxConstraints={[300, 20]}
+                  resizeHandles={["e"]}
+                >
+                  <div style={{ width: "100%", height: "100%" }}>{header}</div>
+                </ResizableBox>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td>{item.ProdCd}</td>
+              <td>{item.sProd}</td>
+              <td>{item.sProdCat}</td>
+              <td>{item.sProdCatSub}</td>
+              <td>{item.ixJCd}</td>
+              <td>{item.ixJCd}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default POSTable;
+
+
+import React from "react";
+import data from "./DataJson.json";
+
+const POSTable = () => {
+  const aggregatedData = data.reduce((acc, item) => {
+    if (!acc[item.ixProd]) {
+      acc[item.ixProd] = {
+        ...item,
+        ixJCdSum: item.qtyBAL,
+      };
+    } else {
+      acc[item.ixProd].ixJCdSum += item.qtyBAL;
+    }
+    return acc;
+  }, {});
+
+  const sortedData = Object.values(aggregatedData).sort(
+    (a, b) => a.ixProd - b.ixProd,
+  );
+
+  const tableStyle = `
+    .po-table-container {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    
+    .po-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+      font-family: 'Arial', sans-serif;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+    
+    .po-table thead tr,
+    .po-table tfoot tr {
+      background-color: #FF7704;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+      position: sticky;
+      z-index: 1;
+    }
+    
+    .po-table thead tr {
+      top: 0;
+    }
+    
+    .po-table tfoot tr {
+      bottom: 0;
+    }
+    
+    .po-table th, .po-table td {
+      padding: 5px;
+      width: 10.66%;
+    }
+    
+    .po-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+    
+    .po-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+    
+    .po-table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+  `;
+
+  return (
+    <div>
+      <style>{tableStyle}</style>
+      <div className="po-table-container">
+        <table className="po-table">
+          <thead>
+            <tr>
+              <th>Product Code</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Sale Code</th>
+              <th>Purchase Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.ixProd}</td>
+                <td>{item.sProd}</td>
+                <td>{item.sProdCat}</td>
+                <td>{item.sProdCatSub}</td>
+                <td>{item.ixJCdSum}</td>
+                <td>{item.ixJCdSum}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default POSTable;
+
+
+
+import React from "react";
+import data from "./DataJson.json";
+
+const POSTable = () => {
+  // Sorting data numerically by ixProd
+  const sortedData = [...data].sort((a, b) => a.ixProd - b.ixProd);
+
+  // Group data by ixProd
+  const groupedData = sortedData.reduce((acc, item) => {
+    const existing = acc.find((i) => i.ixProd === item.ixProd);
+    if (existing) {
+      existing.ixJCds.push({ ixJCd: item.ixJCd, qtyBAL: item.qtyBAL });
+    } else {
+      acc.push({
+        ...item,
+        ixJCds: [{ ixJCd: item.ixJCd, qtyBAL: item.qtyBAL }],
+      });
+    }
+    return acc;
+  }, []);
+
+  // Determine the maximum number of ixJCds for any product
+  const maxJCds = Math.max(...groupedData.map((item) => item.ixJCds.length));
+
+  const tableStyle = `
+    .po-table-container {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    
+    .po-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+      font-family: 'Arial', sans-serif;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+    
+    .po-table thead tr,
+    .po-table tfoot tr {
+      background-color: #FF7704;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+      position: sticky;
+      z-index: 1;
+    }
+    
+    .po-table thead tr {
+      top: 0;
+    }
+    
+    .po-table tfoot tr {
+      bottom: 0;
+    }
+    
+    .po-table th, .po-table td {
+      padding: 5px 10px; /* Increased padding */
+      width: 20%;
+    }
+    
+    .po-table tbody tr {
+      border-bottom: 5px double black; /* Double line border at the bottom of each row */
+    }
+    
+    .po-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+    
+    .po-table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+    
+    .po-table tbody .spacer-row td {
+      background-color: #fff;
+      border: none;
+      height: 20px; /* Adjust this height to create more or less space */
+    }
+    
+    .po-table tbody .spacer-row .grand-total {
+      font-weight: bold;
+      padding-left: 15px;
+    }
+  `;
+
+  return (
+    <div>
+      <style>{tableStyle}</style>
+      <div className="po-table-container">
+        <table className="po-table">
+          <thead>
+            <tr>
+              <th>Product Code</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>ixJCds</th>
+              {Array.from({ length: maxJCds }, (_, i) => (
+                <th key={i}></th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {groupedData.map((item, index) => (
+              <React.Fragment key={index}>
+                <tr>
+                  <td>{item.ixProd}</td>
+                  <td>{item.sProd}</td>
+                  <td>{item.sProdCat}</td>
+                  <td>{item.sProdCatSub}</td>
+                  <td></td>
+                  {Array.from({ length: maxJCds }, (_, i) => (
+                    <td key={i}>{item.ixJCds[i]?.ixJCd || ""}</td>
+                  ))}
+                </tr>
+                <tr className="spacer-row">
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <td key={i}></td>
+                  ))}
+                  <td className="grand-total">Grand Total:</td>
+                  {Array.from({ length: maxJCds }, (_, i) => (
+                    <td key={i}>{item.ixJCds[i]?.qtyBAL || ""}</td>
+                  ))}
+                </tr>
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default POSTable;
+
+
+
+import React from "react";
+import data from "./DataJson.json";
+
+const POSTable = () => {
+  const sortedData = [...data].sort((a, b) => a.ixProd - b.ixProd);
+
+  const uniqueIxJCds = Array.from(
+    new Set(data.map((item) => item.ixJCd)),
+  ).sort();
+
+  const groupedByBranch = sortedData.reduce((acc, item) => {
+    const branch = acc.find((b) => b.ixBrch === item.ixBrch);
+    if (branch) {
+      const product = branch.products.find((p) => p.ixProd === item.ixProd);
+      if (product) {
+        product.ixJCds.push({ ixJCd: item.ixJCd, qtyBAL: item.qtyBAL });
+      } else {
+        branch.products.push({
+          ...item,
+          ixJCds: [{ ixJCd: item.ixJCd, qtyBAL: item.qtyBAL }],
+        });
+      }
+    } else {
+      acc.push({
+        ixBrch: item.ixBrch,
+        products: [
+          {
+            ...item,
+            ixJCds: [{ ixJCd: item.ixJCd, qtyBAL: item.qtyBAL }],
+          },
+        ],
+      });
+    }
+    return acc;
+  }, []);
+
+  const tableStyle = `
+    .po-table-container {
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .po-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1em;
+      font-family: 'Arial', sans-serif;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .po-table thead tr,
+    .po-table tfoot tr {
+      background-color: #FF7704;
+      color: #ffffff;
+      text-align: left;
+      font-weight: bold;
+      position: sticky;
+      z-index: 1;
+    }
+
+    .po-table thead tr {
+      top: 0;
+    }
+
+    .po-table tfoot tr {
+      bottom: 0;
+    }
+
+    .po-table th, .po-table td {
+      padding: 5px 10px;
+    }
+
+    .po-table th.common, .po-table td.common {
+      width: 10%;
+    }
+
+    .po-table th.ixJCd, .po-table td.ixJCd {
+      width: calc(10% / ${uniqueIxJCds.length});
+    }
+
+    .po-table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+
+    .po-table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+
+    .po-table tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .branch-row {
+      background-color: #e1e1e1;
+      font-weight: bold;
+    }
+  `;
+
+  return (
+    <div>
+      <style>{tableStyle}</style>
+      <div className="po-table-container">
+        <table className="po-table">
+          <thead>
+            <tr>
+              <th className="common">Product Code</th>
+              <th className="common">Branch Code</th>
+              <th className="common">Description</th>
+              <th className="common">Category</th>
+              <th className="common">Sub Category</th>
+              {uniqueIxJCds.map((ixJCd, index) => (
+                <th key={index} className="ixJCd">
+                  {ixJCd}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {groupedByBranch.map((branch, branchIndex) => (
+              <React.Fragment key={branchIndex}>
+                <tr className="branch-row">
+                  <td colSpan={5 + uniqueIxJCds.length}>
+                    Branch: {branch.ixBrch}
+                  </td>
+                </tr>
+                {branch.products.map((item, productIndex) => (
+                  <tr key={productIndex}>
+                    <td className="common">{item.ixProd}</td>
+                    <td className="common">{item.ixBrch}</td>
+                    <td className="common">{item.sProd}</td>
+                    <td className="common">{item.sProdCat}</td>
+                    <td className="common">{item.sProdCatSub}</td>
+                    {uniqueIxJCds.map((ixJCd, idx) => (
+                      <td key={idx} className="ixJCd">
+                        {item.ixJCds.find((jc) => jc.ixJCd === ixJCd)?.qtyBAL ||
+                          ""}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default POSTable;
+
+
+

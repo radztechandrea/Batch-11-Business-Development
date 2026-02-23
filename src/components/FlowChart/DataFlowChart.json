@@ -1,0 +1,94 @@
+{
+  "wf": [
+    {
+      "AssignTo": "<nochange>",
+      "color": "cyan",
+      "ixStatus": 50,
+      "required": {
+        "ixStatus": [100,150]
+      },
+      "sStatus": "Open"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "indigo",
+      "ixStatus": 100,
+      "required": {
+        "ixStatus": [200,400]
+      },
+      "sStatus": "Open - Close"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "indigo",
+      "ixStatus": 150,
+      "required": {
+        "ixStatus": [75]
+      },
+      "sStatus": "Close - Open"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "orange",
+      "ixStatus": 75,
+      "required": {
+        "ixStatus": [125]
+      },
+      "sStatus": "In Progress"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "green",
+      "ixStatus": 125,
+      "required": {
+        "ixStatus": [200]
+      },
+      "sStatus": "Resolved"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "yellow",
+      "ixStatus": 200,
+      "required": {
+        "ixStatus": [500,600]
+      },
+      "sStatus": "Pending"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "red",
+      "ixStatus": 300,
+      "required": {
+        "ixStatus": [500]
+      },
+      "sStatus": "Delayed"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "blue",
+      "ixStatus": 400,
+      "required": {
+        "ixStatus": []
+      },
+      "sStatus": "On Hold"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "purple",
+      "ixStatus": 500,
+      "required": {
+        "ixStatus": []
+      },
+      "sStatus": "Cancelled"
+    },
+    {
+      "AssignTo": "<nochange>",
+      "color": "pink",
+      "ixStatus": 600,
+      "required": {
+        "ixStatus": [500,300]
+      },
+      "sStatus": "Archived"
+    }
+  ]
+}

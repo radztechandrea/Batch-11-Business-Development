@@ -1,0 +1,66 @@
+[
+  {
+    "sub_id": 1273,
+    "sub_title": "Ramon",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3319",
+    "location": "121.53589010238647,16.779889848206665",
+    "total_customer": 183
+  },
+  {
+    "sub_id": 1270,
+    "sub_title": "Main Office - Sales",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3300",
+    "location": "16.696071, 121.554382",
+    "total_customer": 105
+  },
+  {
+    "sub_id": 1261,
+    "sub_title": "Alicia",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3306",
+    "location": "16.77396143405587,121.69914925427804",
+    "total_customer": 19
+  },
+  {
+    "sub_id": 1269,
+    "sub_title": "Main Office",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3300",
+    "location": "16.696071, 121.554382",
+    "total_customer": 12
+  },
+  {
+    "sub_id": 1262,
+    "sub_title": "Allacapan",
+    "addressBrgy": "",
+    "province": "Cagayan",
+    "addressZIP": "3523",
+    "location": "18.22857559425154,121.55810952186584",
+    "total_customer": 2
+  },
+  {
+    "sub_id": 1272,
+    "sub_title": "Quezon",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3324",
+    "location": "17.313271566844726,121.60527616739273",
+    "total_customer": 1
+  },
+  {
+    "sub_id": 1267,
+    "sub_title": "Jones",
+    "addressBrgy": "",
+    "province": "Isabela",
+    "addressZIP": "3313",
+    "location": "16.554269803330683,121.70399538319984",
+    "total_customer": 1
+  }
+]
+

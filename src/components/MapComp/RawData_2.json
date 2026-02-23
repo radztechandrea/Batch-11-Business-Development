@@ -1,0 +1,23 @@
+[
+    {
+        "my_id": 10000,
+        "UI_id": "Sydney, Australia",
+        "data": "-33.868820,151.209296"
+    },
+    {
+        "UI_id": "Cape Town, South Africa",
+        "data": "-33.924869,18.424055"
+    },
+    {
+        "UI_id": "Rome, Italy",
+        "data": "41.902782,12.496366"
+    },
+    {
+        "UI_id": "Bangkok, Thailand",
+        "data": "13.756331,100.501765"
+    },
+    {
+        "UI_id": "Istanbul, Turkey",
+        "data": "41.008238,28.978359"
+    }
+]
