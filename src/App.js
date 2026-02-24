@@ -1,13 +1,23 @@
-import React from "react";
-import { ThemeProvider } from "@material-ui/core";
-import defaultTheme from "./theme";
-import createRouter from "./helpers/createRouter";
-import routes from "./routes";
-
-const router = createRouter(routes);
+import './App.css';
 
 function App() {
-  return <ThemeProvider theme={defaultTheme}>{router}</ThemeProvider>;
+  return (
+    <div className="App">
+      <header className="App-header">
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
+  );
 }
 
 export default App;
