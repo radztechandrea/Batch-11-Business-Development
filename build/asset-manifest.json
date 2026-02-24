@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.bb54e0ca.css",
-    "main.js": "/static/js/main.347dcee3.js",
+    "main.js": "/static/js/main.80970c4c.js",
     "static/js/453.33f813b1.chunk.js": "/static/js/453.33f813b1.chunk.js",
     "static/media/ulapbiz.png": "/static/media/ulapbiz.705c0269c5fec0ce618c.png",
     "static/media/payroll.png": "/static/media/payroll.3689525a3cd0025650e8.png",
     "index.html": "/index.html",
     "main.bb54e0ca.css.map": "/static/css/main.bb54e0ca.css.map",
-    "main.347dcee3.js.map": "/static/js/main.347dcee3.js.map",
+    "main.80970c4c.js.map": "/static/js/main.80970c4c.js.map",
     "453.33f813b1.chunk.js.map": "/static/js/453.33f813b1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bb54e0ca.css",
-    "static/js/main.347dcee3.js"
+    "static/js/main.80970c4c.js"
   ]
 }
