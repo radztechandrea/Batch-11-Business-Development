@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import Barcode from 'react-barcode';
 import { computeTotalBasicEarned, compute13thMonthPay } from '../utils/thirteenthMonthCalc';
 import './Calculator.css';
 
@@ -41,6 +42,12 @@ function Calculator() {
   );
   const totalFor13th = totalBasicEarned + allowancesNum;
   const thirteenthMonth = compute13thMonthPay(totalFor13th);
+
+  // Barcode value: 13M + YYYYMMDD + amount (e.g. 13M2025022525000) for receipt/print
+  const receiptBarcodeValue =
+    monthlyNum > 0
+      ? `13M${formatDate(new Date()).replace(/-/g, '')}${Math.round(thirteenthMonth)}`
+      : '';
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -165,6 +172,19 @@ function Calculator() {
               <span>13TH MONTH PAY</span>
               <span>{formatCurrency(thirteenthMonth)}</span>
             </div>
+            {receiptBarcodeValue && (
+              <div className="receipt-barcode">
+                <Barcode
+                  value={receiptBarcodeValue}
+                  format="CODE128"
+                  width={1.2}
+                  height={36}
+                  displayValue={true}
+                  fontSize={10}
+                  margin={4}
+                />
+              </div>
+            )}
             {monthlyNum > 0 && (
               <div className="receipt-actions">
                 <button

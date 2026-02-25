@@ -184,6 +184,18 @@
   letter-spacing: 0.05em;
 }
 
+.receipt-barcode {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+}
+
+.receipt-barcode svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .receipt-footer {
   margin-top: 1rem;
   padding-top: 0.75rem;
@@ -252,6 +264,15 @@
     max-width: none;
     box-shadow: none;
     border: 1px solid #ccc;
+  }
+
+  .receipt-barcode {
+    margin: 0.5rem 0;
+  }
+
+  .receipt-barcode svg {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   body {
