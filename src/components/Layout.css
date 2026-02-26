@@ -2,57 +2,88 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  /* Black → Orange → White Gradient */
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #ff7704 50%,
-    #161616 100%
-  );
-
+  /* Retained gradient: cream → warm orange → dark brown */
+  background: linear-gradient(135deg, #fefaf6 0%, #f5e6dc 25%, #e8a04a 55%, #8b4513 85%, #2d1f14 100%);
   background-attachment: fixed;
-}
-
-.layout-header {
-  background: linear-gradient(135deg,#ffffff 100%);
-  padding: 0.9rem 1.5rem;
-  box-shadow: 0 4px 16px rgba(229, 90, 0, 0.3);
 }
 
 .layout-nav {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   gap: 0.5rem;
-  max-width: 900px;
-  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .nav-link {
-  color: rgba(0, 0, 0, 0.9);
+  color: #5a524c;
   text-decoration: none;
-  padding: 0.55rem 1.1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.25s ease;
+  transition: color 0.18s ease, background 0.18s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
-  color: #ff7704;
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .nav-link.active {
-  color: #ff7704;
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #1a1a1a;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .layout-main {
   flex: 1;
-  padding: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
   width: 100%;
+  max-width: 900px;
+  margin: 1rem auto 2rem;
+  padding: 2rem 1.5rem;
   box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 768px) {
+  .layout-nav {
+    padding: 1rem 1.5rem;
+  }
+
+  .layout-main {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout-main {
+    padding: 1.5rem 1rem;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media print {
+  .layout {
+    background: #fff !important;
+    min-height: auto;
+  }
+
+  .layout-main {
+    background: #fff !important;
+    box-shadow: none;
+    border: none;
+  }
 }

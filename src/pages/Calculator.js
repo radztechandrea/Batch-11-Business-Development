@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Barcode from 'react-barcode';
-import { computeTotalBasicEarned, compute13thMonthPay } from '../utils/thirteenthMonthCalc';
+import { computeTotalBasicEarned, compute13thMonthPay, countWeekdaysInRange } from '../utils/thirteenthMonthCalc';
 import './Calculator.css';
 
 const getYearStart = () => {
@@ -20,6 +20,16 @@ function formatCurrency(n) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(n);
 }
 
+const MAX_AMOUNT = 1e12; // 1 trillion
+
+function clampAmount(value) {
+  if (value === '' || value === null || value === undefined) return value;
+  const num = parseFloat(String(value).replace(/,/g, ''));
+  if (Number.isNaN(num) || num < 0) return value;
+  if (num > MAX_AMOUNT) return String(MAX_AMOUNT);
+  return value;
+}
+
 function Calculator() {
   const [monthlySalary, setMonthlySalary] = useState('');
   const [startDate, setStartDate] = useState(formatDate(getYearStart()));
@@ -33,6 +43,16 @@ function Calculator() {
   const end = new Date(endDate);
   const unpaid = Math.max(0, parseInt(unpaidDays, 10) || 0);
   const allowancesNum = parseFloat(allowances) || 0;
+
+  const maxWeekdays = countWeekdaysInRange(start, end);
+
+  useEffect(() => {
+    if (unpaidDays === '') return;
+    const n = parseInt(unpaidDays, 10);
+    if (!Number.isNaN(n) && maxWeekdays >= 0 && n > maxWeekdays) {
+      setUnpaidDays(String(maxWeekdays));
+    }
+  }, [maxWeekdays, unpaidDays]);
 
   const { totalBasicEarned, dailyRate, unpaidDeduction } = computeTotalBasicEarned(
     monthlyNum,
@@ -83,10 +103,11 @@ function Calculator() {
             id="monthly-salary"
             type="number"
             min="0"
+            max={MAX_AMOUNT}
             step="0.01"
             placeholder="e.g. 25000"
             value={monthlySalary}
-            onChange={(e) => setMonthlySalary(e.target.value)}
+            onChange={(e) => setMonthlySalary(clampAmount(e.target.value))}
           />
         </div>
 
@@ -117,10 +138,11 @@ function Calculator() {
             id="allowances"
             type="number"
             min="0"
+            max={MAX_AMOUNT}
             step="0.01"
             placeholder="0"
             value={allowances}
-            onChange={(e) => setAllowances(e.target.value)}
+            onChange={(e) => setAllowances(clampAmount(e.target.value))}
           />
         </div>
 
@@ -130,11 +152,24 @@ function Calculator() {
             id="unpaid-days"
             type="number"
             min="0"
+            max={maxWeekdays}
             step="1"
             placeholder="0"
             value={unpaidDays}
-            onChange={(e) => setUnpaidDays(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === '') {
+                setUnpaidDays(v);
+                return;
+              }
+              const n = parseInt(v, 10);
+              if (Number.isNaN(n) || n < 0) return;
+              setUnpaidDays(n > maxWeekdays ? String(maxWeekdays) : v);
+            }}
           />
+          {maxWeekdays > 0 && (
+            <span className="form-hint">Max {maxWeekdays} weekdays in selected period</span>
+          )}
         </div>
 
         <button type="button" className="btn-reset" onClick={handleReset}>
@@ -144,11 +179,15 @@ function Calculator() {
 
       <section className="calculator-results receipt">
         <div className="receipt-paper">
+          <div className="receipt-print-header" aria-hidden="true">
+            <span className="receipt-print-title">13th Month Pay Calculator</span>
+            <span className="receipt-print-date">
+              {new Date().toLocaleString('en-PH', { dateStyle: 'medium', timeStyle: 'short' })}
+            </span>
+          </div>
           <div className="receipt-header">
-            <div className="receipt-dashes">- - - - - - - - - - - - - -</div>
             <h2 className="receipt-title">13TH MONTH PAY</h2>
             <div className="receipt-sub">Estimate</div>
-            <div className="receipt-dashes">- - - - - - - - - - - - - -</div>
           </div>
           <div className="receipt-body">
             <div className="receipt-line">
@@ -167,7 +206,15 @@ function Calculator() {
                 <span>-{formatCurrency(unpaidDeduction)}</span>
               </div>
             )}
-            <div className="receipt-dashes">- - - - - - - - - - - - - -</div>
+            <div className="receipt-divider" aria-hidden="true" />
+            {monthlyNum > 0 && totalFor13th > 0 && (
+              <div className="receipt-calculation">
+                <div className="receipt-calculation-formula">
+                  {formatCurrency(totalFor13th)} ÷ 12 = {formatCurrency(thirteenthMonth)}
+                </div>
+                <div className="receipt-calculation-label">13th Month Pay = Total earned in period ÷ 12</div>
+              </div>
+            )}
             <div className="receipt-line receipt-total">
               <span>13TH MONTH PAY</span>
               <span>{formatCurrency(thirteenthMonth)}</span>

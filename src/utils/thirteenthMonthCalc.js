@@ -5,6 +5,26 @@
  */
 
 /**
+ * Count weekdays (Mon–Fri) between two dates, inclusive.
+ * @param {Date} startDate
+ * @param {Date} endDate
+ * @returns {number}
+ */
+export function countWeekdaysInRange(startDate, endDate) {
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  if (end < start) return 0;
+  let count = 0;
+  const d = new Date(start);
+  while (d <= end) {
+    const day = d.getDay();
+    if (day >= 1 && day <= 5) count += 1;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
+}
+
+/**
  * Get days in a given month (1-indexed).
  */
 function getDaysInMonth(year, month) {
