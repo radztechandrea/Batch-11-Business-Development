@@ -13,9 +13,10 @@
   }
 }
 
+
 .calculator-title {
   font-size: 1.85rem;
-  background: linear-gradient(135deg, #e55a00 0%, #ff6b35 100%);
+  background: linear-gradient(135deg #ffffff 100);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -32,7 +33,7 @@
 
 @media (max-width: 768px) {
   .calculator-layout {
-    grid-template-columns: 1fr;
+    grid-template-coxlumns: 1fr;
   }
 }
 

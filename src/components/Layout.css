@@ -2,10 +2,20 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  /* Black → Orange → White Gradient */
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #ff7704 50%,
+    #161616 100%
+  );
+
+  background-attachment: fixed;
 }
 
 .layout-header {
-  background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 50%, #e55a00 100%);
+  background: linear-gradient(135deg,#ffffff 100%);
   padding: 0.9rem 1.5rem;
   box-shadow: 0 4px 16px rgba(229, 90, 0, 0.3);
 }
@@ -18,7 +28,7 @@
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   text-decoration: none;
   padding: 0.55rem 1.1rem;
   border-radius: 8px;
@@ -27,13 +37,13 @@
 }
 
 .nav-link:hover {
-  color: #fff;
+  color: #ff7704;
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
 
 .nav-link.active {
-  color: #fff;
+  color: #ff7704;
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
