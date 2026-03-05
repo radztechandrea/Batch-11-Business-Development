@@ -69,6 +69,20 @@ const PAYMENT_METHODS = [
 const QR_CODE_BASE = "https://api.qrserver.com/v1/create-qr-code/";
 const PENDING_RECEIPT_KEY = "ulap_pending_receipt_";
 
+const COUNTRY_CODES = [
+  { code: "+63", iso: "ph", country: "Philippines", maxLength: 11 },
+  { code: "+1", iso: "us", country: "US/Canada", maxLength: 10 },
+  { code: "+44", iso: "gb", country: "UK", maxLength: 10 },
+  { code: "+61", iso: "au", country: "Australia", maxLength: 9 },
+  { code: "+65", iso: "sg", country: "Singapore", maxLength: 8 },
+  { code: "+81", iso: "jp", country: "Japan", maxLength: 10 },
+  { code: "+82", iso: "kr", country: "South Korea", maxLength: 9 },
+  { code: "+971", iso: "ae", country: "UAE", maxLength: 9 },
+  { code: "+91", iso: "in", country: "India", maxLength: 10 },
+];
+
+const FLAG_CDN = "https://flagcdn.com/w40";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
@@ -240,10 +254,18 @@ const useStyles = makeStyles((theme) => ({
   },
   fieldHelper: {
     marginTop: theme.spacing(0.25),
+    marginBottom: theme.spacing(1.25),
     marginLeft: theme.spacing(1.5),
     fontSize: "0.7rem",
     color: theme.palette.text.secondary,
     lineHeight: 1.35,
+    display: "block",
+  },
+  fieldHelperSecure: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+    "& svg": { fontSize: 14, color: theme.palette.text.secondary, flexShrink: 0 },
   },
   paymentNote: {
     display: "flex",
@@ -304,6 +326,51 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(0.25),
       transform: "none",
     },
+  },
+  phoneRow: {
+    display: "flex",
+    gap: theme.spacing(1),
+    marginBottom: theme.spacing(1.5),
+  },
+  phoneCountryWrap: {
+    display: "flex",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: "#fafbfc",
+    border: "1px solid rgba(0,0,0,0.23)",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(0.5),
+    gap: theme.spacing(0.75),
+    flexShrink: 0,
+    minHeight: 48,
+    transition: "border-color 0.2s ease",
+    "&:focus-within": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+    },
+  },
+  phoneCountrySelect: {
+    border: "none",
+    background: "transparent",
+    padding: "8px 4px 8px 0",
+    fontSize: "0.9rem",
+    fontFamily: "inherit",
+    color: theme.palette.text.primary,
+    cursor: "pointer",
+    outline: "none",
+    minWidth: 52,
+  },
+  phoneFlag: {
+    width: 28,
+    height: 21,
+    objectFit: "cover",
+    borderRadius: 2,
+    flexShrink: 0,
+    border: "1px solid rgba(0,0,0,0.1)",
+  },
+  phoneInput: {
+    flex: 1,
+    minWidth: 0,
   },
   nativeSelect: {
     width: "100%",
@@ -520,6 +587,7 @@ export default function Checkout() {
     workEmail: "",
     companyName: "",
     phone: "",
+    phoneCountryCode: "+63",
     billingAddress: "",
     paymentMethod: "card",
   });
@@ -539,8 +607,26 @@ export default function Checkout() {
   const handleChange = (field) => (e) => {
     const value = e?.target?.value;
     if (value === undefined) return;
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === "phoneCountryCode") {
+        const maxLen =
+          COUNTRY_CODES.find((c) => c.code === value)?.maxLength ?? 11;
+        next.phone = (prev.phone || "").replace(/\D/g, "").slice(0, maxLen);
+      }
+      return next;
+    });
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const raw = e?.target?.value ?? "";
+    const digits = raw.replace(/\D/g, "");
+    const maxLen =
+      COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode)?.maxLength ??
+      11;
+    setForm((prev) => ({ ...prev, phone: digits.slice(0, maxLen) }));
+    if (errors.phone) setErrors((prev) => ({ ...prev, phone: "" }));
   };
 
   const handlePaymentDetailsChange = (field) => (e) => {
@@ -564,10 +650,14 @@ export default function Checkout() {
     if (!form.companyName.trim())
       next.companyName = "Please enter your company name";
     if (form.paymentMethod === "card") {
-      if (!paymentDetails.cardNumber?.trim()) next.payment_cardNumber = "Card number is required";
-      if (!paymentDetails.cardExpiry?.trim()) next.payment_cardExpiry = "Expiry (MM/YY) is required";
-      if (!paymentDetails.cardCvv?.trim()) next.payment_cardCvv = "CVV is required";
-      if (!paymentDetails.nameOnCard?.trim()) next.payment_nameOnCard = "Name on card is required";
+      if (!paymentDetails.cardNumber?.trim())
+        next.payment_cardNumber = "Card number is required";
+      if (!paymentDetails.cardExpiry?.trim())
+        next.payment_cardExpiry = "Expiry (MM/YY) is required";
+      if (!paymentDetails.cardCvv?.trim())
+        next.payment_cardCvv = "CVV is required";
+      if (!paymentDetails.nameOnCard?.trim())
+        next.payment_nameOnCard = "Name on card is required";
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -578,7 +668,10 @@ export default function Checkout() {
     if (!validate()) return;
     setSubmitting(true);
     const receiptId = `UPR-${Date.now().toString(36).toUpperCase()}`;
-    const date = new Date().toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" });
+    const date = new Date().toLocaleString("en-PH", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
     const receiptState = {
       form: { ...form },
       planKey,
@@ -588,12 +681,13 @@ export default function Checkout() {
       date,
     };
 
-    const isEwallet = form.paymentMethod === "gcash" || form.paymentMethod === "paymaya";
+    const isEwallet =
+      form.paymentMethod === "gcash" || form.paymentMethod === "paymaya";
     if (isEwallet) {
       try {
         sessionStorage.setItem(
           PENDING_RECEIPT_KEY + receiptId,
-          JSON.stringify(receiptState)
+          JSON.stringify(receiptState),
         );
       } catch (_) {}
       setTimeout(() => {
@@ -612,7 +706,9 @@ export default function Checkout() {
   const handleQrDone = () => {
     if (qrStepReceiptState) {
       try {
-        sessionStorage.removeItem(PENDING_RECEIPT_KEY + qrStepReceiptState.receiptId);
+        sessionStorage.removeItem(
+          PENDING_RECEIPT_KEY + qrStepReceiptState.receiptId,
+        );
       } catch (_) {}
       navigate("/reciept", { state: qrStepReceiptState });
       setShowQrStep(false);
@@ -622,7 +718,8 @@ export default function Checkout() {
 
   const handlePlanChange = (e) => {
     const newPlan = e?.target?.value;
-    if (newPlan) navigate({ pathname: "/checkout", search: `?plan=${newPlan}` });
+    if (newPlan)
+      navigate({ pathname: "/checkout", search: `?plan=${newPlan}` });
   };
 
   const formatPrice = (amount) => `₱${amount.toLocaleString("en-PH")}/month`;
@@ -744,26 +841,67 @@ export default function Checkout() {
                   }}
                 />
 
-                <TextField
-                  className={classes.field}
-                  fullWidth
-                  variant="outlined"
-                  label="Phone Number"
-                  placeholder="09XX XXX XXXX"
-                  value={form.phone}
-                  onChange={handleChange("phone")}
-                  onBlur={handleBlur("phone")}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Phone
-                          fontSize="small"
-                          style={{ color: "rgba(0,0,0,0.35)" }}
+                <Box className={classes.phoneRow}>
+                  {(() => {
+                    const current = COUNTRY_CODES.find(
+                      (c) => c.code === form.phoneCountryCode,
+                    );
+                    return (
+                      <Box className={classes.phoneCountryWrap}>
+                        <img
+                          src={`${FLAG_CDN}/${current ? current.iso : "ph"}.png`}
+                          alt=""
+                          className={classes.phoneFlag}
+                          aria-hidden
                         />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                        <select
+                          className={classes.phoneCountrySelect}
+                          aria-label="Country code"
+                          value={form.phoneCountryCode}
+                          onChange={handleChange("phoneCountryCode")}
+                        >
+                          {COUNTRY_CODES.map(({ code, iso }) => (
+                            <option key={code} value={code}>
+                              {code} {iso.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                      </Box>
+                    );
+                  })()}
+                  <TextField
+                    className={`${classes.field} ${classes.phoneInput}`}
+                    fullWidth
+                    variant="outlined"
+                    label="Phone Number"
+                    placeholder={
+                      form.phoneCountryCode === "+63"
+                        ? "912 345 6789"
+                        : "Phone number"
+                    }
+                    value={form.phone}
+                    onChange={handlePhoneChange}
+                    onBlur={handleBlur("phone")}
+                    inputProps={{
+                      maxLength:
+                        COUNTRY_CODES.find(
+                          (c) => c.code === form.phoneCountryCode,
+                        )?.maxLength ?? 11,
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Phone
+                            fontSize="small"
+                            style={{ color: "rgba(0,0,0,0.35)" }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
                 <Typography className={classes.fieldHelper}>
                   Optional. For delivery updates and support.
                 </Typography>
@@ -773,12 +911,18 @@ export default function Checkout() {
                   fullWidth
                   variant="outlined"
                   label="Billing Address"
-                  placeholder="Street, Barangay, City, Province, ZIP"
+                  placeholder="Street, Barangay, City, Province, ZIP Code"
                   multiline
                   minRows={3}
+                  maxRows={6}
                   value={form.billingAddress}
                   onChange={handleChange("billingAddress")}
                   onBlur={handleBlur("billingAddress")}
+                  inputProps={{
+                    maxLength: 500,
+                    autoComplete: "billing street-address",
+                    "aria-describedby": "billing-address-helper",
+                  }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment
@@ -793,8 +937,18 @@ export default function Checkout() {
                     ),
                   }}
                 />
-                <Typography className={classes.fieldHelper}>
-                  Optional. For invoices and official records.
+                <Typography
+                  id="billing-address-helper"
+                  className={`${classes.fieldHelper} ${classes.fieldHelperSecure}`}
+                >
+                  <Lock fontSize="inherit" />
+                  Optional. Used only for official invoices and tax records. Your
+                  address is kept confidential and transmitted securely.
+                  {form.billingAddress.length > 0 && (
+                    <span style={{ marginLeft: 4 }}>
+                      ({form.billingAddress.length}/500)
+                    </span>
+                  )}
                 </Typography>
 
                 <Box className={`${classes.field} ${classes.nativeSelectWrap}`}>
@@ -820,53 +974,55 @@ export default function Checkout() {
                       Card information
                     </Typography>
                     <>
+                      <TextField
+                        className={classes.field}
+                        fullWidth
+                        variant="outlined"
+                        label="Card number"
+                        placeholder="1234 5678 9012 3456"
+                        value={paymentDetails.cardNumber}
+                        onChange={handlePaymentDetailsChange("cardNumber")}
+                        error={!!errors.payment_cardNumber}
+                        helperText={errors.payment_cardNumber}
+                      />
+                      <Box
+                        style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
+                      >
                         <TextField
                           className={classes.field}
-                          fullWidth
+                          style={{ flex: "1 1 120px" }}
                           variant="outlined"
-                          label="Card number"
-                          placeholder="1234 5678 9012 3456"
-                          value={paymentDetails.cardNumber}
-                          onChange={handlePaymentDetailsChange("cardNumber")}
-                          error={!!errors.payment_cardNumber}
-                          helperText={errors.payment_cardNumber}
+                          label="Expiry (MM/YY)"
+                          placeholder="MM/YY"
+                          value={paymentDetails.cardExpiry}
+                          onChange={handlePaymentDetailsChange("cardExpiry")}
+                          error={!!errors.payment_cardExpiry}
+                          helperText={errors.payment_cardExpiry}
                         />
-                        <Box style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                          <TextField
-                            className={classes.field}
-                            style={{ flex: "1 1 120px" }}
-                            variant="outlined"
-                            label="Expiry (MM/YY)"
-                            placeholder="MM/YY"
-                            value={paymentDetails.cardExpiry}
-                            onChange={handlePaymentDetailsChange("cardExpiry")}
-                            error={!!errors.payment_cardExpiry}
-                            helperText={errors.payment_cardExpiry}
-                          />
-                          <TextField
-                            className={classes.field}
-                            style={{ flex: "1 1 100px" }}
-                            variant="outlined"
-                            label="CVV"
-                            placeholder="123"
-                            value={paymentDetails.cardCvv}
-                            onChange={handlePaymentDetailsChange("cardCvv")}
-                            error={!!errors.payment_cardCvv}
-                            helperText={errors.payment_cardCvv}
-                          />
-                        </Box>
                         <TextField
                           className={classes.field}
-                          fullWidth
+                          style={{ flex: "1 1 100px" }}
                           variant="outlined"
-                          label="Name on card"
-                          placeholder="As shown on card"
-                          value={paymentDetails.nameOnCard}
-                          onChange={handlePaymentDetailsChange("nameOnCard")}
-                          error={!!errors.payment_nameOnCard}
-                          helperText={errors.payment_nameOnCard}
+                          label="CVV"
+                          placeholder="123"
+                          value={paymentDetails.cardCvv}
+                          onChange={handlePaymentDetailsChange("cardCvv")}
+                          error={!!errors.payment_cardCvv}
+                          helperText={errors.payment_cardCvv}
                         />
-                      </>
+                      </Box>
+                      <TextField
+                        className={classes.field}
+                        fullWidth
+                        variant="outlined"
+                        label="Name on card"
+                        placeholder="As shown on card"
+                        value={paymentDetails.nameOnCard}
+                        onChange={handlePaymentDetailsChange("nameOnCard")}
+                        error={!!errors.payment_nameOnCard}
+                        helperText={errors.payment_nameOnCard}
+                      />
+                    </>
                   </Box>
                 )}
 
@@ -881,7 +1037,8 @@ export default function Checkout() {
                   />
                   <span>
                     Payment instructions will be sent to your email after you
-                    confirm. You can pay via e-wallet or card depending on your selection.
+                    confirm. You can pay via e-wallet or card depending on your
+                    selection.
                   </span>
                 </Box>
               </Box>
@@ -916,7 +1073,9 @@ export default function Checkout() {
                     aria-label="Change plan"
                   >
                     <option value="starter">Starter — ₱2,000/mo</option>
-                    <option value="professional">Professional — ₱6,000/mo</option>
+                    <option value="professional">
+                      Professional — ₱6,000/mo
+                    </option>
                     <option value="enterprise">Enterprise — ₱13,000/mo</option>
                   </select>
                 </Box>
@@ -988,27 +1147,44 @@ export default function Checkout() {
         </form>
 
         {showQrStep && qrStepReceiptState && (
-          <Box className={classes.qrOverlay} onClick={(e) => e.target === e.currentTarget && setShowQrStep(false)}>
-            <Box className={classes.qrModal} onClick={(e) => e.stopPropagation()}>
+          <Box
+            className={classes.qrOverlay}
+            onClick={(e) =>
+              e.target === e.currentTarget && setShowQrStep(false)
+            }
+          >
+            <Box
+              className={classes.qrModal}
+              onClick={(e) => e.stopPropagation()}
+            >
               <Typography className={classes.qrModalTitle}>
-                Scan to pay with {form.paymentMethod === "gcash" ? "GCash" : "Maya"}
+                Scan to pay with{" "}
+                {form.paymentMethod === "gcash" ? "GCash" : "Maya"}
               </Typography>
               <Typography className={classes.qrModalAmount}>
                 {formatPrice(plan.price)}
               </Typography>
-              <Typography className={classes.qrHint} style={{ marginBottom: 16 }}>
-                Open your app, scan to pay, then open the link to complete. Or click below when done.
+              <Typography
+                className={classes.qrHint}
+                style={{ marginBottom: 16 }}
+              >
+                Open your app, scan to pay, then open the link to complete. Or
+                click below when done.
               </Typography>
               <img
                 className={classes.qrImage}
                 src={`${QR_CODE_BASE}?size=200x200&data=${encodeURIComponent(
                   typeof window !== "undefined"
                     ? `${window.location.origin}/payment-complete?ref=${qrStepReceiptState.receiptId}`
-                    : `UlapPayroll-${plan.label}-${plan.price}-${qrStepReceiptState.receiptId}`
+                    : `UlapPayroll-${plan.label}-${plan.price}-${qrStepReceiptState.receiptId}`,
                 )}`}
                 alt="Payment QR Code"
               />
-              <Typography variant="body2" color="textSecondary" style={{ marginTop: 8, marginBottom: 4 }}>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                style={{ marginTop: 8, marginBottom: 4 }}
+              >
                 Simulate:{" "}
                 <Typography
                   component="a"

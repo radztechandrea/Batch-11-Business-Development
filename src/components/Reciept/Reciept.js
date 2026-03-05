@@ -225,7 +225,9 @@ export default function Reciept() {
           {form.phone && (
             <div className={classes.row}>
               <span className={classes.label}>Phone</span>
-              <span className={classes.value}>{form.phone}</span>
+              <span className={classes.value}>
+                {form.phoneCountryCode ? `${form.phoneCountryCode} ` : ""}{form.phone}
+              </span>
             </div>
           )}
           {form.billingAddress && (
