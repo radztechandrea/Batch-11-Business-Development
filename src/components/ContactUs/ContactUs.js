@@ -24,10 +24,17 @@ const PLANS = [
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(2, 3, 5),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(5),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
     animation: '$pageEnter 0.4s ease-out',
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+    },
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(2, 2, 4),
+      paddingBottom: theme.spacing(4),
     },
   },
   '@keyframes pageEnter': {
@@ -37,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   topBar: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     marginBottom: theme.spacing(3),
   },
   backBtn: {
@@ -151,7 +159,7 @@ const ContactUs = () => {
   };
 
   return (
-    <Container maxWidth="md" className={classes.root}>
+    <Container maxWidth="lg" className={classes.root} disableGutters>
       <Box className={classes.topBar}>
         <Button
           component="button"
@@ -214,15 +222,15 @@ const ContactUs = () => {
 
           <Box className={classes.fieldWrap}>
             <Typography className={classes.fieldLabel}>Name</Typography>
-            <TextField variant="outlined" fullWidth required className={classes.input} />
+            <TextField variant="outlined" fullWidth required className={classes.input} placeholder="Enter your name" />
           </Box>
           <Box className={classes.fieldWrap}>
             <Typography className={classes.fieldLabel}>Email</Typography>
-            <TextField type="email" variant="outlined" fullWidth required className={classes.input} />
+            <TextField type="email" variant="outlined" fullWidth required className={classes.input} placeholder="Enter your email" />
           </Box>
           <Box className={classes.fieldWrap}>
             <Typography className={classes.fieldLabel}>Company (optional)</Typography>
-            <TextField variant="outlined" fullWidth className={classes.input} />
+            <TextField variant="outlined" fullWidth className={classes.input} placeholder="Enter your company name" />
           </Box>
           <Box className={classes.fieldWrap}>
             <Typography className={classes.fieldLabel}>Message</Typography>
@@ -231,12 +239,12 @@ const ContactUs = () => {
               fullWidth
               multiline
               rows={3}
+              className={classes.input}
               placeholder={
                 intent === INTENT_DEMO
                   ? 'Tell us about your payroll needs or preferred demo date...'
                   : 'How can we help?'
               }
-              className={classes.input}
             />
           </Box>
           <Button

@@ -1,0 +1,11 @@
+/* Prevent layout shift when scrollbar appears/disappears between pages */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Fallback: always show scrollbar track so width stays consistent (older browsers) */
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+}
