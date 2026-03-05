@@ -5,6 +5,8 @@ import {
   Button,
   CircularProgress,
   Container,
+  // eslint-disable-next-line
+  IconButton,
   InputAdornment,
   makeStyles,
   Paper,
@@ -20,6 +22,7 @@ import {
   Business,
   Phone,
   LocationOn,
+  MyLocation,
   CheckCircle,
   ShoppingCart,
 } from "@material-ui/icons";
@@ -151,6 +154,7 @@ const useStyles = makeStyles((theme) => ({
     to: { opacity: 1, transform: "translateY(0)" },
   },
   pageTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 700,
     marginBottom: theme.spacing(0.25),
     color: theme.palette.text.primary,
@@ -158,6 +162,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.4rem",
   },
   pageSubtitle: {
+    fontFamily: '"Roboto", sans-serif',
     color: theme.palette.text.secondary,
     fontSize: "0.85rem",
     lineHeight: 1.45,
@@ -224,6 +229,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1),
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     marginBottom: theme.spacing(2),
     fontSize: "1rem",
@@ -265,7 +271,22 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
-    "& svg": { fontSize: 14, color: theme.palette.text.secondary, flexShrink: 0 },
+    "& svg": {
+      fontSize: 14,
+      color: theme.palette.text.secondary,
+      flexShrink: 0,
+    },
+  },
+  locationButtonWrap: {
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.25),
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+  },
+  locationError: {
+    fontSize: "0.7rem",
+    color: theme.palette.error.main,
   },
   paymentNote: {
     display: "flex",
@@ -307,11 +328,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.75),
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     marginBottom: theme.spacing(1.5),
     fontSize: "1rem",
   },
   planSwitcherLabel: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     marginBottom: theme.spacing(0.5),
@@ -422,16 +445,19 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
   },
   planName: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     fontSize: "0.95rem",
     marginBottom: theme.spacing(0.25),
   },
   planDescription: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     marginBottom: theme.spacing(0.75),
   },
   planPrice: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     fontSize: "1rem",
     color: theme.palette.text.primary,
@@ -446,10 +472,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(0.5),
   },
   totalLabel: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     fontSize: "0.9rem",
   },
   totalAmount: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 700,
     fontSize: "1.2rem",
     color: theme.palette.primary.main,
@@ -505,6 +533,7 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid rgba(0,0,0,0.08)",
   },
   paymentDetailsTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontSize: "0.8rem",
     fontWeight: 600,
     marginBottom: theme.spacing(1),
@@ -526,11 +555,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1.5),
   },
   qrLabel: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "0.85rem",
     fontWeight: 600,
     marginBottom: theme.spacing(0.25),
   },
   qrHint: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
   },
@@ -557,11 +588,13 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 24px 48px rgba(0,0,0,0.2)",
   },
   qrModalTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontSize: "1rem",
     fontWeight: 600,
     marginBottom: theme.spacing(1.5),
   },
   qrModalAmount: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "1.25rem",
     fontWeight: 700,
     color: theme.palette.primary.main,
@@ -603,6 +636,8 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [showQrStep, setShowQrStep] = useState(false);
   const [qrStepReceiptState, setQrStepReceiptState] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   const handleChange = (field) => (e) => {
     const value = e?.target?.value;
@@ -639,6 +674,54 @@ export default function Checkout() {
 
   const handleBlur = (field) => () =>
     setTouched((prev) => ({ ...prev, [field]: true }));
+
+  const getBillingAddressFromGPS = () => {
+    setLocationError(null);
+    setLocationLoading(true);
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser.");
+      setLocationLoading(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+          {
+            headers: {
+              "Accept-Language": "en",
+              "User-Agent": "Batch11Checkout/1.0",
+            },
+          },
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            const a = data.address || {};
+            const parts = [
+              a.road,
+              a.suburb || a.village || a.town,
+              a.city || a.municipality,
+              a.state || a.province,
+              a.postcode,
+              a.country,
+            ].filter(Boolean);
+            const address = parts.join(", ");
+            setForm((prev) => ({ ...prev, billingAddress: address }));
+            setLocationError(null);
+          })
+          .catch(() =>
+            setLocationError("Could not resolve address from location."),
+          )
+          .finally(() => setLocationLoading(false));
+      },
+      () => {
+        setLocationError("Location access denied or unavailable.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  };
 
   const validate = () => {
     const next = {};
@@ -937,13 +1020,39 @@ export default function Checkout() {
                     ),
                   }}
                 />
+                <Box className={classes.locationButtonWrap}>
+                  <Button
+                    size="small"
+                    color="primary"
+                    startIcon={
+                      locationLoading ? (
+                        <CircularProgress size={14} color="inherit" />
+                      ) : (
+                        <MyLocation fontSize="small" />
+                      )
+                    }
+                    onClick={getBillingAddressFromGPS}
+                    disabled={locationLoading}
+                    aria-label="Use my current location for billing address"
+                  >
+                    Use my location
+                  </Button>
+                  {locationError && (
+                    <Typography
+                      className={classes.locationError}
+                      component="span"
+                    >
+                      {locationError}
+                    </Typography>
+                  )}
+                </Box>
                 <Typography
                   id="billing-address-helper"
                   className={`${classes.fieldHelper} ${classes.fieldHelperSecure}`}
                 >
                   <Lock fontSize="inherit" />
-                  Optional. Used only for official invoices and tax records. Your
-                  address is kept confidential and transmitted securely.
+                  Optional. Used only for official invoices and tax records.
+                  Your address is kept confidential and transmitted securely.
                   {form.billingAddress.length > 0 && (
                     <span style={{ marginLeft: 4 }}>
                       ({form.billingAddress.length}/500)

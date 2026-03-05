@@ -44,12 +44,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
   },
   logo: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontSize: "1.5rem",
     fontWeight: 700,
     color: theme.palette.primary.main,
     marginBottom: theme.spacing(1),
   },
   title: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontSize: "1.25rem",
     fontWeight: 600,
     marginBottom: theme.spacing(3),
@@ -65,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
   label: { color: theme.palette.text.secondary, marginRight: theme.spacing(2) },
   value: { fontWeight: 500 },
   sectionTitle: {
+    fontFamily: '"Roboto", sans-serif',
     fontSize: "0.75rem",
     fontWeight: 700,
     textTransform: "uppercase",
@@ -88,6 +91,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     textAlign: "center",
+  },
+  noDataTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
   },
 }));
 
@@ -143,7 +149,7 @@ export default function Reciept() {
     return (
       <Box className={classes.root}>
         <Container maxWidth="sm">
-          <Typography variant="h6" style={{ marginBottom: 16 }}>
+          <Typography variant="h6" className={classes.noDataTitle} style={{ marginBottom: 16 }}>
             No receipt data found.
           </Typography>
           <Button
