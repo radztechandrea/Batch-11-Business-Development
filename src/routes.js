@@ -4,12 +4,18 @@ import Result from "./components/Result/Result";
 import Checkout from "./components/Checkout/Checkout";
 import Reciept from "./components/Reciept/Reciept";
 import PaymentComplete from "./components/PaymentComplete/PaymentComplete";
+import ContactUs from "./components/ContactUs/ContactUs";
+import DefaultLayout from "./layouts/DefaultLayout";
 
 const routes = [
   {
     path: "/",
-    element: Hero,
+    element: DefaultLayout,
     children: [
+      {
+        index: true,
+        element: Hero,
+      },
       {
         path: "questionnaire",
         element: Questionnaire,
@@ -29,6 +35,10 @@ const routes = [
       {
         path: "payment-complete",
         element: PaymentComplete,
+      },
+      {
+        path: "contact-us",
+        element: ContactUs,
       },
     ],
   },

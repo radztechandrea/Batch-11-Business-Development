@@ -2,16 +2,30 @@ import React, { Fragment } from "react";
 import { Outlet, Route, Routes } from "react-router";
 
 const renderRoutes = (routes = []) =>
-  routes.map((route) => {
+  routes.map((route, idx) => {
     const props = route.elementProps || {};
-
     const Guard = route.guard || Fragment;
     const Element = route.element || Outlet;
+    const key = route.path ?? (route.index ? "index" : `route-${idx}`);
 
-    return "children" in route ? (
+    if (route.index) {
+      return (
+        <Route
+          key={key}
+          index
+          element={
+            <Guard>
+              <Element {...props} />
+            </Guard>
+          }
+        />
+      );
+    }
+
+    return "children" in route && route.children?.length > 0 ? (
       <Route
         path={route.path}
-        key={route.path}
+        key={key}
         element={
           <Guard>
             <Element {...props} />
@@ -23,7 +37,7 @@ const renderRoutes = (routes = []) =>
     ) : (
       <Route
         path={route.path}
-        key={route.path}
+        key={key}
         element={
           <Guard>
             <Element {...props} />

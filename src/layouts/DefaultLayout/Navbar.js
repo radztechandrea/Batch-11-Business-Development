@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     borderBottom: '2px solid #FF7704',
   },
+  navLink: {
+    transition: 'color 0.25s ease',
+  },
 }));
 
 const Navbar = () => {
@@ -157,7 +160,7 @@ const Navbar = () => {
                     to="/#hero"
                     underline="none"
                     color="textPrimary"
-                    className={isActive('Home') ? classes.activeLink : ''}
+                    className={`${isActive('Home') ? classes.activeLink : ''} ${classes.navLink}`}
                     style={{ fontSize: '.8rem' }}
                   >
                     Home
@@ -168,7 +171,7 @@ const Navbar = () => {
                     to="/plan-recommendation"
                     underline="none"
                     color="textPrimary"
-                    className={isActive('Plan Recommendation') ? classes.activeLink : ''}
+                    className={`${isActive('Plan Recommendation') ? classes.activeLink : ''} ${classes.navLink}`}
                     style={{ fontSize: '.8rem' }}
                   >
                     Plan Recommendation
@@ -179,7 +182,7 @@ const Navbar = () => {
                     to="/contact-us"
                     underline="none"
                     color="textPrimary"
-                    className={isActive('Contact Us') ? classes.activeLink : ''}
+                    className={`${isActive('Contact Us') ? classes.activeLink : ''} ${classes.navLink}`}
                     style={{ fontSize: '.8rem' }}
                   >
                     Contact Us
@@ -211,7 +214,7 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={isActive('Home') ? classes.activeLink : ''}
+                className={`${isActive('Home') ? classes.activeLink : ''} ${classes.navLink}`}
                 style={{ fontSize: '1rem' }}
               >
                 Home
@@ -223,7 +226,7 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={isActive('Plan Recommendation') ? classes.activeLink : ''}
+                className={`${isActive('Plan Recommendation') ? classes.activeLink : ''} ${classes.navLink}`}
                 style={{ fontSize: '1rem' }}
               >
                 Plan Recommendation
@@ -235,7 +238,7 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={isActive('Contact Us') ? classes.activeLink : ''}
+                className={`${isActive('Contact Us') ? classes.activeLink : ''} ${classes.navLink}`}
                 style={{ fontSize: '1rem' }}
               >
                 Contact Us

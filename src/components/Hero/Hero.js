@@ -22,12 +22,17 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    animation: '$rootFadeIn 0.4s ease-out',
     [theme.breakpoints.down('md')]: {
       overflow: 'auto',
       height: 'auto',
       minHeight: 'calc(100vh - 60px)',
       justifyContent: 'flex-start',
     },
+  },
+  '@keyframes rootFadeIn': {
+    '0%': { opacity: 0 },
+    '100%': { opacity: 1 },
   },
   hero: {
     position: 'relative',
@@ -65,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     [theme.breakpoints.down('md')]: { order: 2, minHeight: 'min(78vh, 620px)' },
     [theme.breakpoints.down('xs')]: { minHeight: 'min(70vh, 520px)' },
+    [theme.breakpoints.only('md')]: { minHeight: 'min(52vh, 420px)' },
   },
   heroImageWrap: {
     position: 'relative',
@@ -78,6 +84,7 @@ const useStyles = makeStyles((theme) => ({
     animation: '$heroFadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both',
     [theme.breakpoints.down('md')]: { height: 'min(78vh, 620px)', minHeight: 480 },
     [theme.breakpoints.down('xs')]: { height: 'min(70vh, 520px)', minHeight: 420 },
+    [theme.breakpoints.only('md')]: { height: 'min(52vh, 420px)', minHeight: 360 },
   },
   heroImage: {
     width: 'auto',
@@ -89,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: 'bottom',
     [theme.breakpoints.down('md')]: { maxHeight: 'min(78vh, 620px)' },
     [theme.breakpoints.down('xs')]: { maxHeight: 'min(70vh, 520px)' },
+    [theme.breakpoints.only('md')]: { maxHeight: 'min(52vh, 420px)' },
   },
   '@keyframes heroFadeIn': {
     '0%': { opacity: 0, transform: 'translateX(24px)' },
@@ -184,16 +192,38 @@ const useStyles = makeStyles((theme) => ({
   heroCtaBtn: {
     backgroundColor: '#DB6700',
     color: '#fff',
-    padding: theme.spacing(1.75, 2),
-    borderRadius: 12,
+    padding: theme.spacing(1.50, 2),
+    borderRadius: 4,
     textTransform: 'none',
     fontWeight: 550,
     fontSize: '1rem',
     boxShadow: 'none',
     alignSelf: 'flex-start',
     animation: '$heroFadeInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both',
+    transition: 'background-color 0.25s ease, transform 0.2s ease',
     [theme.breakpoints.down('md')]: { alignSelf: 'center' },
-    '&:hover': { backgroundColor: '#C45D00' },
+    '&:hover': { backgroundColor: '#C45D00', transform: 'translateY(-1px)' },
+  },
+  heroCtaBtnOutlined: {
+    padding: theme.spacing(1.50, 2),
+    borderRadius: 4,
+    textTransform: 'none',
+    fontWeight: 550,
+    fontSize: '1rem',
+    borderColor: '#DB6700',
+    color: '#DB6700',
+    alignSelf: 'flex-start',
+    animation: '$heroFadeInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.45s both',
+    transition: 'border-color 0.25s ease, color 0.25s ease, background-color 0.25s ease, transform 0.2s ease',
+    [theme.breakpoints.down('md')]: { alignSelf: 'center' },
+    '&:hover': { borderColor: '#C45D00', color: '#C45D00', backgroundColor: 'rgba(219, 103, 0, 0.08)', transform: 'translateY(-1px)' },
+  },
+  heroCtaGroup: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing(2),
+    alignSelf: 'flex-start',
+    [theme.breakpoints.down('md')]: { alignSelf: 'center' },
   },
   '@keyframes heroFadeInLeft': {
     '0%': { opacity: 0, transform: 'translateX(-24px)' },
@@ -217,14 +247,24 @@ const Home = () => {
                 UlapPayroll helps you manage workforce compensation with clear calculations
                 and compliance. Get a plan recommendation in minutes.
               </Typography>
-              <Button
-                component={RouterLink}
-                to="/plan-recommendation"
-                variant="contained"
-                className={classes.heroCtaBtn}
-              >
-                Find me a plan
-              </Button>
+              <Box className={classes.heroCtaGroup}>
+                <Button
+                  component={RouterLink}
+                  to="/questionnaire"
+                  variant="contained"
+                  className={classes.heroCtaBtn}
+                >
+                  Find me a plan
+                </Button>
+                <Button
+                  component={RouterLink}
+                  to="/contact-us"
+                  variant="outlined"
+                  className={classes.heroCtaBtnOutlined}
+                >
+                  Book a demo
+                </Button>
+              </Box>
             </Grid>
             <Grid item xs={12} md={6} className={classes.heroRight}>
               <Box className={classes.heroImageWrap}>
