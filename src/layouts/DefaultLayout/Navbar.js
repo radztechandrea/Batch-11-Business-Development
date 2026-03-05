@@ -1,272 +1,250 @@
-import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
-import UlapBizLogo from "src/images/ulapbiz.png";
-import MenuIcon from '@material-ui/icons/Menu';
-import CloseIcon from '@material-ui/icons/Close';
-
+import React, { useState } from 'react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
-  Avatar,
   AppBar,
   Toolbar,
-  makeStyles,
   Link,
   Box,
   Container,
   Collapse,
   useMediaQuery,
   useTheme,
-} from "@material-ui/core";
-
-const pages = [
-  "Home",
-  "Plans",
-  "Accounting and Beyond",
-  "Features",
-  "Schedules and Reports",
-  "Contact Us",
-];
+  Avatar,
+  makeStyles,
+} from '@material-ui/core';
+import MenuIcon from '@material-ui/icons/Menu';
+import CloseIcon from '@material-ui/icons/Close';
+import UlapBizLogo from '../../images/ulapbiz.png';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    background: "#fff",
+    background: '#fff',
     height: 60,
   },
-  appBar: {
-    [theme.breakpoints.down("md")]: {
-      height: "100%",
+  container: {
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
     },
   },
   biz: {
-    color: "#FF7704",
+    color: '#FF7704',
     fontWeight: 900,
   },
   iconContainer: {
-    display: "flex",
-    gap: ".3em",
-    alignItems: "center",
-    filter: "grayscale(10%)",
-    transition: "all 500ms ease-in-out",
-    [theme.breakpoints.down("md")]: {
+    display: 'flex',
+    gap: '.3em',
+    alignItems: 'center',
+    filter: 'grayscale(10%)',
+    transition: 'all 500ms ease-in-out',
+    [theme.breakpoints.down('md')]: {
       flexGrow: 1,
     },
-    "&:hover": {
-      filter: "grayscale(0)",
+    '&:hover': {
+      filter: 'grayscale(0)',
     },
   },
-  signin: {
-    fontSize: ".8rem",
-    border: `1px solid ${theme.palette.primary.main}`,
-    padding: ".5rem 1rem",
-    borderRadius: ".25rem",
-    '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-      color: '#FAFAFA',
-    },
+  activeLink: {
+    color: '#DB6700',
+    fontWeight: 600,
+    borderBottom: '2px solid #FF7704',
   },
-  signup: {
-    fontSize: ".8rem",
-    padding: ".5rem 1rem",
-    borderRadius: ".25rem",
-    border: `1px solid ${theme.palette.primary.main}`,
-    backgroundColor: theme.palette.primary.main,
-    color: '#FAFAFA',
-    '&:hover': {
-      backgroundColor: '#FAFAFA',
-      color: theme.palette.primary.main,
-      border: `1px solid ${theme.palette.primary.main}`,
-    },
-  }
 }));
 
 const Navbar = () => {
   const classes = useStyles();
   const theme = useTheme();
-
   const [open, setOpen] = useState(false);
-  const isXs = useMediaQuery(theme.breakpoints.down("xs"));
+  const isXs = useMediaQuery(theme.breakpoints.down('md'));
+  const location = useLocation();
+
+  const getPathFromPage = (page) => {
+    if (page === 'Home') return '/';
+    if (page === 'Plan Recommendation') return '/plan-recommendation';
+    if (page === 'Contact Us') return '/contact-us';
+    return `/${page.toLowerCase().replace(/\s+/g, '-')}`;
+  };
+
+  const isActive = (page) => {
+    if (page === 'Home') {
+      return location.pathname === '/' && (!location.hash || location.hash === '#hero');
+    }
+    return location.pathname === getPathFromPage(page);
+  };
 
   return (
     <AppBar elevation={2} color="inherit">
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" className={classes.container}>
         <Toolbar disableGutters className={classes.toolbar}>
-          <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            [theme.breakpoints.up('md')]: {
-              justifyContent: "start",
-              gap: "2rem",
-            },
-            alignItems: "center",
-            width: "100%",
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              [theme.breakpoints.up('md')]: {
+                justifyContent: 'start',
+                gap: '2rem',
+              },
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            {/* Logo Section */}
             <Box className={classes.iconContainer}>
-              <RouterLink to="/" >
+              <RouterLink to="/#hero">
                 <Avatar src={UlapBizLogo} />
               </RouterLink>
               <Link
                 component={RouterLink}
-                variant="h4"
-                to="/"
+                variant="h6"
+                to="/#hero"
                 underline="none"
                 color="textPrimary"
               >
                 Ulap<span className={classes.biz}>Biz</span>
               </Link>
             </Box>
-            {isXs && <Box sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "flex-end",
-            }}>
-              {open ?
-                <CloseIcon color="primary" onClick={() => setOpen(false)} /> :
-                <MenuIcon color="primary" onClick={() => setOpen(true)} />}
-            </Box>}
-            {!isXs &&
-              <Box sx={{
-                display: "flex",
-                gap: "1rem",
-                justifyContent: "space-between",
-                width: "100%",
-                "& :hover": {
-                  color: "#FF7704",
-                }
-              }}>
-                <Box sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}>
-                  {!isXs && pages.map((page, index) => (
-                    <Link
-                      key={index}
-                      component={RouterLink}
-                      variant="h6"
-                      to={`/${page.toLowerCase().replace(" ", "-")}`}
-                      underline="none"
-                      color="textPrimary"
-                      style={{
-                        fontSize: ".8rem",
-                      }}
-                    >
-                      {page}
-                    </Link>
-                  ))}
-                </Box>
-                {!isXs &&
-                  <Box sx={{
-                    display: "flex",
-                    gap: "1rem",
-                  }}>
-                    <Link
-                      key="signin"
-                      component={RouterLink}
-                      variant="h6"
-                      to='test'
-                      underline="none"
-                      color="textPrimary"
-                      className={classes.signin}
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      key="signup"
-                      component={RouterLink}
-                      variant="h6"
-                      to='test'
-                      underline="none"
-                      color="textPrimary"
-                      className={classes.signup}
-                    >
-                      Sign Up
-                    </Link>
-                  </Box>
-                }
+
+            {/* Mobile Menu Toggle Button */}
+            {isXs && (
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                {open ? (
+                  <CloseIcon
+                    color="textPrimary"
+                    onClick={() => setOpen(false)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                ) : (
+                  <MenuIcon
+                    color="textPrimary"
+                    onClick={() => setOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                )}
               </Box>
-            }
+            )}
+
+            {/* Desktop Navigation */}
+            {!isXs && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '1rem',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  '& :hover': {
+                    color: '#FF7704',
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1.5rem',
+                  }}
+                >
+                  <Link
+                    component={RouterLink}
+                    variant="h6"
+                    to="/#hero"
+                    underline="none"
+                    color="textPrimary"
+                    className={isActive('Home') ? classes.activeLink : ''}
+                    style={{ fontSize: '.8rem' }}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    component={RouterLink}
+                    variant="h6"
+                    to="/plan-recommendation"
+                    underline="none"
+                    color="textPrimary"
+                    className={isActive('Plan Recommendation') ? classes.activeLink : ''}
+                    style={{ fontSize: '.8rem' }}
+                  >
+                    Plan Recommendation
+                  </Link>
+                  <Link
+                    component={RouterLink}
+                    variant="h6"
+                    to="/contact-us"
+                    underline="none"
+                    color="textPrimary"
+                    className={isActive('Contact Us') ? classes.activeLink : ''}
+                    style={{ fontSize: '.8rem' }}
+                  >
+                    Contact Us
+                  </Link>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Toolbar>
-        <Collapse in={open}>
-          {isXs &&
-            <Box sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
-              gap: "1rem",
-              marginBottom: "1rem",
-              height: "100vh",
-            }}>
-              {pages.map((page, index) => (
-                <Link
-                  key={index}
-                  component={RouterLink}
-                  variant="h6"
-                  to={`/${page.toLowerCase().replace(" ", "-")}`}
-                  underline="none"
-                  color="primary"
-                >
-                  {page}
-                </Link>
 
-              ))}
+        {/* Mobile Collapse Menu */}
+        <Collapse in={open}>
+          {isXs && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                gap: '1rem',
+                marginBottom: '1rem',
+                paddingBottom: '2rem',
+              }}
+            >
               <Link
-                key="signin"
                 component={RouterLink}
                 variant="h6"
-                to='test'
+                to="/#hero"
                 underline="none"
                 color="textPrimary"
-                style={{
-                  color: theme.palette.primary.main,
-                }}
+                onClick={() => setOpen(false)}
+                className={isActive('Home') ? classes.activeLink : ''}
+                style={{ fontSize: '1rem' }}
               >
-                Sign In
+                Home
               </Link>
               <Link
-                key="signup"
                 component={RouterLink}
                 variant="h6"
-                to='test'
+                to="/plan-recommendation"
                 underline="none"
                 color="textPrimary"
-                style={{
-                  color: theme.palette.primary.main,
-                }}
+                onClick={() => setOpen(false)}
+                className={isActive('Plan Recommendation') ? classes.activeLink : ''}
+                style={{ fontSize: '1rem' }}
               >
-                Sign Up
+                Plan Recommendation
+              </Link>
+              <Link
+                component={RouterLink}
+                variant="h6"
+                to="/contact-us"
+                underline="none"
+                color="textPrimary"
+                onClick={() => setOpen(false)}
+                className={isActive('Contact Us') ? classes.activeLink : ''}
+                style={{ fontSize: '1rem' }}
+              >
+                Contact Us
               </Link>
             </Box>
-          }
-          {isXs &&
-            <>
-              <Link
-                key="signin"
-                component={RouterLink}
-                variant="h6"
-                to='test'
-                underline="none"
-                color="textPrimary"
-              // className={classes.signin}
-              >
-                Sign In
-              </Link>
-              <Link
-                key="signup"
-                component={RouterLink}
-                variant="h6"
-                to='test'
-                underline="none"
-                color="textPrimary"
-              // className={classes.signup}
-              >
-                Sign Up
-              </Link>
-            </>
-          }
+          )}
         </Collapse>
       </Container>
-    </AppBar >
+    </AppBar>
   );
 };
 
