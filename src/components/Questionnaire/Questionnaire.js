@@ -1,22 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 // --- Data Configuration ---
 const questions = [
   {
     id: 1,
-    title: "What types of workers do you pay?",
-    type: "multi-select",
-    options: [
-      { label: "Fixed Monthly Employees", score: 1, isComplex: false },
-      { label: "Daily Wage Employees", score: 2, isComplex: true },
-      { label: "Project-Based Employees", score: 2, isComplex: true },
-      { label: "Field / Remote Employees", score: 3, isComplex: true },
-      { label: "Mixed Compensation Staff", score: 5, isComplex: true },
-    ],
-  },
-  {
-    id: 2,
     title: "How many employees do you have?",
     type: "single-select",
     options: [
@@ -24,6 +12,18 @@ const questions = [
       { label: "21-50", score: 2 },
       { label: "50-150", score: 3 },
       { label: "151+", score: 4 },
+    ],
+  },
+  {
+    id: 2,
+    title: "What types of workers do you pay?",
+    type: "multi-select",
+    hint: "Complexity Bonus: If 3 or more complex types are selected (Daily, Project-Based, Field) → Add +5 points",
+    options: [
+      { label: "Fixed Monthly Employees", score: 1, isComplex: false },
+      { label: "Daily Wage Employees", score: 2, isComplex: true },
+      { label: "Project-Based Employees", score: 2, isComplex: true },
+      { label: "Field / Remote Employees", score: 3, isComplex: true },
     ],
   },
   {
@@ -46,12 +46,21 @@ const questions = [
       { label: "Management & analytics reports.", score: 3 },
     ],
   },
+  {
+    id: 5,
+    title: "What level of payroll support would you like?",
+    type: "single-select",
+    options: [
+      { label: "Priority support.", score: 2 },
+      { label: "Dedicated Product Expert support.", score: 3 },
+    ],
+  },
 ];
-
+// eslint-disable-next-line
 const plans = [
-  { name: "Starter", price: "2,000 PHP", minScore: 0, maxScore: 5 },
-  { name: "Professional", price: "6,000 PHP", minScore: 6, maxScore: 10 },
-  { name: "Enterprise", price: "13,000 PHP", minScore: 11, maxScore: 999 },
+  { name: "Starter", price: "2,000 PHP", minScore: 5, maxScore: 10 },
+  { name: "Professional", price: "6,000 PHP", minScore: 11, maxScore: 16 },
+  { name: "Enterprise", price: "13,000 PHP", minScore: 17, maxScore: 21 },
 ];
 
 // --- Styles ---
@@ -61,70 +70,85 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
-    backgroundColor: "#f4f4f4",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    padding: "20px",
+    background: "linear-gradient(160deg, #f8f9fc 0%, #f0f2f5 50%, #e8ecf1 100%)",
+    fontFamily: "'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif",
+    padding: "24px 16px",
+    boxSizing: "border-box",
   },
   container: {
     width: "100%",
-    maxWidth: "500px",
+    maxWidth: "520px",
     backgroundColor: "#ffffff",
-    borderRadius: "20px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-    padding: "40px 30px",
-    textAlign: "center",
+    borderRadius: "24px",
+    boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
+    padding: "36px 32px 32px",
     position: "relative",
     overflow: "hidden",
+    transition: "box-shadow 0.3s ease",
   },
-  dotContainer: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "12px",
-    marginBottom: "30px",
+  progressWrap: {
+    marginBottom: "28px",
   },
-  dot: {
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: "#e0e0e0",
-    transition: "all 0.3s ease",
+  progressBar: {
+    height: "6px",
+    borderRadius: "999px",
+    backgroundColor: "rgba(255, 107, 0, 0.15)",
+    overflow: "hidden",
+    transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
   },
-  dotActive: {
-    backgroundColor: "#ff6b00",
-    transform: "scale(1.3)",
+  progressFill: {
+    height: "100%",
+    borderRadius: "999px",
+    background: "linear-gradient(90deg, #ff6b00, #ff8c42)",
+    transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
   },
-  dotCompleted: {
-    backgroundColor: "#ff6b00",
-    transform: "scale(1.1)",
+  stepLabel: {
+    fontSize: "13px",
+    color: "#64748b",
+    marginTop: "8px",
+    fontWeight: 500,
   },
   title: {
-    fontSize: "22px",
+    fontSize: "20px",
     fontWeight: "700",
-    color: "#1a1a1a",
-    marginBottom: "25px",
-    lineHeight: "1.4",
+    color: "#1e293b",
+    marginBottom: "8px",
+    lineHeight: 1.4,
+    letterSpacing: "-0.01em",
+  },
+  hint: {
+    fontSize: "13px",
+    color: "#64748b",
+    marginBottom: "20px",
+    lineHeight: 1.5,
+    padding: "10px 14px",
+    backgroundColor: "rgba(255, 107, 0, 0.06)",
+    borderRadius: "10px",
+    borderLeft: "3px solid #ff6b00",
   },
   optionsGrid: {
     display: "grid",
     gridTemplateColumns: "1fr",
-    gap: "12px",
-    marginBottom: "30px",
+    gap: "10px",
+    marginBottom: "24px",
   },
   optionCard: {
     padding: "16px 20px",
-    border: "2px solid #e0e0e0",
-    borderRadius: "12px",
+    border: "2px solid #e2e8f0",
+    borderRadius: "14px",
     cursor: "pointer",
-    transition: "all 0.2s ease",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "#fff",
+    outline: "none",
   },
   optionCardSelected: {
     borderColor: "#ff6b00",
-    backgroundColor: "#fff5eb",
+    backgroundColor: "rgba(255, 107, 0, 0.06)",
     fontWeight: "600",
+    boxShadow: "0 0 0 1px rgba(255, 107, 0, 0.2)",
   },
   button: {
     backgroundColor: "#ff6b00",
@@ -132,14 +156,34 @@ const styles = {
     border: "none",
     padding: "14px 32px",
     fontSize: "16px",
-    fontWeight: "700",
-    borderRadius: "30px",
+    fontWeight: "600",
+    borderRadius: "14px",
     cursor: "pointer",
     width: "100%",
+    marginTop: "8px",
+    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: "0 2px 8px rgba(255, 107, 0, 0.25)",
+  },
+  backLink: {
+    display: "inline-block",
     marginTop: "20px",
-    transition: "background 0.2s",
+    fontSize: "14px",
+    color: "#64748b",
+    textDecoration: "none",
+    transition: "color 0.2s ease",
   },
 };
+
+const KEYFRAMES = `
+  @keyframes questionIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes optionIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
 
 function Quiz() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -147,9 +191,10 @@ function Quiz() {
   const [hoveredOption, setHoveredOption] = useState(null);
   const navigate = useNavigate();
 
-  // --- Logic for Question 1 (Multi-select) ---
+  // --- Logic for Multi-select (worker types, etc.) ---
   const handleMultiSelect = (option) => {
-    const currentSelection = answers[1] || [];
+    const qId = questions[currentStep].id;
+    const currentSelection = answers[qId] || [];
     let newSelection;
 
     if (currentSelection.includes(option)) {
@@ -158,100 +203,131 @@ function Quiz() {
       newSelection = [...currentSelection, option];
     }
 
-    setAnswers({ ...answers, [1]: newSelection });
+    setAnswers({ ...answers, [qId]: newSelection });
   };
 
-  // --- Logic for Single Select (Auto-Next) ---
+  // When we reach last question and user selects an option, single-select auto-advances and redirects
   const handleSingleSelect = (option) => {
-    setAnswers({ ...answers, [questions[currentStep].id]: option });
-    
+    const qId = questions[currentStep].id;
+    const nextAnswers = { ...answers, [qId]: option };
+    setAnswers(nextAnswers);
+
     setTimeout(() => {
       if (currentStep < questions.length - 1) {
         setCurrentStep(currentStep + 1);
       } else {
-        calculateAndRedirect();
+        // Last question: compute score with the new answer (state not updated yet)
+        let score = 0;
+        questions.forEach((q) => {
+          const data = q.id === qId ? option : answers[q.id];
+          if (q.type === "multi-select") {
+            const selection = q.id === qId ? [option] : answers[q.id] || [];
+            let qScore = 0,
+              complexCount = 0;
+            selection.forEach((opt) => {
+              qScore += opt.score;
+              if (opt.isComplex) complexCount++;
+            });
+            if (complexCount >= 3) qScore += 5;
+            score += qScore;
+          } else if (data) {
+            score += data.score;
+          }
+        });
+        navigate("/result", {
+          state: {
+            totalScore: score,
+            answeredCount: questions.length,
+            totalQuestions: questions.length,
+            answers: nextAnswers,
+            questionsSummary: questions.map((q) => ({
+              id: q.id,
+              title: q.title,
+              type: q.type,
+              options: q.options.map((o) => ({ label: o.label })),
+            })),
+          },
+        });
       }
     }, 250);
   };
 
-  // --- Calculate Score and Redirect ---
-  const calculateAndRedirect = () => {
-    let score = 0;
+  const progressPercent =
+    questions.length > 0
+      ? ((currentStep + 1) / questions.length) * 100
+      : 0;
 
-    // 1. Process Question 1 (Multi-select)
-    const q1Selection = answers[1] || [];
-    let q1Score = 0;
-    let complexCount = 0;
-
-    q1Selection.forEach((opt) => {
-      q1Score += opt.score;
-      if (opt.isComplex) complexCount++;
-    });
-
-    // Complexity Bonus
-    if (complexCount >= 3) {
-      q1Score += 5;
-    }
-    score += q1Score;
-
-    // 2. Process Questions 2, 3, 4
-    for (let i = 1; i < questions.length; i++) {
-      const selectedOption = answers[questions[i].id];
-      if (selectedOption) {
-        score += selectedOption.score;
-      }
-    }
-
-    // Navigate to Result page with score
-    navigate('/result', { state: { totalScore: score } });
-  };
-
-  // --- Render Dot Navigation ---
-  const renderDots = () => {
-    return (
-      <div style={styles.dotContainer}>
-        {questions.map((_, index) => {
-          let dotStyle = styles.dot;
-          
-          if (index < currentStep) {
-            dotStyle = { ...dotStyle, ...styles.dotCompleted };
-          } else if (index === currentStep) {
-            dotStyle = { ...dotStyle, ...styles.dotActive };
-          }
-
-          return <div key={index} style={dotStyle} />;
-        })}
+  const renderProgress = () => (
+    <div style={styles.progressWrap}>
+      <div style={styles.progressBar}>
+        <div
+          style={{
+            ...styles.progressFill,
+            width: `${progressPercent}%`,
+          }}
+        />
       </div>
-    );
-  };
+      <div style={styles.stepLabel}>
+        Question {currentStep + 1} of {questions.length}
+      </div>
+    </div>
+  );
 
   // --- Render ---
   return (
     <div style={styles.wrapper}>
+      <style>{KEYFRAMES}</style>
       <div style={styles.container}>
-        
-        {/* Dot Navigation */}
-        {currentStep < questions.length && renderDots()}
+        {currentStep < questions.length && renderProgress()}
 
         {currentStep < questions.length ? (
-          // --- Question View ---
-          <div>
+          <div
+            key={currentStep}
+            style={{
+              animation: "questionIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+            }}
+          >
             <h2 style={styles.title}>{questions[currentStep].title}</h2>
-            
+            {questions[currentStep].hint && (
+              <p style={styles.hint}>⚠ {questions[currentStep].hint}</p>
+            )}
+
             <div style={styles.optionsGrid}>
               {questions[currentStep].options.map((option, index) => {
-                const isSelected = 
-                  questions[currentStep].type === "multi-select" 
-                    ? (answers[1] || []).includes(option)
-                    : answers[questions[currentStep].id] === option;
+                const qId = questions[currentStep].id;
+                const isSelected =
+                  questions[currentStep].type === "multi-select"
+                    ? (answers[qId] || []).includes(option)
+                    : answers[qId] === option;
+                const isHovered = hoveredOption === index && !isSelected;
 
                 return (
                   <div
                     key={index}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        questions[currentStep].type === "multi-select"
+                          ? handleMultiSelect(option)
+                          : handleSingleSelect(option);
+                      }
+                    }}
                     style={{
                       ...styles.optionCard,
                       ...(isSelected ? styles.optionCardSelected : {}),
-                      ...(hoveredOption === index && !isSelected ? { borderColor: "#ff6b00", backgroundColor: "#fafafa" } : {}),
+                      ...(isHovered
+                        ? {
+                            borderColor: "rgba(255, 107, 0, 0.5)",
+                            backgroundColor: "#fafafa",
+                            transform: "translateY(-2px)",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+                          }
+                        : {}),
+                      animation: "optionIn 0.35s ease-out forwards",
+                      animationDelay: `${index * 0.04}s`,
+                      opacity: 0,
                     }}
                     onClick={() =>
                       questions[currentStep].type === "multi-select"
@@ -261,33 +337,76 @@ function Quiz() {
                     onMouseEnter={() => setHoveredOption(index)}
                     onMouseLeave={() => setHoveredOption(null)}
                   >
-                    <span>{option.label}</span>
+                    <span style={{ textAlign: "left" }}>{option.label}</span>
                     {isSelected && (
-                      <span style={{ color: "#ff6b00", fontWeight: "bold" }}>✓</span>
+                      <span
+                        style={{
+                          color: "#ff6b00",
+                          fontWeight: "700",
+                          fontSize: "18px",
+                          flexShrink: 0,
+                          marginLeft: "8px",
+                        }}
+                      >
+                        ✓
+                      </span>
                     )}
                   </div>
                 );
               })}
             </div>
 
-            {/* Next Button for Multi-select */}
             {questions[currentStep].type === "multi-select" && (
               <button
+                type="button"
                 style={{
                   ...styles.button,
-                  opacity: (answers[1] || []).length === 0 ? 0.5 : 1,
-                  cursor: (answers[1] || []).length === 0 ? "not-allowed" : "pointer",
+                  opacity:
+                    (answers[questions[currentStep].id] || []).length === 0
+                      ? 0.5
+                      : 1,
+                  cursor:
+                    (answers[questions[currentStep].id] || []).length === 0
+                      ? "not-allowed"
+                      : "pointer",
                 }}
-                disabled={(answers[1] || []).length === 0}
+                disabled={
+                  (answers[questions[currentStep].id] || []).length === 0
+                }
                 onClick={() => {
-                  if ((answers[1] || []).length > 0) {
+                  if ((answers[questions[currentStep].id] || []).length > 0) {
                     setCurrentStep(currentStep + 1);
                   }
                 }}
+                onMouseEnter={(e) => {
+                  if ((answers[questions[currentStep].id] || []).length > 0) {
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 4px 14px rgba(255, 107, 0, 0.35)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 8px rgba(255, 107, 0, 0.25)";
+                }}
               >
-                Next
+                Continue
               </button>
             )}
+
+            <RouterLink
+              to="/"
+              style={styles.backLink}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#ff6b00";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "#64748b";
+              }}
+            >
+              ← Back to home
+            </RouterLink>
           </div>
         ) : null}
       </div>

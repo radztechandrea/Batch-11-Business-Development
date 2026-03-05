@@ -5,6 +5,7 @@ import Checkout from "./components/Checkout/Checkout";
 import Reciept from "./components/Reciept/Reciept";
 import PaymentComplete from "./components/PaymentComplete/PaymentComplete";
 import ContactUs from "./components/ContactUs/ContactUs";
+import Pricing from "./components/Pricing/Pricing";
 import DefaultLayout from "./layouts/DefaultLayout";
 
 const routes = [
@@ -39,6 +40,10 @@ const routes = [
       {
         path: "contact-us",
         element: ContactUs,
+      },
+      {
+        path: "pricing",
+        element: Pricing,
       },
     ],
   },

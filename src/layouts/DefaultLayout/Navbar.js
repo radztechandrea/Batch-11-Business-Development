@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -11,48 +11,48 @@ import {
   useTheme,
   Avatar,
   makeStyles,
-} from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import CloseIcon from '@material-ui/icons/Close';
-import UlapBizLogo from '../../images/ulapbiz.png';
+} from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
+import CloseIcon from "@material-ui/icons/Close";
+import UlapBizLogo from "../../images/ulapbiz.png";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
-    background: '#fff',
+    background: "#fff",
     height: 60,
   },
   container: {
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down("xs")]: {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2),
     },
   },
   biz: {
-    color: '#FF7704',
+    color: "#FF7704",
     fontWeight: 900,
   },
   iconContainer: {
-    display: 'flex',
-    gap: '.3em',
-    alignItems: 'center',
-    filter: 'grayscale(10%)',
-    transition: 'all 500ms ease-in-out',
-    [theme.breakpoints.down('md')]: {
+    display: "flex",
+    gap: ".3em",
+    alignItems: "center",
+    filter: "grayscale(10%)",
+    transition: "all 500ms ease-in-out",
+    [theme.breakpoints.down("md")]: {
       flexGrow: 1,
     },
-    '&:hover': {
-      filter: 'grayscale(0)',
+    "&:hover": {
+      filter: "grayscale(0)",
     },
   },
   activeLink: {
-    color: '#DB6700',
+    color: "#DB6700",
     fontWeight: 600,
-    borderBottom: '2px solid #FF7704',
+    borderBottom: "2px solid #FF7704",
   },
   navLink: {
-    transition: 'color 0.25s ease',
+    transition: "color 0.25s ease",
   },
 }));
 
@@ -60,19 +60,23 @@ const Navbar = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const isXs = useMediaQuery(theme.breakpoints.down('md'));
+  const isXs = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
 
   const getPathFromPage = (page) => {
-    if (page === 'Home') return '/';
-    if (page === 'Plan Recommendation') return '/plan-recommendation';
-    if (page === 'Contact Us') return '/contact-us';
-    return `/${page.toLowerCase().replace(/\s+/g, '-')}`;
+    if (page === "Home") return "/";
+    if (page === "Plan Recommendation") return "/questionnaire";
+    if (page === "Pricing") return "/pricing";
+    if (page === "Contact Us") return "/contact-us";
+    return `/${page.toLowerCase().replace(/\s+/g, "-")}`;
   };
 
   const isActive = (page) => {
-    if (page === 'Home') {
-      return location.pathname === '/' && (!location.hash || location.hash === '#hero');
+    if (page === "Home") {
+      return (
+        location.pathname === "/" &&
+        (!location.hash || location.hash === "#hero")
+      );
     }
     return location.pathname === getPathFromPage(page);
   };
@@ -83,14 +87,14 @@ const Navbar = () => {
         <Toolbar disableGutters className={classes.toolbar}>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              [theme.breakpoints.up('md')]: {
-                justifyContent: 'start',
-                gap: '2rem',
+              display: "flex",
+              justifyContent: "space-between",
+              [theme.breakpoints.up("md")]: {
+                justifyContent: "start",
+                gap: "2rem",
               },
-              alignItems: 'center',
-              width: '100%',
+              alignItems: "center",
+              width: "100%",
             }}
           >
             {/* Logo Section */}
@@ -101,7 +105,7 @@ const Navbar = () => {
               <Link
                 component={RouterLink}
                 variant="h6"
-                to="/#hero"
+                to="/"
                 underline="none"
                 color="textPrimary"
               >
@@ -113,22 +117,22 @@ const Navbar = () => {
             {isXs && (
               <Box
                 sx={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
                 }}
               >
                 {open ? (
                   <CloseIcon
                     color="textPrimary"
                     onClick={() => setOpen(false)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                   />
                 ) : (
                   <MenuIcon
                     color="textPrimary"
                     onClick={() => setOpen(true)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                   />
                 )}
               </Box>
@@ -138,43 +142,54 @@ const Navbar = () => {
             {!isXs && (
               <Box
                 sx={{
-                  display: 'flex',
-                  gap: '1rem',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  '& :hover': {
-                    color: '#FF7704',
+                  display: "flex",
+                  gap: "1rem",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  "& :hover": {
+                    color: "#FF7704",
                   },
                 }}
               >
                 <Box
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.5rem',
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1.5rem",
                   }}
                 >
                   <Link
                     component={RouterLink}
                     variant="h6"
-                    to="/#hero"
+                    to="/"
                     underline="none"
                     color="textPrimary"
-                    className={`${isActive('Home') ? classes.activeLink : ''} ${classes.navLink}`}
-                    style={{ fontSize: '.8rem' }}
+                    className={`${isActive("Home") ? classes.activeLink : ""} ${classes.navLink}`}
+                    style={{ fontSize: ".8rem" }}
                   >
                     Home
                   </Link>
                   <Link
                     component={RouterLink}
                     variant="h6"
-                    to="/plan-recommendation"
+                    to="/questionnaire"
                     underline="none"
                     color="textPrimary"
-                    className={`${isActive('Plan Recommendation') ? classes.activeLink : ''} ${classes.navLink}`}
-                    style={{ fontSize: '.8rem' }}
+                    className={`${isActive("Questionnaire") ? classes.activeLink : ""} ${classes.navLink}`}
+                    style={{ fontSize: ".8rem" }}
                   >
                     Plan Recommendation
+                  </Link>
+                  <Link
+                    component={RouterLink}
+                    variant="h6"
+                    to="/pricing"
+                    underline="none"
+                    color="textPrimary"
+                    className={`${isActive("Pricing") ? classes.activeLink : ""} ${classes.navLink}`}
+                    style={{ fontSize: ".8rem" }}
+                  >
+                    Pricing
                   </Link>
                   <Link
                     component={RouterLink}
@@ -182,8 +197,8 @@ const Navbar = () => {
                     to="/contact-us"
                     underline="none"
                     color="textPrimary"
-                    className={`${isActive('Contact Us') ? classes.activeLink : ''} ${classes.navLink}`}
-                    style={{ fontSize: '.8rem' }}
+                    className={`${isActive("Contact Us") ? classes.activeLink : ""} ${classes.navLink}`}
+                    style={{ fontSize: ".8rem" }}
                   >
                     Contact Us
                   </Link>
@@ -198,13 +213,13 @@ const Navbar = () => {
           {isXs && (
             <Box
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: '100%',
-                gap: '1rem',
-                marginBottom: '1rem',
-                paddingBottom: '2rem',
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+                gap: "1rem",
+                marginBottom: "1rem",
+                paddingBottom: "2rem",
               }}
             >
               <Link
@@ -214,8 +229,8 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={`${isActive('Home') ? classes.activeLink : ''} ${classes.navLink}`}
-                style={{ fontSize: '1rem' }}
+                className={`${isActive("Home") ? classes.activeLink : ""} ${classes.navLink}`}
+                style={{ fontSize: "1rem" }}
               >
                 Home
               </Link>
@@ -226,10 +241,22 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={`${isActive('Plan Recommendation') ? classes.activeLink : ''} ${classes.navLink}`}
-                style={{ fontSize: '1rem' }}
+                className={`${isActive("Plan Recommendation") ? classes.activeLink : ""} ${classes.navLink}`}
+                style={{ fontSize: "1rem" }}
               >
                 Plan Recommendation
+              </Link>
+              <Link
+                component={RouterLink}
+                variant="h6"
+                to="/pricing"
+                underline="none"
+                color="textPrimary"
+                onClick={() => setOpen(false)}
+                className={`${isActive("Pricing") ? classes.activeLink : ""} ${classes.navLink}`}
+                style={{ fontSize: "1rem" }}
+              >
+                Pricing
               </Link>
               <Link
                 component={RouterLink}
@@ -238,8 +265,8 @@ const Navbar = () => {
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
-                className={`${isActive('Contact Us') ? classes.activeLink : ''} ${classes.navLink}`}
-                style={{ fontSize: '1rem' }}
+                className={`${isActive("Contact Us") ? classes.activeLink : ""} ${classes.navLink}`}
+                style={{ fontSize: "1rem" }}
               >
                 Contact Us
               </Link>

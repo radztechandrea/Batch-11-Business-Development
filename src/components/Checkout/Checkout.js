@@ -810,7 +810,7 @@ export default function Checkout() {
   return (
     <Box className={classes.root}>
       <Container maxWidth="lg" className={classes.container}>
-        <RouterLink to="/result" className={classes.backLink}>
+        <RouterLink to="/pricing" className={classes.backLink}>
           <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
           <span>Back to plans</span>
         </RouterLink>
