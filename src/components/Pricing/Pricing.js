@@ -6,7 +6,10 @@ const PLANS = [
   {
     key: "starter",
     name: "Starter",
-    price: 2000,
+    scoreRange: "5-9",
+    priceBase: 2999,
+    pricePerEmployee: 79,
+    priceDisplay: "2,999 PHP + 79/employee/month",
     description: "Perfect for small teams",
     color: "#22c55e",
     lightBg: "rgba(34, 197, 94, 0.08)",
@@ -22,7 +25,10 @@ const PLANS = [
   {
     key: "professional",
     name: "Professional",
-    price: 6000,
+    scoreRange: "10-13",
+    priceBase: 4999,
+    pricePerEmployee: 109,
+    priceDisplay: "4,999 PHP + 109/employee/month",
     description: "Best for growing businesses",
     color: "#3b82f6",
     lightBg: "rgba(59, 130, 246, 0.08)",
@@ -39,7 +45,10 @@ const PLANS = [
   {
     key: "enterprise",
     name: "Enterprise",
-    price: 13000,
+    scoreRange: "14-17",
+    priceBase: 10000,
+    pricePerEmployee: 179,
+    priceDisplay: "10,000 PHP + 179/employee/month",
     description: "For large organizations",
     color: "#8b5cf6",
     lightBg: "rgba(139, 92, 246, 0.08)",
@@ -49,6 +58,21 @@ const PLANS = [
       "Management & analytics reports",
       "Dedicated Product Expert",
       "Custom reporting & integrations",
+    ],
+    notIncluded: [],
+  },
+  {
+    key: "talk-to-sales",
+    name: "Talk to Sales",
+    scoreRange: "18-21",
+    description: "Custom solutions for large or complex needs. Our team will reach out.",
+    color: "#64748b",
+    lightBg: "rgba(100, 116, 139, 0.08)",
+    talkToSales: true,
+    features: [
+      "Custom pricing and terms",
+      "Dedicated account team",
+      "Tailored implementation",
     ],
     notIncluded: [],
   },
@@ -97,7 +121,7 @@ const styles = {
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
+    gridTemplateColumns: "repeat(4, 1fr)",
     gap: "24px",
     alignItems: "stretch",
   },
@@ -131,6 +155,13 @@ const styles = {
     color,
     marginBottom: "4px",
   }),
+  scoreRange: (color) => ({
+    fontSize: "14px",
+    fontWeight: "600",
+    color,
+    opacity: 0.9,
+    marginBottom: "4px",
+  }),
   planDescription: {
     fontSize: "14px",
     color: "#64748b",
@@ -153,6 +184,11 @@ const styles = {
     color: "#64748b",
     fontWeight: 500,
     marginTop: "2px",
+  },
+  talkToSalesLabel: {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#64748b",
   },
   featuresList: {
     listStyle: "none",
@@ -273,22 +309,31 @@ export default function Pricing() {
                 <span style={styles.popularBadge(plan.color)}>Most popular</span>
               )}
               <div style={styles.planName(plan.color)}>{plan.name}</div>
+              <div style={styles.scoreRange(plan.color)}>{plan.scoreRange}</div>
               <div style={styles.planDescription}>{plan.description}</div>
 
-              <div style={styles.priceWrap}>
-                <div style={styles.price(plan.color)}>
-                  {formatPrice(plan.price)}
+              {plan.talkToSales ? (
+                <div style={styles.priceWrap}>
+                  <div style={styles.talkToSalesLabel}>Custom pricing</div>
                 </div>
-                <div style={styles.priceUnit}>per month</div>
-              </div>
+              ) : (
+                <div style={styles.priceWrap}>
+                  <div style={styles.price(plan.color)}>
+                    {formatPrice(plan.priceBase)}
+                  </div>
+                  <div style={styles.priceUnit}>+ {formatPrice(plan.pricePerEmployee)}/employee/month</div>
+                </div>
+              )}
 
               <ul style={styles.featuresList}>
-                {plan.features.map((feature, i) => (
-                  <li key={i} style={styles.featureItem}>
-                    <span style={styles.featureCheck(plan.color)}>✓</span>
-                    {feature}
-                  </li>
-                ))}
+                {plan.features && plan.features.length > 0 ? (
+                  plan.features.map((feature, i) => (
+                    <li key={i} style={styles.featureItem}>
+                      <span style={styles.featureCheck(plan.color)}>✓</span>
+                      {feature}
+                    </li>
+                  ))
+                ) : null}
               </ul>
 
               {plan.notIncluded && plan.notIncluded.length > 0 && (
@@ -302,20 +347,37 @@ export default function Pricing() {
                 </div>
               )}
 
-              <RouterLink
-                to={`/checkout?plan=${plan.key}`}
-                style={styles.cta(plan.color)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.boxShadow = `0 4px 16px ${plan.color}50`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = `0 2px 12px ${plan.color}40`;
-                }}
-              >
-                Get {plan.name}
-              </RouterLink>
+              {plan.talkToSales ? (
+                <RouterLink
+                  to="/contact-us"
+                  style={styles.cta(plan.color)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = `0 4px 16px ${plan.color}50`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = `0 2px 12px ${plan.color}40`;
+                  }}
+                >
+                  Talk to Sales
+                </RouterLink>
+              ) : (
+                <RouterLink
+                  to={`/checkout?plan=${plan.key}`}
+                  style={styles.cta(plan.color)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-1px)";
+                    e.currentTarget.style.boxShadow = `0 4px 16px ${plan.color}50`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = `0 2px 12px ${plan.color}40`;
+                  }}
+                >
+                  Get {plan.name}
+                </RouterLink>
+              )}
             </div>
           ))}
         </div>
@@ -342,6 +404,9 @@ export default function Pricing() {
 
       <style>{`
         @media (max-width: 900px) {
+          .pricing-grid { grid-template-columns: repeat(2, 1fr) !important; max-width: 100%; margin: 0; }
+        }
+        @media (max-width: 560px) {
           .pricing-grid { grid-template-columns: 1fr !important; max-width: 400px; margin: 0 auto; }
         }
       `}</style>

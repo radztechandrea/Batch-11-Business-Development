@@ -264,10 +264,14 @@ export default function Reciept() {
             <span>Total paid</span>
             <span>
               ₱
-              {plan.price != null
+              {plan.basePrice != null
+                ? Number(plan.basePrice).toLocaleString("en-PH")
+                : plan.price != null
                 ? Number(plan.price).toLocaleString("en-PH")
                 : "—"}
-              /month
+              {plan.perEmployee != null
+                ? ` + ₱${plan.perEmployee}/employee/month`
+                : "/month"}
             </span>
           </div>
 

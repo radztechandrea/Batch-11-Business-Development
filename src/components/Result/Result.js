@@ -6,13 +6,13 @@ const plans = [
   {
     key: "starter",
     name: "Starter",
-    price: "2,000 PHP",
+    price: "2,999 PHP + 79/employee/month",
     minScore: 5,
-    maxScore: 10,
+    maxScore: 9,
     color: "#22c55e",
     lightBg: "rgba(34, 197, 94, 0.08)",
     description: "Perfect for small teams getting started with payroll.",
-    scoreRangeLabel: "5–10",
+    scoreRangeLabel: "5–9",
     features: [
       "Up to 20 employees",
       "Standard payroll processing",
@@ -28,14 +28,14 @@ const plans = [
   {
     key: "professional",
     name: "Professional",
-    price: "6,000 PHP",
-    minScore: 11,
-    maxScore: 16,
+    price: "4,999 PHP + 109/employee/month",
+    minScore: 10,
+    maxScore: 13,
     color: "#3b82f6",
     lightBg: "rgba(59, 130, 246, 0.08)",
     description:
       "Ideal for growing companies with multiple branches and moderate complexity.",
-    scoreRangeLabel: "11–16",
+    scoreRangeLabel: "10–13",
     features: [
       "Up to 150 employees",
       "Advanced payroll & HR tools",
@@ -52,13 +52,13 @@ const plans = [
   {
     key: "enterprise",
     name: "Enterprise",
-    price: "13,000 PHP",
-    minScore: 17,
-    maxScore: 21,
+    price: "10,000 PHP + 179/employee/month",
+    minScore: 14,
+    maxScore: 17,
     color: "#8b5cf6",
     lightBg: "rgba(139, 92, 246, 0.08)",
     description: "For large organizations that need full support.",
-    scoreRangeLabel: "17–21",
+    scoreRangeLabel: "14–17",
     features: [
       "Unlimited employees",
       "Full UlapPayroll suite",
@@ -70,6 +70,24 @@ const plans = [
       "All Professional benefits",
       "Dedicated account support",
       "Built for complex, large-scale demand",
+    ],
+  },
+  {
+    key: "talk-to-sales",
+    name: "Talk to Sales",
+    price: null,
+    minScore: 18,
+    maxScore: 21,
+    color: "#64748b",
+    lightBg: "rgba(100, 116, 139, 0.08)",
+    description: "Custom solutions for large or complex needs. Our team will reach out to discuss the best fit.",
+    scoreRangeLabel: "18–21",
+    talkToSales: true,
+    features: [],
+    benefits: [
+      "Custom pricing and terms",
+      "Dedicated account team",
+      "Tailored implementation",
     ],
   },
 ];
@@ -204,6 +222,9 @@ const styles = {
     fontWeight: "700",
   },
   button: (color) => ({
+    display: "block",
+    textAlign: "center",
+    textDecoration: "none",
     backgroundColor: color,
     color: "white",
     border: "none",
@@ -238,20 +259,6 @@ const styles = {
     lineHeight: 1.65,
     marginBottom: "24px",
   },
-  // eslint-disable-next-line
-  button: (color) => ({
-    backgroundColor: color,
-    color: "white",
-    border: "none",
-    padding: "14px 28px",
-    fontSize: "15px",
-    fontWeight: "600",
-    borderRadius: "14px",
-    cursor: "pointer",
-    width: "100%",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: `0 2px 10px ${color}40`,
-  }),
 };
 
 function Result() {
@@ -337,8 +344,12 @@ function Result() {
             <div style={styles.planPill(recommended.color)}>
               {recommended.name}
             </div>
-            <h2 style={styles.planTitle}>{recommended.name} Plan</h2>
-            <div style={styles.planPrice}>{recommended.price} / month</div>
+            <h2 style={styles.planTitle}>
+              {recommended.talkToSales ? recommended.name : `${recommended.name} Plan`}
+            </h2>
+            {recommended.price != null && (
+              <div style={styles.planPrice}>{recommended.price}</div>
+            )}
             <p style={styles.planDescription}>{recommended.description}</p>
 
             {recommended.features && recommended.features.length > 0 && (
@@ -357,21 +368,38 @@ function Result() {
               </>
             )}
 
-            <button
-              type="button"
-              style={styles.button(recommended.color)}
-              onClick={handleCheckout}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = `0 4px 16px ${recommended.color}50`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = `0 2px 10px ${recommended.color}40`;
-              }}
-            >
-              Proceed to checkout
-            </button>
+            {recommended.talkToSales ? (
+              <RouterLink
+                to="/contact-us"
+                style={styles.button(recommended.color)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = `0 4px 16px ${recommended.color}50`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = `0 2px 10px ${recommended.color}40`;
+                }}
+              >
+                Talk to Sales
+              </RouterLink>
+            ) : (
+              <button
+                type="button"
+                style={styles.button(recommended.color)}
+                onClick={handleCheckout}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = `0 4px 16px ${recommended.color}50`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = `0 2px 10px ${recommended.color}40`;
+                }}
+              >
+                Proceed to checkout
+              </button>
+            )}
             <RouterLink
               to="/questionnaire"
               style={styles.linkSecondary}

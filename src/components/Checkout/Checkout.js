@@ -31,7 +31,10 @@ const PLANS = {
   starter: {
     name: "Starter",
     label: "Starter Plan",
-    price: 2000,
+    price: 2999,
+    basePrice: 2999,
+    perEmployee: 79,
+    priceDisplay: "2,999 PHP + 79/employee/month",
     color: "#22c55e",
     lightColor: "rgba(34, 197, 94, 0.15)",
     bgColor: "rgba(34, 197, 94, 0.12)",
@@ -40,7 +43,10 @@ const PLANS = {
   professional: {
     name: "Professional",
     label: "Professional Plan",
-    price: 6000,
+    price: 4999,
+    basePrice: 4999,
+    perEmployee: 109,
+    priceDisplay: "4,999 PHP + 109/employee/month",
     color: "#3b82f6",
     lightColor: "rgba(59, 130, 246, 0.15)",
     bgColor: "rgba(59, 130, 246, 0.12)",
@@ -49,7 +55,10 @@ const PLANS = {
   enterprise: {
     name: "Enterprise",
     label: "Enterprise Plan",
-    price: 13000,
+    price: 10000,
+    basePrice: 10000,
+    perEmployee: 179,
+    priceDisplay: "10,000 PHP + 179/employee/month",
     color: "#8b5cf6",
     lightColor: "rgba(139, 92, 246, 0.15)",
     bgColor: "rgba(139, 92, 246, 0.12)",
@@ -1181,11 +1190,11 @@ export default function Checkout() {
                     onChange={handlePlanChange}
                     aria-label="Change plan"
                   >
-                    <option value="starter">Starter — ₱2,000/mo</option>
+                    <option value="starter">Starter — ₱2,999 + ₱79/employee/mo</option>
                     <option value="professional">
-                      Professional — ₱6,000/mo
+                      Professional — ₱4,999 + ₱109/employee/mo
                     </option>
-                    <option value="enterprise">Enterprise — ₱13,000/mo</option>
+                    <option value="enterprise">Enterprise — ₱10,000 + ₱179/employee/mo</option>
                   </select>
                 </Box>
 
@@ -1209,16 +1218,16 @@ export default function Checkout() {
                     {plan.description}
                   </Typography>
                   <Typography className={classes.planPrice}>
-                    {formatPrice(plan.price)}
+                    ₱{plan.basePrice.toLocaleString("en-PH")} + ₱{plan.perEmployee}/employee/month
                   </Typography>
                 </Box>
 
                 <Box className={classes.totalRow}>
                   <Typography className={classes.totalLabel}>
-                    Total due today
+                    Total due today (base)
                   </Typography>
                   <Typography className={classes.totalAmount}>
-                    ₱{plan.price.toLocaleString("en-PH")}/mo
+                    ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱{plan.perEmployee}/employee
                   </Typography>
                 </Box>
 
@@ -1271,7 +1280,7 @@ export default function Checkout() {
                 {form.paymentMethod === "gcash" ? "GCash" : "Maya"}
               </Typography>
               <Typography className={classes.qrModalAmount}>
-                {formatPrice(plan.price)}
+                {formatPrice(plan.basePrice)} + ₱{plan.perEmployee}/employee/mo
               </Typography>
               <Typography
                 className={classes.qrHint}
@@ -1285,7 +1294,7 @@ export default function Checkout() {
                 src={`${QR_CODE_BASE}?size=200x200&data=${encodeURIComponent(
                   typeof window !== "undefined"
                     ? `${window.location.origin}/payment-complete?ref=${qrStepReceiptState.receiptId}`
-                    : `UlapPayroll-${plan.label}-${plan.price}-${qrStepReceiptState.receiptId}`,
+                    : `UlapPayroll-${plan.label}-${plan.basePrice}-${qrStepReceiptState.receiptId}`,
                 )}`}
                 alt="Payment QR Code"
               />

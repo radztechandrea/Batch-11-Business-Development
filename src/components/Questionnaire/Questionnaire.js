@@ -8,22 +8,22 @@ const questions = [
     title: "How many employees do you have?",
     type: "single-select",
     options: [
-      { label: "1-20", score: 1 },
-      { label: "21-50", score: 2 },
-      { label: "50-150", score: 3 },
-      { label: "151+", score: 4 },
+      { label: "Startup (1-20 Employees) — Small, agile team.", score: 1 },
+      { label: "Growing (21-49 Employees) — Expanding team with emerging structure.", score: 2 },
+      { label: "Mid-Sized (51-150 Employees) — Established company with organized workflows", score: 3 },
+      { label: "Enterprise (151+ Employees) — Large Organization", score: 4 },
     ],
   },
   {
     id: 2,
-    title: "What types of workers do you pay?",
+    title: "What types of workers do you pay? (Select all that apply)",
     type: "multi-select",
-    hint: "Complexity Bonus: If 3 or more complex types are selected (Daily, Project-Based, Field) → Add +5 points",
+    hint: "Complexity Bonus: If 3 or more complex types are selected (Daily, Project-Based, Field, Mixed) → Add +5 points",
     options: [
-      { label: "Fixed Monthly Employees", score: 1, isComplex: false },
-      { label: "Daily Wage Employees", score: 2, isComplex: true },
-      { label: "Project-Based Employees", score: 2, isComplex: true },
-      { label: "Field / Remote Employees", score: 3, isComplex: true },
+      { label: "Fixed Monthly Employees — Salaried staff", score: 1, isComplex: false },
+      { label: "Daily Wage Employees — Paid by day", score: 2, isComplex: true },
+      { label: "Project-Based Employees — Paid per project", score: 2, isComplex: true },
+      { label: "Field / Remote Employees — Offsite Staff", score: 3, isComplex: true },
     ],
   },
   {
@@ -51,16 +51,17 @@ const questions = [
     title: "What level of payroll support would you like?",
     type: "single-select",
     options: [
-      { label: "Priority support.", score: 2 },
-      { label: "Dedicated Product Expert support.", score: 3 },
+      { label: "Expert Product Support", score: 1 },
+      { label: "Expert Product Support & Expert Setup", score: 3 },
     ],
   },
 ];
 // eslint-disable-next-line
 const plans = [
-  { name: "Starter", price: "2,000 PHP", minScore: 5, maxScore: 10 },
-  { name: "Professional", price: "6,000 PHP", minScore: 11, maxScore: 16 },
-  { name: "Enterprise", price: "13,000 PHP", minScore: 17, maxScore: 21 },
+  { name: "Starter", price: "2,999 PHP + 79/employee/month", minScore: 5, maxScore: 9 },
+  { name: "Professional", price: "4,999 PHP + 109/employee/month", minScore: 10, maxScore: 13 },
+  { name: "Enterprise", price: "10,000 PHP + 179/employee/month", minScore: 14, maxScore: 17 },
+  { name: "Talk to Sales", price: "—", minScore: 18, maxScore: 21 },
 ];
 
 // --- Styles ---
@@ -107,6 +108,20 @@ const styles = {
     color: "#64748b",
     marginTop: "8px",
     fontWeight: 500,
+  },
+  introTitle: {
+    fontSize: "22px",
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: "8px",
+    lineHeight: 1.3,
+    letterSpacing: "-0.02em",
+  },
+  introSubtitle: {
+    fontSize: "15px",
+    color: "#64748b",
+    marginBottom: "24px",
+    lineHeight: 1.5,
   },
   title: {
     fontSize: "20px",
@@ -287,6 +302,14 @@ function Quiz() {
               animation: "questionIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
             }}
           >
+            {currentStep === 0 && (
+              <>
+                <h1 style={styles.introTitle}>Find Your Plan</h1>
+                <p style={styles.introSubtitle}>
+                  Share a few details to discover the best payroll for your business. We’ll take it from there.
+                </p>
+              </>
+            )}
             <h2 style={styles.title}>{questions[currentStep].title}</h2>
             {questions[currentStep].hint && (
               <p style={styles.hint}>⚠ {questions[currentStep].hint}</p>
