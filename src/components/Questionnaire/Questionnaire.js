@@ -1,6 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-
+import {
+  Box,
+  Container,
+  Radio,
+  Checkbox,
+  Button,
+  Typography,
+  makeStyles,
+} from "@material-ui/core";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import CheckIcon from "@material-ui/icons/Check";
 // --- Data Configuration ---
 const questions = [
   {
@@ -56,383 +69,563 @@ const questions = [
     ],
   },
 ];
-// eslint-disable-next-line
-const plans = [
-  { name: "Starter", price: "2,999 PHP + 79/employee/month", minScore: 5, maxScore: 9 },
-  { name: "Professional", price: "4,999 PHP + 109/employee/month", minScore: 10, maxScore: 13 },
-  { name: "Enterprise", price: "10,000 PHP + 179/employee/month", minScore: 14, maxScore: 17 },
-  { name: "Talk to Sales", price: "—", minScore: 18, maxScore: 21 },
-];
 
-// --- Styles ---
-const styles = {
+const useStyles = makeStyles((theme) => ({
   wrapper: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    background: "linear-gradient(160deg, #f8f9fc 0%, #f0f2f5 50%, #e8ecf1 100%)",
-    fontFamily: "'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif",
-    padding: "24px 16px",
+    width: "100%",
+    minHeight: "calc(100vh - 60px)",
+    background: "#f7f9fc",
+    fontFamily: theme.typography.fontFamily,
     boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    paddingTop: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      paddingTop: theme.spacing(2),
+    },
   },
   container: {
     width: "100%",
-    maxWidth: "520px",
-    backgroundColor: "#ffffff",
-    borderRadius: "24px",
-    boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-    padding: "36px 32px 32px",
-    position: "relative",
-    overflow: "hidden",
-    transition: "box-shadow 0.3s ease",
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  },
+  topBanner: {
+    padding: theme.spacing(2, 3, 4),
+    minHeight: 100,
+    background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+    borderBottom: "1px solid #e2e8f0",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    [theme.breakpoints.down("xs")]: {
+      padding: theme.spacing(2, 2, 3),
+      minHeight: 80,
+    },
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: theme.spacing(2, 0, 0),
+    [theme.breakpoints.down("xs")]: {
+      padding: theme.spacing(1.5, 0, 0),
+    },
+  },
+  topBannerContent: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    gap: theme.spacing(0.5),
+  },
+  topBannerText: {
+    fontSize: "2.5rem",
+    fontWeight: 600,
+    color: "#0f172a",
+  },
+  topBannerSub: {
+    fontSize: "1rem",
+    color: "#64748b",
+    lineHeight: 1.4,
+  },
+  mainRow: {
+    display: "flex",
+    flex: 1,
+    minHeight: "calc(100vh - 60px - 140px)",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      minHeight: 0,
+    },
+  },
+  leftPanel: {
+    width: 320,
+    flexShrink: 0,
+    padding: theme.spacing(3, 3),
+    borderRight: "1px solid #e2e8f0",
+    backgroundColor: "#fff",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      borderRight: "none",
+      borderBottom: "1px solid #e2e8f0",
+      padding: theme.spacing(2, 2.5),
+    },
+  },
+  leftTitle: {
+    fontSize: "2rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(0.75),
+    lineHeight: 1.3,
+  },
+  leftSubtitle: {
+    fontSize: "1rem",
+    color: "#64748b",
+    lineHeight: 1.5,
+    marginBottom: theme.spacing(2),
+  },
+  leftBullets: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+  },
+  leftBullet: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: theme.spacing(2),
+    fontSize: "0.875rem",
+    color: "#475569",
+    marginBottom: theme.spacing(1),
+    lineHeight: 1.45,
+  },
+  leftBulletIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: "50%",
+        border: "1.5px solid #22c55e",
+    color: "#22c55e",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 2,
+  },
+  rightPanel: {
+    flex: 1,
+    padding: theme.spacing(3, 3),
+    minWidth: 0,
+    backgroundColor: "#fff",
+    [theme.breakpoints.down("sm")]: {
+      padding: theme.spacing(2, 2.5),
+    },
   },
   progressWrap: {
-    marginBottom: "28px",
+    marginBottom: theme.spacing(2),
   },
   progressBar: {
-    height: "6px",
-    borderRadius: "999px",
-    backgroundColor: "rgba(255, 107, 0, 0.15)",
+    height: 6,
+    borderRadius: 0,
+    backgroundColor: "#e2e8f0",
     overflow: "hidden",
-    transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
   },
   progressFill: {
     height: "100%",
-    borderRadius: "999px",
-    background: "linear-gradient(90deg, #ff6b00, #ff8c42)",
-    transition: "width 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+    borderRadius: 0,
+    backgroundColor: "#FF7704",
+    transition: "width 0.4s ease",
   },
   stepLabel: {
-    fontSize: "13px",
+    fontSize: "0.8125rem",
     color: "#64748b",
-    marginTop: "8px",
+    marginTop: theme.spacing(1),
     fontWeight: 500,
   },
-  introTitle: {
-    fontSize: "22px",
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: "8px",
-    lineHeight: 1.3,
-    letterSpacing: "-0.02em",
-  },
-  introSubtitle: {
-    fontSize: "15px",
-    color: "#64748b",
-    marginBottom: "24px",
-    lineHeight: 1.5,
-  },
   title: {
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: "8px",
+    fontSize: "1.125rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(1.5),
     lineHeight: 1.4,
-    letterSpacing: "-0.01em",
   },
   hint: {
-    fontSize: "13px",
+    fontSize: "0.8125rem",
     color: "#64748b",
-    marginBottom: "20px",
+    marginBottom: theme.spacing(2),
     lineHeight: 1.5,
-    padding: "10px 14px",
-    backgroundColor: "rgba(255, 107, 0, 0.06)",
-    borderRadius: "10px",
-    borderLeft: "3px solid #ff6b00",
+    padding: theme.spacing(1.25, 1.5),
+    backgroundColor: "#f8fafc",
+    borderRadius: 8,
+    border: "1px solid #e2e8f0",
   },
   optionsGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gap: "10px",
-    marginBottom: "24px",
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(1.25),
+    marginBottom: theme.spacing(2),
   },
   optionCard: {
-    padding: "16px 20px",
-    border: "2px solid #e2e8f0",
-    borderRadius: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1.5),
+    padding: theme.spacing(1.5, 2),
+    border: "1px solid #e2e8f0",
+    borderRadius: 10,
     cursor: "pointer",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+    backgroundColor: "#fff",
+    transition: "border-color 0.2s ease, background-color 0.2s ease",
+    "&:hover": {
+      borderColor: "#cbd5e1",
+      backgroundColor: "#f8fafc",
+    },
+  },
+  optionLabel: {
+    flex: 1,
+    fontSize: "0.9375rem",
+    color: "#334155",
+    lineHeight: 1.45,
+    textAlign: "left",
+  },
+  optionLabelSelected: {
+    fontWeight: 600,
+    color: "#0f172a",
+  },
+  radioRoot: {
+    padding: 6,
+    color: "#cbd5e1",
+    "&$radioChecked": {
+      color: "#FF7704",
+    },
+  },
+  radioChecked: {},
+  checkboxRoot: {
+    padding: 6,
+    color: "#cbd5e1",
+    "&$checkboxChecked": {
+      color: "#FF7704",
+    },
+  },
+  checkboxChecked: {},
+  buttonRow: {
+    marginTop: theme.spacing(1),
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: theme.spacing(2),
+  },
+  backBtn: {
+    textTransform: "none",
+    fontSize: "0.9rem",
+    color: "#FF7704",
+    "&:hover": {
+      backgroundColor: "transparent",
+      color: theme.palette.primary.main,
+    },
+  },
+  navRow: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#fff",
-    outline: "none",
+    flexWrap: "wrap",
+    gap: theme.spacing(1.5),
+    marginTop: theme.spacing(2),
   },
-  optionCardSelected: {
-    borderColor: "#ff6b00",
-    backgroundColor: "rgba(255, 107, 0, 0.06)",
-    fontWeight: "600",
-    boxShadow: "0 0 0 1px rgba(255, 107, 0, 0.2)",
+  navBtn: {
+    textTransform: "none",
+    fontSize: "0.875rem",
+    fontWeight: 600,
+    color: "#64748b",
+    "&:hover": {
+      backgroundColor: "rgba(0,0,0,0.04)",
+      color: "#e66d04",
+    },
   },
-  button: {
-    backgroundColor: "#ff6b00",
-    color: "white",
-    border: "none",
-    padding: "14px 32px",
-    fontSize: "16px",
-    fontWeight: "600",
-    borderRadius: "14px",
-    cursor: "pointer",
-    width: "100%",
-    marginTop: "8px",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 2px 8px rgba(255, 107, 0, 0.25)",
+  primaryBtn: {
+    borderRadius: 4,
+    padding: theme.spacing(1.25, 2),
+    fontWeight: 500,
+    textTransform: "none",
+    backgroundColor: "#FF7704",
+    color: "#fff",
+    "&:hover": {
+      backgroundColor: "#e66d04",
+      boxShadow: "0 4px 12px rgba(255, 119, 4, 0.3)",
+    },
   },
   backLink: {
-    display: "inline-block",
-    marginTop: "20px",
-    fontSize: "14px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+    fontSize: "0.875rem",
     color: "#64748b",
     textDecoration: "none",
-    transition: "color 0.2s ease",
+    "&:hover": {
+      color: "#0f172a",
+    },
   },
-};
+}));
 
 const KEYFRAMES = `
   @keyframes questionIn {
-    from { opacity: 0; transform: translateY(16px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes optionIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
 `;
 
 function Quiz() {
+  const classes = useStyles();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [hoveredOption, setHoveredOption] = useState(null);
   const navigate = useNavigate();
 
-  // --- Logic for Multi-select (worker types, etc.) ---
   const handleMultiSelect = (option) => {
     const qId = questions[currentStep].id;
     const currentSelection = answers[qId] || [];
     let newSelection;
-
     if (currentSelection.includes(option)) {
       newSelection = currentSelection.filter((item) => item !== option);
     } else {
       newSelection = [...currentSelection, option];
     }
-
     setAnswers({ ...answers, [qId]: newSelection });
   };
 
-  // When we reach last question and user selects an option, single-select auto-advances and redirects
   const handleSingleSelect = (option) => {
     const qId = questions[currentStep].id;
     const nextAnswers = { ...answers, [qId]: option };
     setAnswers(nextAnswers);
 
-    setTimeout(() => {
-      if (currentStep < questions.length - 1) {
+    const isLastStep = currentStep === questions.length - 1;
+    if (!isLastStep) {
+      setTimeout(() => {
         setCurrentStep(currentStep + 1);
-      } else {
-        // Last question: compute score with the new answer (state not updated yet)
-        let score = 0;
-        questions.forEach((q) => {
-          const data = q.id === qId ? option : answers[q.id];
-          if (q.type === "multi-select") {
-            const selection = q.id === qId ? [option] : answers[q.id] || [];
-            let qScore = 0,
-              complexCount = 0;
-            selection.forEach((opt) => {
-              qScore += opt.score;
-              if (opt.isComplex) complexCount++;
-            });
-            if (complexCount >= 3) qScore += 5;
-            score += qScore;
-          } else if (data) {
-            score += data.score;
-          }
-        });
-        navigate("/result", {
-          state: {
-            totalScore: score,
-            answeredCount: questions.length,
-            totalQuestions: questions.length,
-            answers: nextAnswers,
-            questionsSummary: questions.map((q) => ({
-              id: q.id,
-              title: q.title,
-              type: q.type,
-              options: q.options.map((o) => ({ label: o.label })),
-            })),
-          },
-        });
-      }
-    }, 250);
+      }, 250);
+    }
   };
 
   const progressPercent =
-    questions.length > 0
-      ? ((currentStep + 1) / questions.length) * 100
-      : 0;
+    questions.length > 0 ? ((currentStep + 1) / questions.length) * 100 : 0;
+
+  const submitQuiz = () => {
+    let score = 0;
+    questions.forEach((q) => {
+      if (q.type === "multi-select") {
+        const selection = answers[q.id] || [];
+        let qScore = 0, complexCount = 0;
+        selection.forEach((opt) => {
+          qScore += opt.score;
+          if (opt.isComplex) complexCount++;
+        });
+        if (complexCount >= 3) qScore += 5;
+        score += qScore;
+      } else if (answers[q.id]) {
+        score += answers[q.id].score;
+      }
+    });
+    navigate("/result", {
+      state: {
+        totalScore: score,
+        answeredCount: questions.length,
+        totalQuestions: questions.length,
+        answers,
+        questionsSummary: questions.map((q) => ({
+          id: q.id,
+          title: q.title,
+          type: q.type,
+          options: q.options.map((o) => ({ label: o.label })),
+        })),
+      },
+    });
+  };
 
   const renderProgress = () => (
-    <div style={styles.progressWrap}>
-      <div style={styles.progressBar}>
+    <div className={classes.progressWrap}>
+      <div className={classes.progressBar}>
         <div
-          style={{
-            ...styles.progressFill,
-            width: `${progressPercent}%`,
-          }}
+          className={classes.progressFill}
+          style={{ width: `${progressPercent}%` }}
         />
       </div>
-      <div style={styles.stepLabel}>
+      <Typography className={classes.stepLabel}>
         Question {currentStep + 1} of {questions.length}
-      </div>
+      </Typography>
     </div>
   );
 
-  // --- Render ---
   return (
-    <div style={styles.wrapper}>
+    <div className={classes.wrapper}>
       <style>{KEYFRAMES}</style>
-      <div style={styles.container}>
-        {currentStep < questions.length && renderProgress()}
+      <Container maxWidth="lg" className={classes.container}>
+        {/* Back button left, like Contact Us */}
+        <Box className={classes.topBar}>
+          <Button
+            component={RouterLink}
+            to="/"
+            startIcon={<ArrowBackIcon />}
+            className={classes.backBtn}
+            color="primary"
+          >
+            Back
+          </Button>
+        </Box>
+        {/* Banner: Find your plan */}
+        <div className={classes.topBanner}>
+          <Box className={classes.topBannerContent}>
+            <Typography className={classes.topBannerText}>
+              Find your plan and compare options
+            </Typography>
+            <Typography className={classes.topBannerSub}>
+              A few quick questions to recommend the right payroll solution.
+            </Typography>
+          </Box>
+        </div>
 
         {currentStep < questions.length ? (
-          <div
-            key={currentStep}
-            style={{
-              animation: "questionIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
-            }}
-          >
-            {currentStep === 0 && (
-              <>
-                <h1 style={styles.introTitle}>Find Your Plan</h1>
-                <p style={styles.introSubtitle}>
-                  Share a few details to discover the best payroll for your business. We’ll take it from there.
-                </p>
-              </>
-            )}
-            <h2 style={styles.title}>{questions[currentStep].title}</h2>
-            {questions[currentStep].hint && (
-              <p style={styles.hint}>⚠ {questions[currentStep].hint}</p>
-            )}
+          <div className={classes.mainRow}>
+            {/* Left panel: engaging content */}
+            <aside className={classes.leftPanel}>
+              <Typography component="h2" className={classes.leftTitle}>
+                Why take this quiz?
+              </Typography>
+              <Typography className={classes.leftSubtitle}>
+                We use your answers to match you with the best plan and features for your team size and needs.
+              </Typography>
+              <ul className={classes.leftBullets}>
+                <li className={classes.leftBullet}>
+                  <span className={classes.leftBulletIcon}>
+                    <CheckIcon style={{ fontSize: 12 }} />
+                  </span>
+                  Get a personalized plan recommendation in under a minute.
+                </li>
+                <li className={classes.leftBullet}>
+                  <span className={classes.leftBulletIcon}>
+                    <CheckIcon style={{ fontSize: 12 }} />
+                  </span>
+                  Compare features and pricing that fit your business.
+                </li>
+                <li className={classes.leftBullet}>
+                  <span className={classes.leftBulletIcon}>
+                    <CheckIcon style={{ fontSize: 12 }} />
+                  </span>
+                  No commitment—see your result and decide next steps.
+                </li>
+              </ul>
+            </aside>
 
-            <div style={styles.optionsGrid}>
-              {questions[currentStep].options.map((option, index) => {
-                const qId = questions[currentStep].id;
-                const isSelected =
-                  questions[currentStep].type === "multi-select"
-                    ? (answers[qId] || []).includes(option)
-                    : answers[qId] === option;
-                const isHovered = hoveredOption === index && !isSelected;
-
-                return (
-                  <div
-                    key={index}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        questions[currentStep].type === "multi-select"
-                          ? handleMultiSelect(option)
-                          : handleSingleSelect(option);
-                      }
-                    }}
-                    style={{
-                      ...styles.optionCard,
-                      ...(isSelected ? styles.optionCardSelected : {}),
-                      ...(isHovered
-                        ? {
-                            borderColor: "rgba(255, 107, 0, 0.5)",
-                            backgroundColor: "#fafafa",
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-                          }
-                        : {}),
-                      animation: "optionIn 0.35s ease-out forwards",
-                      animationDelay: `${index * 0.04}s`,
-                      opacity: 0,
-                    }}
-                    onClick={() =>
-                      questions[currentStep].type === "multi-select"
-                        ? handleMultiSelect(option)
-                        : handleSingleSelect(option)
-                    }
-                    onMouseEnter={() => setHoveredOption(index)}
-                    onMouseLeave={() => setHoveredOption(null)}
-                  >
-                    <span style={{ textAlign: "left" }}>{option.label}</span>
-                    {isSelected && (
-                      <span
-                        style={{
-                          color: "#ff6b00",
-                          fontWeight: "700",
-                          fontSize: "18px",
-                          flexShrink: 0,
-                          marginLeft: "8px",
-                        }}
-                      >
-                        ✓
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {questions[currentStep].type === "multi-select" && (
-              <button
-                type="button"
+            {/* Right panel: questionnaire */}
+            <main className={classes.rightPanel}>
+              {renderProgress()}
+              <div
+                key={currentStep}
                 style={{
-                  ...styles.button,
-                  opacity:
-                    (answers[questions[currentStep].id] || []).length === 0
-                      ? 0.5
-                      : 1,
-                  cursor:
-                    (answers[questions[currentStep].id] || []).length === 0
-                      ? "not-allowed"
-                      : "pointer",
-                }}
-                disabled={
-                  (answers[questions[currentStep].id] || []).length === 0
-                }
-                onClick={() => {
-                  if ((answers[questions[currentStep].id] || []).length > 0) {
-                    setCurrentStep(currentStep + 1);
-                  }
-                }}
-                onMouseEnter={(e) => {
-                  if ((answers[questions[currentStep].id] || []).length > 0) {
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 14px rgba(255, 107, 0, 0.35)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(255, 107, 0, 0.25)";
+                  animation: "questionIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
                 }}
               >
-                Continue
-              </button>
-            )}
+                <Typography component="h2" className={classes.title}>
+                  {questions[currentStep].title}
+                </Typography>
+                {questions[currentStep].hint && (
+                  <Typography className={classes.hint}>
+                    {questions[currentStep].hint}
+                  </Typography>
+                )}
 
-            <RouterLink
-              to="/"
-              style={styles.backLink}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "#ff6b00";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "#64748b";
-              }}
-            >
-              ← Back to home
-            </RouterLink>
+                <div className={classes.optionsGrid}>
+                  {questions[currentStep].options.map((option, index) => {
+                    const qId = questions[currentStep].id;
+                    const isMulti = questions[currentStep].type === "multi-select";
+                    const isSelected = isMulti
+                      ? (answers[qId] || []).includes(option)
+                      : answers[qId] === option;
+
+                    return (
+                      <div
+                        key={index}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            isMulti ? handleMultiSelect(option) : handleSingleSelect(option);
+                          }
+                        }}
+                        className={classes.optionCard}
+                        style={{
+                          animation: "optionIn 0.3s ease-out forwards",
+                          animationDelay: `${index * 0.04}s`,
+                          opacity: 0,
+                        }}
+                        onClick={() =>
+                          isMulti ? handleMultiSelect(option) : handleSingleSelect(option)
+                        }
+                      >
+                        {isMulti ? (
+                          <Checkbox
+                            checked={isSelected}
+                            onChange={() => handleMultiSelect(option)}
+                            onClick={(e) => e.stopPropagation()}
+                            color="primary"
+                            classes={{
+                              root: classes.checkboxRoot,
+                              checked: classes.checkboxChecked,
+                            }}
+                            size="small"
+                          />
+                        ) : (
+                          <Radio
+                            checked={isSelected}
+                            onChange={() => handleSingleSelect(option)}
+                            onClick={(e) => e.stopPropagation()}
+                            color="primary"
+                            classes={{
+                              root: classes.radioRoot,
+                              checked: classes.radioChecked,
+                            }}
+                            size="small"
+                          />
+                        )}
+                        <span
+                          className={`${classes.optionLabel} ${isSelected ? classes.optionLabelSelected : ""}`}
+                        >
+                          {option.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className={classes.navRow}>
+                  <Button
+                    startIcon={<ChevronLeftIcon />}
+                    className={classes.navBtn}
+                    disabled={currentStep === 0}
+                    onClick={() => currentStep > 0 && setCurrentStep(currentStep - 1)}
+                  >
+                    Preview
+                  </Button>
+                  <Box style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {currentStep < questions.length - 1 ? (
+                      <Button
+                        endIcon={<ChevronRightIcon />}
+                        className={classes.navBtn}
+                        onClick={() => setCurrentStep(currentStep + 1)}
+                        disabled={
+                          questions[currentStep].type === "multi-select" &&
+                          (answers[questions[currentStep].id] || []).length === 0
+                        }
+                      >
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        className={classes.primaryBtn}
+                        disabled={
+                          questions[currentStep].type === "multi-select"
+                            ? (answers[questions[currentStep].id] || []).length === 0
+                            : !answers[questions[currentStep].id]
+                        }
+                        onClick={submitQuiz}
+                        endIcon={<ArrowForwardIcon style={{ fontSize: 18 }} />}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </Box>
+                </div>
+              </div>
+            </main>
           </div>
         ) : null}
-      </div>
+      </Container>
     </div>
   );
 }

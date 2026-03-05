@@ -1,45 +1,68 @@
 import { createTheme } from "@material-ui/core";
 
 const typography = {
-  fontFamily: "Poppins, sans-serif",
+  fontFamily: '"Fira Sans", sans-serif',
   h1: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 35,
     letterSpacing: "-0.24px",
   },
   h2: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 29,
     letterSpacing: "-0.24px",
   },
   h3: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 24,
     letterSpacing: "-0.06px",
   },
   h4: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 20,
     letterSpacing: "-0.06px",
   },
   h5: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 16,
     letterSpacing: "-0.05px",
   },
   h6: {
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 500,
     fontSize: 14,
     letterSpacing: "-0.05px",
   },
-  overline: {
-    fontWeight: 500,
-  },
   subtitle1: {
+    fontFamily: '"Roboto", sans-serif',
     fontWeight: 400,
   },
   subtitle2: {
+    fontFamily: '"Roboto", sans-serif',
     fontWeight: 400,
+  },
+  body1: {
+    fontFamily: '"Roboto", sans-serif',
+    fontWeight: 400,
+  },
+  body2: {
+    fontFamily: '"Roboto", sans-serif',
+    fontWeight: 400,
+  },
+  button: {
+    fontFamily: '"Roboto", sans-serif',
+  },
+  caption: {
+    fontFamily: '"Roboto", sans-serif',
+  },
+  overline: {
+    fontFamily: '"Fira Sans", sans-serif',
+    fontWeight: 500,
   },
 };
 

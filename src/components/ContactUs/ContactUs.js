@@ -24,6 +24,7 @@ const PLANS = [
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    fontFamily: theme.typography.body1.fontFamily,
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(5),
     paddingLeft: theme.spacing(3),
@@ -48,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   backBtn: {
+    fontFamily: theme.typography.body1.fontFamily,
     textTransform: 'none',
     fontSize: '0.9rem',
     transition: 'color 0.2s ease, background-color 0.2s ease',
@@ -58,12 +60,14 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
   },
   title: {
+    fontFamily: theme.typography.fontFamily,
     fontWeight: 700,
-    fontSize: '1.5rem',
+    fontSize: '2rem',
     color: '#1a1a1a',
     marginBottom: theme.spacing(0.5),
   },
   subtitle: {
+    fontFamily: theme.typography.body1.fontFamily,
     color: '#666',
     fontSize: '0.95rem',
   },
@@ -85,13 +89,15 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(0.5),
   },
   fieldLabel: {
+    fontFamily: theme.typography.fontFamily,
     fontSize: '0.8rem',
     fontWeight: 600,
     color: '#444',
   },
   input: {
     '& .MuiOutlinedInput-input': {
-      padding: theme.spacing(1, 1.25),
+      fontFamily: theme.typography.body1.fontFamily,
+      padding: theme.spacing(1.25),
       fontSize: '0.9rem',
       transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
     },
@@ -105,6 +111,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   submitBtn: {
+    fontFamily: theme.typography.body1.fontFamily,
     alignSelf: 'flex-start',
     padding: theme.spacing(1.25, 2.5),
     fontSize: '0.9rem',
@@ -117,12 +124,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   intentLabel: {
+    fontFamily: theme.typography.fontFamily,
     fontWeight: 600,
     fontSize: '0.85rem',
     marginBottom: theme.spacing(0.75),
     color: '#444',
   },
   radioLabel: {
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: '0.9rem',
   },
 }));

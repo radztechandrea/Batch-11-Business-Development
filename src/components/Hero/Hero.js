@@ -11,7 +11,7 @@ import {
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
-import heroManImg from '../../images/lifestyle-leisure-technology-concept-smiling-asian-man-college-student-having-break-drinking-tak-Photoroom.png';
+import heroManImg from '../../images/hero_person.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
   miniCard: {
     position: 'absolute',
-    fontFamily: '"Poppins", sans-serif',
+    fontFamily: theme.typography.fontFamily,
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: theme.spacing(2, 2),
@@ -117,7 +117,7 @@ const useStyles = makeStyles((theme) => ({
       boxShadow: '0 12px 28px rgba(0,0,0,0.12)',
     },
     '& strong': {
-      fontFamily: '"Poppins", sans-serif',
+      fontFamily: theme.typography.fontFamily,
       color: '#DB6700',
       fontSize: '0.8rem',
       fontWeight: 600,
@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: 4,
     },
     '& span': {
-      fontFamily: '"Poppins", sans-serif',
+      fontFamily: theme.typography.body1.fontFamily,
       color: '#333',
       fontSize: '0.8rem',
       fontWeight: 500,
@@ -165,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
     '100%': { opacity: 1, transform: 'translateY(0)' },
   },
   heroTitle: {
-    fontFamily: '"Poppins", sans-serif',
+    fontFamily: theme.typography.fontFamily,
     fontWeight: 600,
     fontSize: '3.5rem',
     lineHeight: 1.2,
@@ -177,13 +177,13 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('xs')]: { fontSize: '1.75rem', lineHeight: 1.3 },
   },
   heroSubtitle: {
-    fontFamily: '"Poppins", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: '1.25rem',
     color: '#333',
     maxWidth: 500,
     marginBottom: theme.spacing(4),
     lineHeight: 1.6,
-    fontWeight: 500,
+    fontWeight: 400,
     animation: '$heroFadeInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.25s both',
     [theme.breakpoints.down('md')]: { marginLeft: 'auto', marginRight: 'auto', textAlign: 'center' },
     [theme.breakpoints.down('sm')]: { fontSize: '1.2rem' },
