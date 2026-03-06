@@ -38,9 +38,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     filter: "grayscale(10%)",
     transition: "all 500ms ease-in-out",
-    [theme.breakpoints.down("md")]: {
-      flexGrow: 1,
-    },
     "&:hover": {
       filter: "grayscale(0)",
     },
@@ -55,15 +52,17 @@ const useStyles = makeStyles((theme) => ({
     width: "auto",
     display: "block",
   },
-
   navLink: {
     fontWeight: 600,
     transition: "color 0.25s ease",
+    "&:hover": {
+      color: "#FF7704",
+    },
   },
   activeLink: {
     color: "#FF7704 !important",
     fontWeight: 700,
-    textShadow: "0 0 12px rgba(255, 119, 4, 0.7), 0 0 24px rgba(255, 119, 4, 0.4)",
+    borderBottom: "2px solid #FF7704",
   },
 }));
 
@@ -103,23 +102,34 @@ const Navbar = () => {
               width: "100%",
             }}
           >
-            <Box className={classes.iconContainer}>
-              <RouterLink
-                to="/"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: theme.spacing(1),
-                }}
-              >
-                <img src={UlapBizIcon} alt="" className={classes.logoImg} />
-                <img
-                  src={UlapBizLogo}
-                  alt="UlapBiz"
-                  className={classes.logoWordmark}
-                />
-              </RouterLink>
+            {/* LEFT - LOGO */}
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Box className={classes.iconContainer}>
+                <RouterLink
+                  to="/"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: theme.spacing(1),
+                  }}
+                >
+                  <img src={UlapBizIcon} alt="" className={classes.logoImg} />
+                  <img
+                    src={UlapBizLogo}
+                    alt="UlapBiz"
+                    className={classes.logoWordmark}
+                  />
+                </RouterLink>
+              </Box>
             </Box>
+
+            {/* MOBILE MENU BUTTON */}
             {isXs && (
               <Box
                 sx={{
@@ -135,14 +145,17 @@ const Navbar = () => {
                 )}
               </Box>
             )}
+
+            {/* CENTER NAV ITEMS */}
             {!isXs && (
               <>
-                <Box sx={{ flex: 1 }} />
                 <Box
                   sx={{
+                    flex: 1,
                     display: "flex",
+                    justifyContent: "center",
                     alignItems: "center",
-                    gap: "1.5rem",
+                    gap: "1.8rem",
                     "& :hover": {
                       color: "#FF7704",
                     },
@@ -163,11 +176,15 @@ const Navbar = () => {
                     </Link>
                   ))}
                 </Box>
+
+                {/* RIGHT SPACER */}
                 <Box sx={{ flex: 1 }} />
               </>
             )}
           </Box>
         </Toolbar>
+
+        {/* MOBILE MENU */}
         <Collapse in={open}>
           {isXs && (
             <Box
@@ -188,7 +205,7 @@ const Navbar = () => {
                   variant="h6"
                   to={getPathFromPage(page)}
                   underline="none"
-                  color="primary"
+                  color="textPrimary"
                   onClick={() => setOpen(false)}
                   className={`${isActive(page) ? classes.activeLink : ""} ${classes.navLink}`}
                   style={{ fontSize: "1rem" }}
@@ -196,36 +213,6 @@ const Navbar = () => {
                   {page}
                 </Link>
               ))}
-              <Link
-                key="signin"
-                component={RouterLink}
-                variant="h6"
-                to="test"
-                underline="none"
-                color="textPrimary"
-                onClick={() => setOpen(false)}
-                className={classes.navLink}
-                style={{
-                  color: theme.palette.primary.main,
-                }}
-              >
-                Sign In
-              </Link>
-              <Link
-                key="signup"
-                component={RouterLink}
-                variant="h6"
-                to="test"
-                underline="none"
-                color="textPrimary"
-                onClick={() => setOpen(false)}
-                className={classes.navLink}
-                style={{
-                  color: theme.palette.primary.main,
-                }}
-              >
-                Sign Up
-              </Link>
             </Box>
           )}
         </Collapse>

@@ -3,7 +3,6 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Container,
-  Radio,
   Checkbox,
   Button,
   Typography,
@@ -14,6 +13,7 @@ import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import CheckIcon from "@material-ui/icons/Check";
+
 // --- Data Configuration ---
 const questions = [
   {
@@ -92,16 +92,39 @@ const useStyles = makeStyles((theme) => ({
   },
   topBanner: {
     padding: theme.spacing(2, 3, 4),
-    minHeight: 100,
-    background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-    borderBottom: "1px solid #e2e8f0",
+    minHeight: 200,
+    position: "relative",
+    overflow: "hidden",
+    background: "linear-gradient(135deg, #E85D04 0%, #D35400 50%, #C04A00 100%)",
+    borderBottom: "1px solid rgba(0,0,0,0.08)",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: theme.spacing(3),
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      inset: 0,
+      backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 45%), radial-gradient(circle at 85% 50%, rgba(0,0,0,0.06) 0%, transparent 40%)",
+      pointerEvents: "none",
+    },
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      inset: 0,
+      backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
+      backgroundSize: "20px 20px",
+      pointerEvents: "none",
+    },
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      minHeight: 160,
+      padding: theme.spacing(2, 2, 3),
+    },
     [theme.breakpoints.down("xs")]: {
       padding: theme.spacing(2, 2, 3),
-      minHeight: 80,
+      minHeight: 140,
     },
   },
   topBar: {
@@ -114,22 +137,27 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   topBannerContent: {
-    flex: 1,
+    flex: "1 1 auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     textAlign: "center",
     gap: theme.spacing(0.5),
+    position: "relative",
+    zIndex: 1,
+    minWidth: 0,
   },
   topBannerText: {
-    fontSize: "2.5rem",
+    fontSize: "2rem",
     fontWeight: 600,
-    color: "#0f172a",
+    color: "#fff",
+    textShadow: "0 1px 2px rgba(0,0,0,0.15)",
+    [theme.breakpoints.down("xs")]: { fontSize: "1.75rem" },
   },
   topBannerSub: {
     fontSize: "1rem",
-    color: "#64748b",
+    color: "rgba(255,255,255,0.92)",
     lineHeight: 1.4,
   },
   mainRow: {
@@ -146,7 +174,9 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
     padding: theme.spacing(3, 3),
     borderRight: "1px solid #e2e8f0",
-    backgroundColor: "#fff",
+    position: "relative",
+    overflow: "hidden",
+    background: "linear-gradient(180deg, #fefbf8 0%, #faf8f5 50%, #f5f7fa 100%)",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       borderRight: "none",
@@ -154,8 +184,12 @@ const useStyles = makeStyles((theme) => ({
       padding: theme.spacing(2, 2.5),
     },
   },
+  leftPanelContent: {
+    position: "relative",
+    zIndex: 1,
+  },
   leftTitle: {
-    fontSize: "2rem",
+    fontSize: "1.75rem",
     fontWeight: 700,
     color: "#0f172a",
     marginBottom: theme.spacing(0.75),
@@ -246,6 +280,79 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(1.25),
     marginBottom: theme.spacing(2),
   },
+  optionTable: {
+    width: "100%",
+    borderCollapse: "collapse",
+    border: "1px solid #e2e8f0",
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+  },
+  optionTableHeader: {
+    backgroundColor: "#FF7704",
+    "& th": {
+      padding: theme.spacing(1, 1.5),
+      fontFamily: theme.typography.fontFamily,
+      fontSize: "0.75rem",
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      color: "#fff",
+      textAlign: "left",
+      borderBottom: "1px solid rgba(255,255,255,0.2)",
+    },
+    "& th:first-of-type": { width: "72%" },
+    "& th:last-of-type": {
+      width: "28%",
+      textAlign: "center",
+    },
+  },
+  optionTableRow: {
+    borderBottom: "1px solid #e2e8f0",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+    "&:last-child": { borderBottom: "none" },
+    "&:hover": { backgroundColor: "#f8fafc" },
+  },
+  optionTableRowSelected: {
+    backgroundColor: "rgba(255, 119, 4, 0.06)",
+    "&:hover": { backgroundColor: "rgba(255, 119, 4, 0.1)" },
+  },
+  optionTableCellAnswer: {
+    padding: theme.spacing(1.25, 1.5),
+    verticalAlign: "top",
+    borderRight: "1px solid #e2e8f0",
+  },
+  optionCellTitle: {
+    display: "block",
+    fontSize: "0.9375rem",
+    fontWeight: 600,
+    color: "#0f172a",
+    lineHeight: 1.35,
+    marginBottom: 2,
+  },
+  optionCellSubtitle: {
+    display: "block",
+    fontSize: "0.8125rem",
+    fontWeight: 400,
+    color: "#64748b",
+    lineHeight: 1.4,
+  },
+  optionTableCellScore: {
+    padding: theme.spacing(1.25, 1.5),
+    textAlign: "center",
+    verticalAlign: "middle",
+    fontFamily: theme.typography.fontFamily,
+    fontSize: "1rem",
+    fontWeight: 600,
+    color: "#334155",
+  },
+  optionsGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(1.25),
+    marginBottom: theme.spacing(2),
+  },
   optionCard: {
     display: "flex",
     alignItems: "center",
@@ -272,14 +379,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     color: "#0f172a",
   },
-  radioRoot: {
-    padding: 6,
-    color: "#cbd5e1",
-    "&$radioChecked": {
-      color: "#FF7704",
-    },
-  },
-  radioChecked: {},
   checkboxRoot: {
     padding: 6,
     color: "#cbd5e1",
@@ -380,15 +479,7 @@ function Quiz() {
 
   const handleSingleSelect = (option) => {
     const qId = questions[currentStep].id;
-    const nextAnswers = { ...answers, [qId]: option };
-    setAnswers(nextAnswers);
-
-    const isLastStep = currentStep === questions.length - 1;
-    if (!isLastStep) {
-      setTimeout(() => {
-        setCurrentStep(currentStep + 1);
-      }, 250);
-    }
+    setAnswers({ ...answers, [qId]: option });
   };
 
   const progressPercent =
@@ -470,8 +561,9 @@ function Quiz() {
 
         {currentStep < questions.length ? (
           <div className={classes.mainRow}>
-            {/* Left panel: engaging content */}
+            {/* Left panel: content */}
             <aside className={classes.leftPanel}>
+              <Box className={classes.leftPanelContent}>
               <Typography component="h2" className={classes.leftTitle}>
                 Why take this quiz?
               </Typography>
@@ -498,6 +590,7 @@ function Quiz() {
                   No commitment—see your result and decide next steps.
                 </li>
               </ul>
+              </Box>
             </aside>
 
             {/* Right panel: questionnaire */}
@@ -547,31 +640,19 @@ function Quiz() {
                           isMulti ? handleMultiSelect(option) : handleSingleSelect(option)
                         }
                       >
-                        {isMulti ? (
-                          <Checkbox
-                            checked={isSelected}
-                            onChange={() => handleMultiSelect(option)}
-                            onClick={(e) => e.stopPropagation()}
-                            color="primary"
-                            classes={{
-                              root: classes.checkboxRoot,
-                              checked: classes.checkboxChecked,
-                            }}
-                            size="small"
-                          />
-                        ) : (
-                          <Radio
-                            checked={isSelected}
-                            onChange={() => handleSingleSelect(option)}
-                            onClick={(e) => e.stopPropagation()}
-                            color="primary"
-                            classes={{
-                              root: classes.radioRoot,
-                              checked: classes.radioChecked,
-                            }}
-                            size="small"
-                          />
-                        )}
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() =>
+                            isMulti ? handleMultiSelect(option) : handleSingleSelect(option)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                          color="primary"
+                          classes={{
+                            root: classes.checkboxRoot,
+                            checked: classes.checkboxChecked,
+                          }}
+                          size="small"
+                        />
                         <span
                           className={`${classes.optionLabel} ${isSelected ? classes.optionLabelSelected : ""}`}
                         >
@@ -598,8 +679,9 @@ function Quiz() {
                         className={classes.navBtn}
                         onClick={() => setCurrentStep(currentStep + 1)}
                         disabled={
-                          questions[currentStep].type === "multi-select" &&
-                          (answers[questions[currentStep].id] || []).length === 0
+                          questions[currentStep].type === "multi-select"
+                            ? (answers[questions[currentStep].id] || []).length === 0
+                            : !answers[questions[currentStep].id]
                         }
                       >
                         Next

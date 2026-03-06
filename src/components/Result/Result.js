@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     background: "#fff",
-    borderRadius: 12,
+    borderRadius: 8,
     border: "1px solid #e2e8f0",
     padding: theme.spacing(4, 3),
     marginBottom: theme.spacing(5),
@@ -366,7 +366,9 @@ function Result() {
   const recommended = getRecommendedPlan();
 
   const handleCheckout = () => {
-    navigate(`/checkout?plan=${recommended.key}`);
+    navigate(`/checkout?plan=${recommended.key}`, {
+      state: { fromResult: true, resultState: location.state },
+    });
   };
 
   const getAnswerLabels = (q) => {

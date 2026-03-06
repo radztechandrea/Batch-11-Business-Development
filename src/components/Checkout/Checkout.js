@@ -101,9 +101,9 @@ const PLANS = {
       "SLA guarantee",
     ],
     benefits: [
-      "Instant access after payment",
-      "Cancel anytime",
-      "Dedicated support",
+  "Instant access after payment",
+  "Cancel anytime",
+  "Dedicated support",
       "Onboarding assistance",
     ],
   },
@@ -186,7 +186,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
     fontFamily: theme.typography.body1.fontFamily,
     padding: theme.spacing(0.25, 0),
-    borderRadius: 4,
   },
   header: {
     marginTop: theme.spacing(2),
@@ -200,7 +199,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 0,
     color: theme.palette.text.primary,
     letterSpacing: "-0.02em",
-    fontSize: "3rem",
+    fontSize: "2rem",
   },
   pageSubtitle: {
     fontFamily: theme.typography.body1.fontFamily,
@@ -252,7 +251,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: { gridTemplateColumns: "1fr" },
   },
   unifiedCard: {
-    borderRadius: 4,
+    borderRadius: 8,
     overflow: "hidden",
     border: "1px solid rgba(0,0,0,0.12)",
     backgroundColor: "#fff",
@@ -281,7 +280,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 0,
   },
   billingCard: {
-    borderRadius: 4,
+    borderRadius: 8,
     overflow: "hidden",
     boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     border: "1px solid rgba(0,0,0,0.06)",
@@ -309,7 +308,7 @@ const useStyles = makeStyles((theme) => ({
   sectionIcon: {
     width: 38,
     height: 38,
-    borderRadius: 4,
+    borderRadius: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -339,35 +338,19 @@ const useStyles = makeStyles((theme) => ({
   field: {
     marginBottom: 0,
     minWidth: 0,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 4,
-      backgroundColor: "#fff",
-      border: "2px solid rgba(0,0,0,0.15)",
-      transition: "border-color 0.2s ease, box-shadow 0.2s ease",
-      "& .MuiOutlinedInput-notchedOutline": {
-        border: "none",
-      },
-      "& .MuiOutlinedInput-input": {
-        fontFamily: theme.typography.body1.fontFamily,
-        padding: theme.spacing(1.25, 1.5),
-        fontSize: "0.9rem",
-      },
-      "&.Mui-focused": {
-        borderColor: theme.palette.primary.main,
-        borderWidth: 2,
-        boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
-      },
-      "&.Mui-error": {
-        borderColor: theme.palette.error.main,
-        "&.Mui-focused": {
-          boxShadow: `0 0 0 1px ${theme.palette.error.main}`,
-        },
-      },
-    },
-    "& .MuiFormHelperText-root": {
+    '& .MuiOutlinedInput-input': {
       fontFamily: theme.typography.body1.fontFamily,
-      fontSize: "0.7rem",
-      marginTop: 2,
+      padding: theme.spacing(1.25),
+      fontSize: '0.9rem',
+      transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 4,
+      transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+    },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
     },
   },
   fieldHelper: {
@@ -408,8 +391,8 @@ const useStyles = makeStyles((theme) => ({
     flex: "1 1 0",
     minWidth: 80,
     padding: theme.spacing(0.75, 1),
-    borderRadius: 4,
-    border: "2px solid #e2e8f0",
+    borderRadius: 8,
+    border: "1px solid #e2e8f0",
     backgroundColor: "#fff",
     display: "flex",
     alignItems: "center",
@@ -434,12 +417,12 @@ const useStyles = makeStyles((theme) => ({
     width: 24,
     height: 24,
     objectFit: "contain",
-    flexShrink: 0,
-  },
+      flexShrink: 0,
+    },
   paymentMethodDetails: {
     marginTop: theme.spacing(1),
     padding: theme.spacing(1.25),
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "rgba(0,0,0,0.02)",
     border: "1px solid rgba(0,0,0,0.08)",
   },
@@ -463,7 +446,7 @@ const useStyles = makeStyles((theme) => ({
     gap: theme.spacing(0.5),
     marginTop: theme.spacing(1),
     padding: theme.spacing(1, 1.25),
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "rgba(99, 102, 241, 0.08)",
     border: "1px solid rgba(99, 102, 241, 0.2)",
     fontFamily: theme.typography.body1.fontFamily,
@@ -478,7 +461,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 2,
   },
   summaryCard: {
-    borderRadius: 4,
+    borderRadius: 8,
     overflow: "hidden",
     boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     border: "1px solid rgba(0,0,0,0.06)",
@@ -529,15 +512,15 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minWidth: 0,
     minHeight: 40,
-    borderRadius: 4,
-    border: "2px solid rgba(0,0,0,0.15)",
+    borderRadius: 8,
+    border: "1px solid rgba(0,0,0,0.15)",
     backgroundColor: "#fff",
     fontFamily: theme.typography.body1.fontFamily,
     transition: "border-color 0.2s ease, box-shadow 0.2s ease",
     boxSizing: "border-box",
     "&:focus-within": {
       borderColor: theme.palette.primary.main,
-      borderWidth: 2,
+      borderWidth: 1,
       boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
     },
     "&$phoneNumberError": {
@@ -549,7 +532,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "&$phoneNumberRootOpen": {
       borderColor: theme.palette.primary.main,
-      borderWidth: 2,
+      borderWidth: 1,
       boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
     },
   },
@@ -562,7 +545,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 0.75),
     border: "none",
     borderRight: "1px solid rgba(0,0,0,0.12)",
-    borderRadius: "4px 0 0 4px",
+    borderRadius: "8px 0 0 8px",
     background: "transparent",
     cursor: "pointer",
     fontFamily: theme.typography.body1.fontFamily,
@@ -580,7 +563,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 260,
     maxHeight: 280,
     backgroundColor: "#fff",
-    borderRadius: 4,
+    borderRadius: 8,
     boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
     border: "1px solid rgba(0,0,0,0.08)",
     zIndex: 1300,
@@ -599,7 +582,7 @@ const useStyles = makeStyles((theme) => ({
   phoneDropdownSearch: {
     flex: 1,
     border: "1px solid rgba(0,0,0,0.15)",
-    borderRadius: 4,
+    borderRadius: 8,
     padding: "8px 10px 8px 36px",
     fontSize: "0.875rem",
     fontFamily: theme.typography.body1.fontFamily,
@@ -611,10 +594,10 @@ const useStyles = makeStyles((theme) => ({
     left: theme.spacing(1.5),
     top: "50%",
     transform: "translateY(-50%)",
-    color: theme.palette.text.secondary,
+      color: theme.palette.text.secondary,
     fontSize: 18,
     pointerEvents: "none",
-  },
+    },
   phoneDropdownList: {
     overflow: "auto",
     maxHeight: 220,
@@ -625,7 +608,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     gap: theme.spacing(1),
     padding: theme.spacing(0.75, 1),
-    borderRadius: 4,
+    borderRadius: 8,
     cursor: "pointer",
     fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.875rem",
@@ -642,7 +625,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 36,
     border: "none",
     padding: theme.spacing(0, 1.25),
-    borderRadius: "0 4px 4px 0",
+    borderRadius: "0 8px 8px 0",
     fontSize: "0.9rem",
     fontFamily: theme.typography.body1.fontFamily,
     outline: "none",
@@ -652,7 +635,7 @@ const useStyles = makeStyles((theme) => ({
   phoneCountryWrap: {
     display: "flex",
     alignItems: "center",
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "#fff",
     border: "1px solid rgba(0,0,0,0.15)",
     paddingLeft: theme.spacing(0.75),
@@ -681,7 +664,7 @@ const useStyles = makeStyles((theme) => ({
     width: 24,
     height: 18,
     objectFit: "cover",
-    borderRadius: 2,
+    borderRadius: 8,
     flexShrink: 0,
     border: "1px solid rgba(0,0,0,0.1)",
   },
@@ -689,7 +672,7 @@ const useStyles = makeStyles((theme) => ({
   nativeSelect: {
     width: "100%",
     padding: "8px 10px",
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "#fafbfc",
     border: "1px solid rgba(0,0,0,0.15)",
     fontSize: "0.85rem",
@@ -708,7 +691,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "6px 10px",
     fontSize: "0.8rem",
     fontFamily: theme.typography.body1.fontFamily,
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "#fafbfc",
     border: "1px solid rgba(0,0,0,0.15)",
     "&:focus": { padding: "5px 9px" },
@@ -726,20 +709,20 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minWidth: 0,
     minHeight: 40,
-    borderRadius: 4,
-    border: "2px solid rgba(0,0,0,0.15)",
+    borderRadius: 8,
+    border: "1px solid rgba(0,0,0,0.15)",
     backgroundColor: "#fff",
     fontFamily: theme.typography.body1.fontFamily,
     transition: "border-color 0.2s ease, box-shadow 0.2s ease",
     boxSizing: "border-box",
     "&:focus-within": {
       borderColor: theme.palette.primary.main,
-      borderWidth: 2,
+      borderWidth: 1,
       boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
     },
     "&$planSwitcherRootOpen": {
       borderColor: theme.palette.primary.main,
-      borderWidth: 2,
+      borderWidth: 1,
       boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
     },
   },
@@ -751,7 +734,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(0, 1, 0, 1.25),
     border: "none",
-    borderRadius: 4,
+    borderRadius: 8,
     background: "transparent",
     cursor: "pointer",
     fontFamily: theme.typography.body1.fontFamily,
@@ -768,7 +751,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 4,
     maxHeight: 280,
     backgroundColor: "#fff",
-    borderRadius: 4,
+    borderRadius: 8,
     boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
     border: "1px solid rgba(0,0,0,0.08)",
     zIndex: 1300,
@@ -787,7 +770,7 @@ const useStyles = makeStyles((theme) => ({
   planDropdownSearch: {
     flex: 1,
     border: "1px solid rgba(0,0,0,0.15)",
-    borderRadius: 4,
+    borderRadius: 8,
     padding: "8px 10px 8px 36px",
     fontSize: "0.875rem",
     fontFamily: theme.typography.body1.fontFamily,
@@ -812,7 +795,7 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     width: "100%",
     padding: theme.spacing(0.75, 1),
-    borderRadius: 4,
+    borderRadius: 8,
     cursor: "pointer",
     fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.875rem",
@@ -824,9 +807,9 @@ const useStyles = makeStyles((theme) => ({
   },
   planSummaryBox: {
     padding: theme.spacing(1),
-    borderRadius: 4,
+    borderRadius: 8,
     marginBottom: theme.spacing(1),
-    border: "2px solid transparent",
+    border: "1px solid transparent",
     transition: "all 0.2s ease",
     backgroundColor: "rgba(0,0,0,0.02)",
   },
@@ -834,7 +817,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
     alignItems: "center",
     padding: "3px 8px",
-    borderRadius: 4,
+    borderRadius: 8,
     color: "#fff",
     fontWeight: 600,
     fontSize: "0.7rem",
@@ -882,7 +865,7 @@ const useStyles = makeStyles((theme) => ({
   },
   receiptBox: {
     border: "1px solid rgba(0,0,0,0.12)",
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "#fff",
     overflow: "hidden",
   },
@@ -942,7 +925,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     marginTop: theme.spacing(2),
     padding: theme.spacing(1.25, 2),
-    borderRadius: 4,
+    borderRadius: 8,
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     textTransform: "none",
@@ -964,7 +947,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     backgroundColor: "rgba(0,0,0,0.02)",
-    borderRadius: 4,
+    borderRadius: 8,
   },
   benefitsList: {
     listStyle: "none",
@@ -985,7 +968,7 @@ const useStyles = makeStyles((theme) => ({
   paymentDetailsBox: {
     marginTop: theme.spacing(1),
     padding: theme.spacing(1.25),
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "rgba(0,0,0,0.02)",
     border: "1px solid rgba(0,0,0,0.08)",
   },
@@ -1001,7 +984,7 @@ const useStyles = makeStyles((theme) => ({
   qrBox: {
     marginTop: theme.spacing(1.5),
     padding: theme.spacing(2),
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: "#fff",
     border: "1px solid rgba(0,0,0,0.08)",
     textAlign: "center",
@@ -1039,7 +1022,7 @@ const useStyles = makeStyles((theme) => ({
   },
   qrModal: {
     backgroundColor: "#fff",
-    borderRadius: 4,
+    borderRadius: 8,
     padding: theme.spacing(3),
     maxWidth: 360,
     width: "100%",
@@ -1091,6 +1074,7 @@ export default function Checkout() {
     nameOnCard: "",
     gcashNumber: "",
     mayaContact: "",
+    qrphContact: "",
   });
   const [errors, setErrors] = useState({});
   // eslint-disable-next-line
@@ -1315,14 +1299,28 @@ export default function Checkout() {
 
   const formatPrice = (amount) => `₱${amount.toLocaleString("en-PH")}/month`;
 
+  const fromResult = location.state?.fromResult === true && location.state?.resultState != null;
+  const backToResultState = location.state?.resultState;
+
   return (
     <Box className={classes.root}>
       <Container maxWidth="lg" className={classes.container}>
         <Box className={classes.topBar}>
-          <RouterLink to="/pricing" className={classes.backLink}>
-            <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
-            <span>Back </span>
-          </RouterLink>
+          {fromResult ? (
+            <RouterLink
+              to="/result"
+              state={backToResultState}
+              className={classes.backLink}
+            >
+              <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
+              <span>Back </span>
+            </RouterLink>
+          ) : (
+        <RouterLink to="/pricing" className={classes.backLink}>
+          <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
+              <span>Back </span>
+        </RouterLink>
+          )}
         </Box>
 
         <Box className={classes.header}>
@@ -1386,21 +1384,19 @@ export default function Checkout() {
                 </Box>
                 <Box className={classes.fieldRow}>
                   <Box className={classes.fieldWrap}>
-                    <Typography className={classes.fieldLabel}>
-                      Company Name
-                    </Typography>
+                    <Typography className={classes.fieldLabel}>Company Name</Typography>
                     <TextField
                       className={classes.field}
                       fullWidth
                       variant="outlined"
                       size="small"
-                      placeholder="e.g. Acme Inc."
-                      value={form.companyName}
-                      onChange={handleChange("companyName")}
-                      onBlur={handleBlur("companyName")}
-                      error={!!errors.companyName}
-                      helperText={errors.companyName}
-                      required
+                  placeholder="e.g. Acme Inc."
+                  value={form.companyName}
+                  onChange={handleChange("companyName")}
+                  onBlur={handleBlur("companyName")}
+                  error={!!errors.companyName}
+                  helperText={errors.companyName}
+                  required
                     />
                   </Box>
                   <Box className={classes.fieldWrap}>
@@ -1420,42 +1416,32 @@ export default function Checkout() {
                           aria-label="Country code"
                         >
                           {(() => {
-                            const current = COUNTRY_CODES.find(
-                              (c) => c.code === form.phoneCountryCode,
-                            );
+                            const current = COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode);
                             return (
                               <>
-                                <img
-                                  src={`${FLAG_CDN}/${current ? current.iso : "ph"}.png`}
-                                  alt=""
-                                  className={classes.phoneFlag}
-                                  aria-hidden
-                                />
+                        <img
+                          src={`${FLAG_CDN}/${current ? current.iso : "ph"}.png`}
+                          alt=""
+                          className={classes.phoneFlag}
+                          aria-hidden
+                        />
                                 <span>{current ? current.code : "+63"}</span>
                                 <ArrowDropDown
                                   style={{ fontSize: 20, marginLeft: "auto" }}
                                 />
                               </>
-                            );
-                          })()}
+                    );
+                  })()}
                         </button>
                         <Box className={classes.phoneNumberInputWrap}>
                           <input
                             type="tel"
                             className={classes.phoneNumberInput}
-                            placeholder={
-                              form.phoneCountryCode === "+63"
-                                ? "912 345 6789"
-                                : "Enter number"
-                            }
+                            placeholder={form.phoneCountryCode === "+63" ? "912 345 6789" : "Enter number"}
                             value={form.phone}
                             onChange={handlePhoneChange}
                             onBlur={handleBlur("phone")}
-                            maxLength={
-                              COUNTRY_CODES.find(
-                                (c) => c.code === form.phoneCountryCode,
-                              )?.maxLength ?? 11
-                            }
+                            maxLength={COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode)?.maxLength ?? 11}
                             inputMode="numeric"
                             aria-label="Phone number"
                           />
@@ -1522,7 +1508,7 @@ export default function Checkout() {
                                 </span>
                               </div>
                             ))}
-                          </Box>
+                </Box>
                         </Box>
                       )}
                       {errors.phone && (
@@ -1535,33 +1521,31 @@ export default function Checkout() {
                           }}
                         >
                           {errors.phone}
-                        </Typography>
+                </Typography>
                       )}
                     </Box>
                   </Box>
                 </Box>
 
                 <Box className={classes.fieldWrap}>
-                  <Typography className={classes.fieldLabel}>
-                    Billing Address
-                  </Typography>
+                  <Typography className={classes.fieldLabel}>Billing Address</Typography>
                   <TextField
                     className={classes.field}
                     fullWidth
                     variant="outlined"
                     size="small"
-                    placeholder="Street, Barangay, City, Province, ZIP Code"
-                    multiline
+                  placeholder="Street, Barangay, City, Province, ZIP Code"
+                  multiline
                     minRows={2}
                     maxRows={4}
-                    value={form.billingAddress}
-                    onChange={handleChange("billingAddress")}
-                    onBlur={handleBlur("billingAddress")}
-                    inputProps={{
-                      maxLength: 500,
-                      autoComplete: "billing street-address",
-                      "aria-describedby": "billing-address-helper",
-                    }}
+                  value={form.billingAddress}
+                  onChange={handleChange("billingAddress")}
+                  onBlur={handleBlur("billingAddress")}
+                  inputProps={{
+                    maxLength: 500,
+                    autoComplete: "billing street-address",
+                    "aria-describedby": "billing-address-helper",
+                  }}
                   />
                 </Box>
                 <Box className={classes.locationButtonWrap}>
@@ -1610,11 +1594,7 @@ export default function Checkout() {
                 >
                   Payment Method
                 </label>
-                <Box
-                  className={classes.paymentMethodRow}
-                  role="group"
-                  aria-labelledby="payment-method-label"
-                >
+                <Box className={classes.paymentMethodRow} role="group" aria-labelledby="payment-method-label">
                   {PAYMENT_METHODS.map((pm) => (
                     <button
                       key={pm.value}
@@ -1642,9 +1622,9 @@ export default function Checkout() {
                       ) : (
                         <Payment className={classes.paymentMethodIcon} />
                       )}
-                      {pm.label}
+                        {pm.label}
                     </button>
-                  ))}
+                    ))}
                 </Box>
 
                 {form.paymentMethod === "card" && (
@@ -1912,20 +1892,19 @@ export default function Checkout() {
                   >
                     <button
                       type="button"
-                      id="change-plan"
+                    id="change-plan"
                       className={classes.planSwitcherTrigger}
                       onClick={() => setPlanDropdownOpen((o) => !o)}
                       aria-expanded={planDropdownOpen}
                       aria-haspopup="listbox"
                       aria-label="Change plan"
                     >
-                      <span>
-                        {PLAN_OPTIONS.find((o) => o.key === planKey)?.label ??
-                          "Starter — ₱2,999 + ₱79/employee/mo"}
-                      </span>
+                    <span>
+                      {PLAN_OPTIONS.find((o) => o.key === planKey)?.label ?? "Starter — ₱2,999 + ₱79/employee/mo"}
+                    </span>
                       <ArrowDropDown style={{ fontSize: 20, flexShrink: 0 }} />
                     </button>
-                  </Box>
+                </Box>
                   {planDropdownOpen && (
                     <Box
                       className={classes.planDropdown}
@@ -2019,8 +1998,7 @@ export default function Checkout() {
                         Total due today (base)
                       </span>
                       <span className={classes.totalAmount}>
-                        ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱
-                        {plan.perEmployee}/employee
+                        ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱{plan.perEmployee}/employee
                       </span>
                     </Box>
 
@@ -2076,7 +2054,7 @@ export default function Checkout() {
                   Secure checkout · Your data is protected
                 </Box>
               </Box>
-            </Box>
+          </Box>
           </Paper>
         </form>
 

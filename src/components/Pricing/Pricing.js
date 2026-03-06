@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontFamily: theme.typography.fontFamily,
-    fontSize: "1.75rem",
+    fontSize: "2rem",
     fontWeight: 700,
     color: "#0f172a",
     letterSpacing: "-0.02em",
