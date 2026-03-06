@@ -231,7 +231,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
     opacity: 0.6,
   },
-  stepDotActive: { opacity: 1, transform: "scale(1.2)", boxShadow: `0 0 0 2px ${theme.palette.primary.main}20` },
+  stepDotActive: {
+    opacity: 1,
+    transform: "scale(1.2)",
+    boxShadow: `0 0 0 2px ${theme.palette.primary.main}20`,
+  },
   "@keyframes fadeSlide": {
     from: { opacity: 0, transform: "translateY(-8px)" },
     to: { opacity: 1, transform: "translateY(0)" },
@@ -266,7 +270,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1.5),
     borderRight: "none",
     minWidth: 0,
-    [theme.breakpoints.down("md")]: { borderRight: "none", borderBottom: "1px solid rgba(0,0,0,0.06)" },
+    [theme.breakpoints.down("md")]: {
+      borderRight: "none",
+      borderBottom: "1px solid rgba(0,0,0,0.06)",
+    },
   },
   unifiedSummary: {
     padding: theme.spacing(1.5),
@@ -282,7 +289,10 @@ const useStyles = makeStyles((theme) => ({
     animation: "$cardIn 0.5s ease-out 0.1s both",
     "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.08)" },
   },
-  billingCardTop: { height: 3, background: `linear-gradient(90deg, ${theme.palette.primary.main}, #ff9f43)` },
+  billingCardTop: {
+    height: 3,
+    background: `linear-gradient(90deg, ${theme.palette.primary.main}, #ff9f43)`,
+  },
   billingCardContent: { padding: theme.spacing(1.5) },
   sectionTitle: {
     display: "flex",
@@ -374,7 +384,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
-    "& svg": { fontSize: 12, color: theme.palette.text.secondary, flexShrink: 0 },
+    "& svg": {
+      fontSize: 12,
+      color: theme.palette.text.secondary,
+      flexShrink: 0,
+    },
   },
   paymentMethodLabel: {
     fontFamily: theme.typography.body1.fontFamily,
@@ -475,7 +489,10 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.08)" },
     [theme.breakpoints.down("md")]: { position: "static" },
   },
-  summaryCardTop: { height: 3, background: "linear-gradient(90deg, #64748b, #94a3b8)" },
+  summaryCardTop: {
+    height: 3,
+    background: "linear-gradient(90deg, #64748b, #94a3b8)",
+  },
   summaryContent: { padding: theme.spacing(1.25) },
   summaryTitle: {
     display: "flex",
@@ -644,7 +661,10 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
     minHeight: 40,
     transition: "border-color 0.2s ease",
-    "&:focus-within": { borderColor: theme.palette.primary.main, borderWidth: 2 },
+    "&:focus-within": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+    },
   },
   phoneCountrySelect: {
     border: "none",
@@ -946,7 +966,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(0,0,0,0.02)",
     borderRadius: 4,
   },
-  benefitsList: { listStyle: "none", padding: 0, margin: 0, marginTop: theme.spacing(0.75) },
+  benefitsList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    marginTop: theme.spacing(0.75),
+  },
   benefitItem: {
     display: "flex",
     alignItems: "center",
@@ -1050,8 +1075,9 @@ export default function Checkout() {
   const plan = PLANS[planKey];
 
   const [form, setForm] = useState({
-    fullName: "",
+    recipientName: "",
     workEmail: "",
+    fullName: "",
     companyName: "",
     phone: "",
     phoneCountryCode: "+63",
@@ -1095,7 +1121,10 @@ export default function Checkout() {
   useEffect(() => {
     if (!planDropdownOpen) return;
     const handleClickOutside = (e) => {
-      if (planDropdownRef.current && !planDropdownRef.current.contains(e.target))
+      if (
+        planDropdownRef.current &&
+        !planDropdownRef.current.contains(e.target)
+      )
         setPlanDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -1188,6 +1217,11 @@ export default function Checkout() {
 
   const validate = () => {
     const next = {};
+    if (!form.recipientName.trim())
+      next.recipientName = "Please enter recipient name";
+    if (!form.workEmail.trim()) next.workEmail = "Please enter email";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.workEmail.trim()))
+      next.workEmail = "Please enter a valid email address";
     if (!form.companyName.trim())
       next.companyName = "Please enter your company name";
     if (form.paymentMethod === "card") {
@@ -1204,7 +1238,8 @@ export default function Checkout() {
       if (!paymentDetails.gcashNumber?.trim())
         next.payment_gcashNumber = "GCash mobile number is required";
       else if (!/^09\d{9}$/.test(paymentDetails.gcashNumber.replace(/\s/g, "")))
-        next.payment_gcashNumber = "Enter a valid 11-digit mobile number (09XX XXX XXXX)";
+        next.payment_gcashNumber =
+          "Enter a valid 11-digit mobile number (09XX XXX XXXX)";
     }
     if (form.paymentMethod === "paymaya") {
       if (!paymentDetails.mayaContact?.trim())
@@ -1264,15 +1299,14 @@ export default function Checkout() {
 
   const handleQrDone = () => {
     if (qrStepReceiptState) {
-      navigate(
-        `/payment-complete?ref=${qrStepReceiptState.receiptId}`,
-        { replace: true }
-      );
+      navigate(`/payment-complete?ref=${qrStepReceiptState.receiptId}`, {
+        replace: true,
+      });
       setShowQrStep(false);
       setQrStepReceiptState(null);
     }
   };
-
+  // eslint-disable-next-line
   const handlePlanChange = (e) => {
     const newPlan = e?.target?.value;
     if (newPlan)
@@ -1313,7 +1347,48 @@ export default function Checkout() {
                 </Typography>
                 <Box className={classes.fieldRow}>
                   <Box className={classes.fieldWrap}>
-                    <Typography className={classes.fieldLabel}>Company Name</Typography>
+                    <Typography className={classes.fieldLabel}>
+                      Recipient name
+                    </Typography>
+                    <TextField
+                      className={classes.field}
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      placeholder="e.g. Juan Dela Cruz"
+                      value={form.recipientName}
+                      onChange={handleChange("recipientName")}
+                      onBlur={handleBlur("recipientName")}
+                      error={!!errors.recipientName}
+                      helperText={errors.recipientName}
+                      required
+                    />
+                  </Box>
+                  <Box className={classes.fieldWrap}>
+                    <Typography className={classes.fieldLabel}>
+                      Email
+                    </Typography>
+                    <TextField
+                      className={classes.field}
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      type="email"
+                      placeholder="e.g. you@company.com"
+                      value={form.workEmail}
+                      onChange={handleChange("workEmail")}
+                      onBlur={handleBlur("workEmail")}
+                      error={!!errors.workEmail}
+                      helperText={errors.workEmail}
+                      required
+                    />
+                  </Box>
+                </Box>
+                <Box className={classes.fieldRow}>
+                  <Box className={classes.fieldWrap}>
+                    <Typography className={classes.fieldLabel}>
+                      Company Name
+                    </Typography>
                     <TextField
                       className={classes.field}
                       fullWidth
@@ -1329,7 +1404,9 @@ export default function Checkout() {
                     />
                   </Box>
                   <Box className={classes.fieldWrap}>
-                    <Typography className={classes.fieldLabel}>Phone number</Typography>
+                    <Typography className={classes.fieldLabel}>
+                      Phone number
+                    </Typography>
                     <Box ref={phoneRef} className={classes.phoneNumberWrapper}>
                       <Box
                         className={`${classes.phoneNumberRoot} ${errors.phone ? classes.phoneNumberError : ""} ${phoneDropdownOpen ? classes.phoneNumberRootOpen : ""}`}
@@ -1343,7 +1420,9 @@ export default function Checkout() {
                           aria-label="Country code"
                         >
                           {(() => {
-                            const current = COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode);
+                            const current = COUNTRY_CODES.find(
+                              (c) => c.code === form.phoneCountryCode,
+                            );
                             return (
                               <>
                                 <img
@@ -1353,7 +1432,9 @@ export default function Checkout() {
                                   aria-hidden
                                 />
                                 <span>{current ? current.code : "+63"}</span>
-                                <ArrowDropDown style={{ fontSize: 20, marginLeft: "auto" }} />
+                                <ArrowDropDown
+                                  style={{ fontSize: 20, marginLeft: "auto" }}
+                                />
                               </>
                             );
                           })()}
@@ -1362,11 +1443,19 @@ export default function Checkout() {
                           <input
                             type="tel"
                             className={classes.phoneNumberInput}
-                            placeholder={form.phoneCountryCode === "+63" ? "912 345 6789" : "Enter number"}
+                            placeholder={
+                              form.phoneCountryCode === "+63"
+                                ? "912 345 6789"
+                                : "Enter number"
+                            }
                             value={form.phone}
                             onChange={handlePhoneChange}
                             onBlur={handleBlur("phone")}
-                            maxLength={COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode)?.maxLength ?? 11}
+                            maxLength={
+                              COUNTRY_CODES.find(
+                                (c) => c.code === form.phoneCountryCode,
+                              )?.maxLength ?? 11
+                            }
                             inputMode="numeric"
                             aria-label="Phone number"
                           />
@@ -1375,21 +1464,30 @@ export default function Checkout() {
                       {phoneDropdownOpen && (
                         <Box className={classes.phoneDropdown}>
                           <Box className={classes.phoneDropdownSearchWrap}>
-                            <SearchIcon className={classes.phoneDropdownSearchIcon} />
+                            <SearchIcon
+                              className={classes.phoneDropdownSearchIcon}
+                            />
                             <input
                               type="text"
                               className={classes.phoneDropdownSearch}
                               placeholder="Search country"
                               value={phoneCountrySearch}
-                              onChange={(e) => setPhoneCountrySearch(e.target.value)}
+                              onChange={(e) =>
+                                setPhoneCountrySearch(e.target.value)
+                              }
                               autoFocus
                             />
                           </Box>
-                          <Box className={classes.phoneDropdownList} role="listbox">
+                          <Box
+                            className={classes.phoneDropdownList}
+                            role="listbox"
+                          >
                             {COUNTRY_CODES.filter(
                               (c) =>
                                 !phoneCountrySearch ||
-                                c.country.toLowerCase().includes(phoneCountrySearch.toLowerCase()) ||
+                                c.country
+                                  .toLowerCase()
+                                  .includes(phoneCountrySearch.toLowerCase()) ||
                                 c.code.includes(phoneCountrySearch),
                             ).map((c) => (
                               <div
@@ -1399,9 +1497,14 @@ export default function Checkout() {
                                 className={classes.phoneDropdownItem}
                                 onClick={() => {
                                   setForm((prev) => {
-                                    const next = { ...prev, phoneCountryCode: c.code };
+                                    const next = {
+                                      ...prev,
+                                      phoneCountryCode: c.code,
+                                    };
                                     const maxLen = c.maxLength ?? 11;
-                                    next.phone = (prev.phone || "").replace(/\D/g, "").slice(0, maxLen);
+                                    next.phone = (prev.phone || "")
+                                      .replace(/\D/g, "")
+                                      .slice(0, maxLen);
                                     return next;
                                   });
                                   setPhoneDropdownOpen(false);
@@ -1414,14 +1517,23 @@ export default function Checkout() {
                                   className={classes.phoneFlag}
                                   aria-hidden
                                 />
-                                <span>{c.country} ({c.code})</span>
+                                <span>
+                                  {c.country} ({c.code})
+                                </span>
                               </div>
                             ))}
                           </Box>
                         </Box>
                       )}
                       {errors.phone && (
-                        <Typography style={{ fontFamily: "inherit", fontSize: "0.7rem", color: "#d32f2f", marginTop: 4 }}>
+                        <Typography
+                          style={{
+                            fontFamily: "inherit",
+                            fontSize: "0.7rem",
+                            color: "#d32f2f",
+                            marginTop: 4,
+                          }}
+                        >
                           {errors.phone}
                         </Typography>
                       )}
@@ -1430,7 +1542,9 @@ export default function Checkout() {
                 </Box>
 
                 <Box className={classes.fieldWrap}>
-                  <Typography className={classes.fieldLabel}>Billing Address</Typography>
+                  <Typography className={classes.fieldLabel}>
+                    Billing Address
+                  </Typography>
                   <TextField
                     className={classes.field}
                     fullWidth
@@ -1464,12 +1578,19 @@ export default function Checkout() {
                     onClick={getBillingAddressFromGPS}
                     disabled={locationLoading}
                     aria-label="Use my current location for billing address"
-                    style={{ minWidth: 0, padding: "4px 8px", fontSize: "0.75rem" }}
+                    style={{
+                      minWidth: 0,
+                      padding: "4px 8px",
+                      fontSize: "0.75rem",
+                    }}
                   >
                     Use my location
                   </Button>
                   {locationError && (
-                    <Typography className={classes.locationError} component="span">
+                    <Typography
+                      className={classes.locationError}
+                      component="span"
+                    >
                       {locationError}
                     </Typography>
                   )}
@@ -1479,27 +1600,43 @@ export default function Checkout() {
                   className={`${classes.fieldHelper} ${classes.fieldHelperSecure}`}
                 >
                   <Lock fontSize="inherit" />
-                  Optional. For invoices and tax records. ({form.billingAddress.length}/500)
+                  Optional. For invoices and tax records. (
+                  {form.billingAddress.length}/500)
                 </Typography>
 
-                <label id="payment-method-label" className={classes.paymentMethodLabel}>
+                <label
+                  id="payment-method-label"
+                  className={classes.paymentMethodLabel}
+                >
                   Payment Method
                 </label>
-                <Box className={classes.paymentMethodRow} role="group" aria-labelledby="payment-method-label">
+                <Box
+                  className={classes.paymentMethodRow}
+                  role="group"
+                  aria-labelledby="payment-method-label"
+                >
                   {PAYMENT_METHODS.map((pm) => (
                     <button
                       key={pm.value}
                       type="button"
                       className={`${classes.paymentMethodBtn} ${form.paymentMethod === pm.value ? classes.paymentMethodBtnActive : ""}`}
                       onClick={() => {
-                        setForm((prev) => ({ ...prev, paymentMethod: pm.value }));
-                        if (errors.paymentMethod) setErrors((prev) => ({ ...prev, paymentMethod: "" }));
+                        setForm((prev) => ({
+                          ...prev,
+                          paymentMethod: pm.value,
+                        }));
+                        if (errors.paymentMethod)
+                          setErrors((prev) => ({ ...prev, paymentMethod: "" }));
                       }}
                       aria-pressed={form.paymentMethod === pm.value}
                       aria-label={pm.label}
                     >
                       {pm.logo ? (
-                        <img src={pm.logo} alt="" className={classes.paymentMethodLogo} />
+                        <img
+                          src={pm.logo}
+                          alt=""
+                          className={classes.paymentMethodLogo}
+                        />
                       ) : pm.icon === "card" ? (
                         <CreditCard className={classes.paymentMethodIcon} />
                       ) : (
@@ -1515,12 +1652,29 @@ export default function Checkout() {
                     <Typography className={classes.paymentDetailsTitle}>
                       Card information
                     </Typography>
-                    <Box style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                      <img src={visaLogo} alt="Visa" style={{ height: 20, objectFit: "contain" }} />
-                      <img src={mastercardLogo} alt="Mastercard" style={{ height: 20, objectFit: "contain" }} />
+                    <Box
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <img
+                        src={visaLogo}
+                        alt="Visa"
+                        style={{ height: 20, objectFit: "contain" }}
+                      />
+                      <img
+                        src={mastercardLogo}
+                        alt="Mastercard"
+                        style={{ height: 20, objectFit: "contain" }}
+                      />
                     </Box>
                     <Box className={classes.fieldWrap}>
-                      <Typography className={classes.fieldLabel}>Card number</Typography>
+                      <Typography className={classes.fieldLabel}>
+                        Card number
+                      </Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
@@ -1534,8 +1688,13 @@ export default function Checkout() {
                       />
                     </Box>
                     <Box style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <Box className={classes.fieldWrap} style={{ flex: "1 1 90px" }}>
-                        <Typography className={classes.fieldLabel}>Expiry (MM/YY)</Typography>
+                      <Box
+                        className={classes.fieldWrap}
+                        style={{ flex: "1 1 90px" }}
+                      >
+                        <Typography className={classes.fieldLabel}>
+                          Expiry (MM/YY)
+                        </Typography>
                         <TextField
                           className={classes.field}
                           fullWidth
@@ -1548,8 +1707,13 @@ export default function Checkout() {
                           helperText={errors.payment_cardExpiry}
                         />
                       </Box>
-                      <Box className={classes.fieldWrap} style={{ flex: "1 1 80px" }}>
-                        <Typography className={classes.fieldLabel}>CVV</Typography>
+                      <Box
+                        className={classes.fieldWrap}
+                        style={{ flex: "1 1 80px" }}
+                      >
+                        <Typography className={classes.fieldLabel}>
+                          CVV
+                        </Typography>
                         <TextField
                           className={classes.field}
                           fullWidth
@@ -1564,7 +1728,9 @@ export default function Checkout() {
                       </Box>
                     </Box>
                     <Box className={classes.fieldWrap}>
-                      <Typography className={classes.fieldLabel}>Name on card</Typography>
+                      <Typography className={classes.fieldLabel}>
+                        Name on card
+                      </Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
@@ -1583,14 +1749,30 @@ export default function Checkout() {
                 {form.paymentMethod === "gcash" && (
                   <Box className={classes.paymentDetailsBox}>
                     <Box className={classes.paymentMethodDetails}>
-                      <img src={PAYMENT_METHODS.find((p) => p.value === "gcash").logo} alt="" className={classes.paymentMethodDetailsLogo} />
-                      <Typography className={classes.paymentDetailsTitle}>Pay with GCash</Typography>
+                      <img
+                        src={
+                          PAYMENT_METHODS.find((p) => p.value === "gcash").logo
+                        }
+                        alt=""
+                        className={classes.paymentMethodDetailsLogo}
+                      />
+                      <Typography className={classes.paymentDetailsTitle}>
+                        Pay with GCash
+                      </Typography>
                     </Box>
-                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
-                      Enter the mobile number registered with your GCash account. We'll send a payment link to complete the transaction.
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      style={{ marginBottom: 12 }}
+                    >
+                      Enter the mobile number registered with your GCash
+                      account. We'll send a payment link to complete the
+                      transaction.
                     </Typography>
                     <Box className={classes.fieldWrap}>
-                      <Typography className={classes.fieldLabel}>GCash-registered mobile number</Typography>
+                      <Typography className={classes.fieldLabel}>
+                        GCash-registered mobile number
+                      </Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
@@ -1610,14 +1792,31 @@ export default function Checkout() {
                 {form.paymentMethod === "paymaya" && (
                   <Box className={classes.paymentDetailsBox}>
                     <Box className={classes.paymentMethodDetails}>
-                      <img src={PAYMENT_METHODS.find((p) => p.value === "paymaya").logo} alt="" className={classes.paymentMethodDetailsLogo} />
-                      <Typography className={classes.paymentDetailsTitle}>Pay with Maya</Typography>
+                      <img
+                        src={
+                          PAYMENT_METHODS.find((p) => p.value === "paymaya")
+                            .logo
+                        }
+                        alt=""
+                        className={classes.paymentMethodDetailsLogo}
+                      />
+                      <Typography className={classes.paymentDetailsTitle}>
+                        Pay with Maya
+                      </Typography>
                     </Box>
-                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
-                      Enter the mobile number or email linked to your Maya account. You'll receive instructions to complete the payment.
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      style={{ marginBottom: 12 }}
+                    >
+                      Enter the mobile number or email linked to your Maya
+                      account. You'll receive instructions to complete the
+                      payment.
                     </Typography>
                     <Box className={classes.fieldWrap}>
-                      <Typography className={classes.fieldLabel}>Maya mobile or email</Typography>
+                      <Typography className={classes.fieldLabel}>
+                        Maya mobile or email
+                      </Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
@@ -1636,11 +1835,25 @@ export default function Checkout() {
                 {form.paymentMethod === "qrph" && (
                   <Box className={classes.paymentDetailsBox}>
                     <Box className={classes.paymentMethodDetails}>
-                      <img src={PAYMENT_METHODS.find((p) => p.value === "qrph").logo} alt="" className={classes.paymentMethodDetailsLogo} />
-                      <Typography className={classes.paymentDetailsTitle}>Pay via InstaPay / QR PH</Typography>
+                      <img
+                        src={
+                          PAYMENT_METHODS.find((p) => p.value === "qrph").logo
+                        }
+                        alt=""
+                        className={classes.paymentMethodDetailsLogo}
+                      />
+                      <Typography className={classes.paymentDetailsTitle}>
+                        Pay via InstaPay / QR PH
+                      </Typography>
                     </Box>
-                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
-                      After you confirm, we'll show a QR code and bank details. Scan with your bank app or e-wallet (GCash, Maya, or any InstaPay/QR PH–enabled app) to complete payment.
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      style={{ marginBottom: 12 }}
+                    >
+                      After you confirm, we'll show a QR code and bank details.
+                      Scan with your bank app or e-wallet (GCash, Maya, or any
+                      InstaPay/QR PH–enabled app) to complete payment.
                     </Typography>
                     <Box className={classes.fieldWrap}>
                       <Typography className={classes.fieldLabel}>
@@ -1690,7 +1903,10 @@ export default function Checkout() {
                 <Typography className={classes.planSwitcherLabel}>
                   Selected plan — change anytime below
                 </Typography>
-                <Box ref={planDropdownRef} className={classes.planSwitcherWrapper}>
+                <Box
+                  ref={planDropdownRef}
+                  className={classes.planSwitcherWrapper}
+                >
                   <Box
                     className={`${classes.planSwitcherRoot} ${planDropdownOpen ? classes.planSwitcherRootOpen : ""}`}
                   >
@@ -1703,22 +1919,31 @@ export default function Checkout() {
                       aria-haspopup="listbox"
                       aria-label="Change plan"
                     >
-                    <span>
-                      {PLAN_OPTIONS.find((o) => o.key === planKey)?.label ?? "Starter — ₱2,999 + ₱79/employee/mo"}
-                    </span>
+                      <span>
+                        {PLAN_OPTIONS.find((o) => o.key === planKey)?.label ??
+                          "Starter — ₱2,999 + ₱79/employee/mo"}
+                      </span>
                       <ArrowDropDown style={{ fontSize: 20, flexShrink: 0 }} />
                     </button>
                   </Box>
                   {planDropdownOpen && (
-                    <Box className={classes.planDropdown} role="listbox" aria-labelledby="change-plan">
+                    <Box
+                      className={classes.planDropdown}
+                      role="listbox"
+                      aria-labelledby="change-plan"
+                    >
                       <Box className={classes.planDropdownSearchWrap}>
-                        <SearchIcon className={classes.planDropdownSearchIcon} />
+                        <SearchIcon
+                          className={classes.planDropdownSearchIcon}
+                        />
                         <input
                           type="text"
                           className={classes.planDropdownSearch}
                           placeholder="Search plan"
                           value={planDropdownSearch}
-                          onChange={(e) => setPlanDropdownSearch(e.target.value)}
+                          onChange={(e) =>
+                            setPlanDropdownSearch(e.target.value)
+                          }
                           autoFocus
                         />
                       </Box>
@@ -1726,8 +1951,12 @@ export default function Checkout() {
                         {PLAN_OPTIONS.filter(
                           (p) =>
                             !planDropdownSearch ||
-                            p.label.toLowerCase().includes(planDropdownSearch.toLowerCase()) ||
-                            p.key.toLowerCase().includes(planDropdownSearch.toLowerCase()),
+                            p.label
+                              .toLowerCase()
+                              .includes(planDropdownSearch.toLowerCase()) ||
+                            p.key
+                              .toLowerCase()
+                              .includes(planDropdownSearch.toLowerCase()),
                         ).map((p) => (
                           <button
                             key={p.key}
@@ -1736,7 +1965,10 @@ export default function Checkout() {
                             aria-selected={planKey === p.key}
                             className={classes.planDropdownItem}
                             onClick={() => {
-                              navigate({ pathname: "/checkout", search: `?plan=${p.key}` });
+                              navigate({
+                                pathname: "/checkout",
+                                search: `?plan=${p.key}`,
+                              });
                               setPlanDropdownOpen(false);
                               setPlanDropdownSearch("");
                             }}
@@ -1751,34 +1983,53 @@ export default function Checkout() {
 
                 <Box className={classes.receiptBox}>
                   <Box className={classes.receiptHeader}>
-                    <Typography className={classes.receiptTitle}>UlapPayroll</Typography>
-                    <Typography className={classes.receiptSubtitle}>Subscription summary</Typography>
+                    <Typography className={classes.receiptTitle}>
+                      UlapPayroll
+                    </Typography>
+                    <Typography className={classes.receiptSubtitle}>
+                      Subscription summary
+                    </Typography>
                   </Box>
                   <Box className={classes.receiptBody}>
                     <Box className={classes.receiptRow}>
                       <span className={classes.receiptRowLabel}>Plan</span>
-                      <span className={classes.receiptRowValue}>{plan.label}</span>
+                      <span className={classes.receiptRowValue}>
+                        {plan.label}
+                      </span>
                     </Box>
                     <Box className={classes.receiptRow}>
-                      <span className={classes.receiptRowLabel}>Base (monthly)</span>
-                      <span className={classes.receiptRowValue}>₱{plan.basePrice.toLocaleString("en-PH")}</span>
+                      <span className={classes.receiptRowLabel}>
+                        Base (monthly)
+                      </span>
+                      <span className={classes.receiptRowValue}>
+                        ₱{plan.basePrice.toLocaleString("en-PH")}
+                      </span>
                     </Box>
                     <Box className={classes.receiptRow}>
-                      <span className={classes.receiptRowLabel}>Per employee / mo</span>
-                      <span className={classes.receiptRowValue}>₱{plan.perEmployee}</span>
+                      <span className={classes.receiptRowLabel}>
+                        Per employee / mo
+                      </span>
+                      <span className={classes.receiptRowValue}>
+                        ₱{plan.perEmployee}
+                      </span>
                     </Box>
                     <Box className={classes.receiptDivider} />
                     <Box className={classes.receiptRow}>
-                      <span className={classes.totalLabel}>Total due today (base)</span>
+                      <span className={classes.totalLabel}>
+                        Total due today (base)
+                      </span>
                       <span className={classes.totalAmount}>
-                        ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱{plan.perEmployee}/employee
+                        ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱
+                        {plan.perEmployee}/employee
                       </span>
                     </Box>
 
                     {plan.features && plan.features.length > 0 && (
                       <>
                         <Box className={classes.receiptDivider} />
-                        <Typography className={classes.receiptSectionTitle}>Included in this plan</Typography>
+                        <Typography className={classes.receiptSectionTitle}>
+                          Included in this plan
+                        </Typography>
                         {plan.features.map((feature, i) => (
                           <Box key={i} className={classes.receiptFeatureItem}>
                             <CheckCircleOutline fontSize="small" />
@@ -1791,7 +2042,9 @@ export default function Checkout() {
                     {plan.benefits && plan.benefits.length > 0 && (
                       <>
                         <Box className={classes.receiptDivider} />
-                        <Typography className={classes.receiptSectionTitle}>Benefits</Typography>
+                        <Typography className={classes.receiptSectionTitle}>
+                          Benefits
+                        </Typography>
                         {plan.benefits.map((benefit, i) => (
                           <Box key={i} className={classes.receiptFeatureItem}>
                             <CheckCircleOutline fontSize="small" />
@@ -1843,8 +2096,8 @@ export default function Checkout() {
                 {form.paymentMethod === "gcash"
                   ? "GCash"
                   : form.paymentMethod === "qrph"
-                  ? "QrPH"
-                  : "Maya"}
+                    ? "QrPH"
+                    : "Maya"}
               </Typography>
               <Typography className={classes.qrModalAmount}>
                 {formatPrice(plan.basePrice)} + ₱{plan.perEmployee}/employee/mo

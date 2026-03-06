@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import UlapBizIcon from "../../images/ulapbiz.png";
 import UlapBizLogo from "../../images/Ulap_Biz.png";
-import MenuIcon from '@material-ui/icons/Menu';
-import CloseIcon from '@material-ui/icons/Close';
+import MenuIcon from "@material-ui/icons/Menu";
+import CloseIcon from "@material-ui/icons/Close";
 
 import {
   AppBar,
@@ -17,14 +17,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 
-const pages = [
-  "Home",
-  "Pricing",
-  "Accounting and Beyond",
-  "Features",
-  "Schedules and Reports",
-  "Contact Us",
-];
+const pages = ["Home", "Pricing", "Contact Us"];
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -62,37 +55,15 @@ const useStyles = makeStyles((theme) => ({
     width: "auto",
     display: "block",
   },
-  activeLink: {
-    color: "#DB6700",
-    fontWeight: 600,
-    borderBottom: "2px solid #FF7704",
-  },
-  signin: {
-    fontSize: ".8rem",
-    border: `1px solid ${theme.palette.primary.main}`,
-    padding: ".5rem 1rem",
-    borderRadius: ".25rem",
-    '&:hover': {
-      backgroundColor: theme.palette.primary.main,
-      color: '#FAFAFA',
-    },
-  },
-  signup: {
-    fontSize: ".8rem",
-    padding: ".5rem 1rem",
-    borderRadius: ".25rem",
-    border: `1px solid ${theme.palette.primary.main}`,
-    backgroundColor: theme.palette.primary.main,
-    color: '#FAFAFA',
-    '&:hover': {
-      backgroundColor: '#FAFAFA',
-      color: theme.palette.primary.main,
-      border: `1px solid ${theme.palette.primary.main}`,
-    },
-  },
+
   navLink: {
     fontWeight: 600,
     transition: "color 0.25s ease",
+  },
+  activeLink: {
+    color: "#FF7704 !important",
+    fontWeight: 700,
+    textShadow: "0 0 12px rgba(255, 119, 4, 0.7), 0 0 24px rgba(255, 119, 4, 0.4)",
   },
 }));
 
@@ -113,7 +84,10 @@ const Navbar = () => {
 
   const isActive = (page) => {
     if (page === "Home") {
-      return location.pathname === "/" && (!location.hash || location.hash === "#hero");
+      return (
+        location.pathname === "/" &&
+        (!location.hash || location.hash === "#hero")
+      );
     }
     return location.pathname === getPathFromPage(page);
   };
@@ -122,47 +96,59 @@ const Navbar = () => {
     <AppBar elevation={2} color="inherit" className={classes.appBar}>
       <Container maxWidth="lg">
         <Toolbar disableGutters className={classes.toolbar}>
-          <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            [theme.breakpoints.up('md')]: {
-              justifyContent: "start",
-              gap: "2rem",
-            },
-            alignItems: "center",
-            width: "100%",
-          }}>
-            <Box className={classes.iconContainer}>
-              <RouterLink to="/" style={{ display: "flex", alignItems: "center", gap: theme.spacing(1) }}>
-                <img src={UlapBizIcon} alt="" className={classes.logoImg} />
-                <img src={UlapBizLogo} alt="UlapBiz" className={classes.logoWordmark} />
-              </RouterLink>
-            </Box>
-            {isXs && <Box sx={{
-              width: "100%",
+          <Box
+            sx={{
               display: "flex",
-              justifyContent: "flex-end",
-            }}>
-              {open ?
-                <CloseIcon color="primary" onClick={() => setOpen(false)} /> :
-                <MenuIcon color="primary" onClick={() => setOpen(true)} />}
-            </Box>}
-            {!isXs &&
-              <Box sx={{
-                display: "flex",
-                gap: "1rem",
-                justifyContent: "space-between",
-                width: "100%",
-                "& :hover": {
-                  color: "#FF7704",
-                }
-              }}>
-                <Box sx={{
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <Box className={classes.iconContainer}>
+              <RouterLink
+                to="/"
+                style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "1rem",
-                }}>
-                  {!isXs && pages.map((page, index) => (
+                  gap: theme.spacing(1),
+                }}
+              >
+                <img src={UlapBizIcon} alt="" className={classes.logoImg} />
+                <img
+                  src={UlapBizLogo}
+                  alt="UlapBiz"
+                  className={classes.logoWordmark}
+                />
+              </RouterLink>
+            </Box>
+            {isXs && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  flex: 1,
+                }}
+              >
+                {open ? (
+                  <CloseIcon color="primary" onClick={() => setOpen(false)} />
+                ) : (
+                  <MenuIcon color="primary" onClick={() => setOpen(true)} />
+                )}
+              </Box>
+            )}
+            {!isXs && (
+              <>
+                <Box sx={{ flex: 1 }} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1.5rem",
+                    "& :hover": {
+                      color: "#FF7704",
+                    },
+                  }}
+                >
+                  {pages.map((page, index) => (
                     <Link
                       key={index}
                       component={RouterLink}
@@ -177,50 +163,24 @@ const Navbar = () => {
                     </Link>
                   ))}
                 </Box>
-                {!isXs &&
-                  <Box sx={{
-                    display: "flex",
-                    gap: "1rem",
-                  }}>
-                    <Link
-                      key="signin"
-                      component={RouterLink}
-                      variant="h6"
-                      to='test'
-                      underline="none"
-                      color="textPrimary"
-                      className={`${classes.signin} ${classes.navLink}`}
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      key="signup"
-                      component={RouterLink}
-                      variant="h6"
-                      to='test'
-                      underline="none"
-                      color="textPrimary"
-                      className={`${classes.signup} ${classes.navLink}`}
-                    >
-                      Sign Up
-                    </Link>
-                  </Box>
-                }
-              </Box>
-            }
+                <Box sx={{ flex: 1 }} />
+              </>
+            )}
           </Box>
         </Toolbar>
         <Collapse in={open}>
-          {isXs &&
-            <Box sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
-              gap: "1rem",
-              marginBottom: "1rem",
-              height: "100vh",
-            }}>
+          {isXs && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+                gap: "1rem",
+                marginBottom: "1rem",
+                height: "100vh",
+              }}
+            >
               {pages.map((page, index) => (
                 <Link
                   key={index}
@@ -240,7 +200,7 @@ const Navbar = () => {
                 key="signin"
                 component={RouterLink}
                 variant="h6"
-                to='test'
+                to="test"
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
@@ -255,7 +215,7 @@ const Navbar = () => {
                 key="signup"
                 component={RouterLink}
                 variant="h6"
-                to='test'
+                to="test"
                 underline="none"
                 color="textPrimary"
                 onClick={() => setOpen(false)}
@@ -267,7 +227,7 @@ const Navbar = () => {
                 Sign Up
               </Link>
             </Box>
-          }
+          )}
         </Collapse>
       </Container>
     </AppBar>

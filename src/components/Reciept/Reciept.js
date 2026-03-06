@@ -160,7 +160,7 @@ export default function Reciept() {
       .finally(() => setDownloading(false));
   };
 
-  const hasData = form.fullName || form.workEmail || plan.label;
+  const hasData = form.recipientName || form.fullName || form.workEmail || plan.label;
 
   if (!hasData) {
     return (
@@ -226,10 +226,10 @@ export default function Reciept() {
           </div>
 
           <div className={classes.sectionTitle}>Billing information</div>
-          {form.fullName && (
+          {(form.recipientName || form.fullName) && (
             <div className={classes.row}>
-              <span className={classes.label}>Name</span>
-              <span className={classes.value}>{form.fullName}</span>
+              <span className={classes.label}>Recipient name</span>
+              <span className={classes.value}>{form.recipientName || form.fullName}</span>
             </div>
           )}
           {form.workEmail && (
