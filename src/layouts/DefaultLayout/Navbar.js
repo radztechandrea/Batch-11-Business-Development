@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: {
       height: "100%",
     },
+    "@media print": {
+      display: "none !important",
+    },
   },
   iconContainer: {
     display: "flex",
@@ -116,7 +119,7 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar elevation={2} color="inherit">
+    <AppBar elevation={2} color="inherit" className={classes.appBar}>
       <Container maxWidth="lg">
         <Toolbar disableGutters className={classes.toolbar}>
           <Box sx={{

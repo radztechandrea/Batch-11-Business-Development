@@ -16,6 +16,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f5f7fa",
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(6),
+    "@media print": {
+      minHeight: "auto",
+      backgroundColor: "#fff",
+      paddingTop: 0,
+      paddingBottom: 0,
+    },
   },
   actions: {
     display: "flex",
@@ -42,6 +48,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
     overflow: "hidden",
     padding: theme.spacing(4),
+    "@media print": {
+      boxShadow: "none",
+      pageBreakInside: "avoid",
+    },
   },
   logo: {
     fontFamily: '"Fira Sans", sans-serif',
@@ -102,6 +112,7 @@ function formatPaymentLabel(value) {
     card: "Credit / Debit Card",
     gcash: "GCash",
     paymaya: "PayMaya",
+    qrph: "QrPH",
   };
   return map[value] || value;
 }

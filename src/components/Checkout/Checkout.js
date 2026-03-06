@@ -76,6 +76,7 @@ const PAYMENT_METHODS = [
   { value: "card", label: "Credit / Debit Card" },
   { value: "gcash", label: "GCash" },
   { value: "paymaya", label: "PayMaya" },
+  { value: "qrph", label: "QrPH" },
 ];
 
 const QR_CODE_BASE = "https://api.qrserver.com/v1/create-qr-code/";
@@ -774,7 +775,9 @@ export default function Checkout() {
     };
 
     const isEwallet =
-      form.paymentMethod === "gcash" || form.paymentMethod === "paymaya";
+      form.paymentMethod === "gcash" ||
+      form.paymentMethod === "paymaya" ||
+      form.paymentMethod === "qrph";
     if (isEwallet) {
       try {
         sessionStorage.setItem(
@@ -797,12 +800,10 @@ export default function Checkout() {
 
   const handleQrDone = () => {
     if (qrStepReceiptState) {
-      try {
-        sessionStorage.removeItem(
-          PENDING_RECEIPT_KEY + qrStepReceiptState.receiptId,
-        );
-      } catch (_) {}
-      navigate("/reciept", { state: qrStepReceiptState });
+      navigate(
+        `/payment-complete?ref=${qrStepReceiptState.receiptId}`,
+        { replace: true }
+      );
       setShowQrStep(false);
       setQrStepReceiptState(null);
     }
@@ -1277,7 +1278,11 @@ export default function Checkout() {
             >
               <Typography className={classes.qrModalTitle}>
                 Scan to pay with{" "}
-                {form.paymentMethod === "gcash" ? "GCash" : "Maya"}
+                {form.paymentMethod === "gcash"
+                  ? "GCash"
+                  : form.paymentMethod === "qrph"
+                  ? "QrPH"
+                  : "Maya"}
               </Typography>
               <Typography className={classes.qrModalAmount}>
                 {formatPrice(plan.basePrice)} + ₱{plan.perEmployee}/employee/mo
@@ -1286,8 +1291,7 @@ export default function Checkout() {
                 className={classes.qrHint}
                 style={{ marginBottom: 16 }}
               >
-                Open your app, scan to pay, then open the link to complete. Or
-                click below when done.
+                Open your app, scan to pay, then click below when done.
               </Typography>
               <img
                 className={classes.qrImage}
@@ -1298,21 +1302,6 @@ export default function Checkout() {
                 )}`}
                 alt="Payment QR Code"
               />
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                style={{ marginTop: 8, marginBottom: 4 }}
-              >
-                Simulate:{" "}
-                <Typography
-                  component="a"
-                  href={`${typeof window !== "undefined" ? window.location.origin : ""}/payment-complete?ref=${qrStepReceiptState.receiptId}`}
-                  color="primary"
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                >
-                  I scanned and paid (open link)
-                </Typography>
-              </Typography>
               <Button
                 variant="contained"
                 color="primary"

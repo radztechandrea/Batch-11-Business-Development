@@ -6,6 +6,9 @@ import { makeStyles } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   outletWrap: {
     animation: "$pageFadeIn 0.35s ease-out forwards",
+    "@media print": {
+      marginTop: "0 !important",
+    },
   },
   "@keyframes pageFadeIn": {
     "0%": {
