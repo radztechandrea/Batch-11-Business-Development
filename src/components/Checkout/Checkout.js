@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
@@ -7,25 +7,29 @@ import {
   Container,
   // eslint-disable-next-line
   IconButton,
-  InputAdornment,
   makeStyles,
   Paper,
   TextField,
   Typography,
-  Chip,
 } from "@material-ui/core";
 import {
   Lock,
   ArrowBack,
   Person,
-  Email,
-  Business,
-  Phone,
-  LocationOn,
   MyLocation,
-  CheckCircle,
+  CheckCircleOutline,
   ShoppingCart,
+  CreditCard,
+  Payment,
+  ArrowDropDown,
+  Search as SearchIcon,
 } from "@material-ui/icons";
+
+import gcashLogo from "../../images/gcash-logo-brandlogos.net_2zwyjdb1l.svg";
+import mayaLogo from "../../images/Maya_logo.svg.png";
+import qrphLogo from "../../images/QR_Ph_Logo.svg";
+import visaLogo from "../../images/Visa_Inc.-Logo.wine.png";
+import mastercardLogo from "../../images/Mastercard-Logo.wine.png";
 
 const PLANS = {
   starter: {
@@ -39,6 +43,18 @@ const PLANS = {
     lightColor: "rgba(34, 197, 94, 0.15)",
     bgColor: "rgba(34, 197, 94, 0.12)",
     description: "Perfect for small teams",
+    features: [
+      "Up to 25 employees",
+      "Basic payroll processing",
+      "SSS, PhilHealth, Pag-IBIG",
+      "Payslip generation",
+      "Monthly reports",
+    ],
+    benefits: [
+      "Instant access after payment",
+      "Cancel anytime",
+      "Email support",
+    ],
   },
   professional: {
     name: "Professional",
@@ -51,6 +67,19 @@ const PLANS = {
     lightColor: "rgba(59, 130, 246, 0.15)",
     bgColor: "rgba(59, 130, 246, 0.12)",
     description: "Best for growing businesses",
+    features: [
+      "Up to 100 employees",
+      "Full payroll + tax compliance",
+      "Leave & attendance",
+      "Custom reports & export",
+      "13th month & year-end",
+      "Priority support",
+    ],
+    benefits: [
+      "Instant access after payment",
+      "Cancel anytime",
+      "Dedicated support",
+    ],
   },
   enterprise: {
     name: "Enterprise",
@@ -63,20 +92,34 @@ const PLANS = {
     lightColor: "rgba(139, 92, 246, 0.15)",
     bgColor: "rgba(139, 92, 246, 0.12)",
     description: "For large organizations",
+    features: [
+      "Unlimited employees",
+      "Everything in Professional",
+      "API & integrations",
+      "Dedicated account manager",
+      "Custom workflows",
+      "SLA guarantee",
+    ],
+    benefits: [
+      "Instant access after payment",
+      "Cancel anytime",
+      "Dedicated support",
+      "Onboarding assistance",
+    ],
   },
 };
 
-const BENEFITS = [
-  "Instant access after payment",
-  "Cancel anytime",
-  "Dedicated support",
+const PAYMENT_METHODS = [
+  { value: "card", label: "Card", icon: "card", logo: null },
+  { value: "gcash", label: "GCash", icon: "wallet", logo: gcashLogo },
+  { value: "paymaya", label: "Maya", icon: "wallet", logo: mayaLogo },
+  { value: "qrph", label: "QrPH", icon: "wallet", logo: qrphLogo },
 ];
 
-const PAYMENT_METHODS = [
-  { value: "card", label: "Credit / Debit Card" },
-  { value: "gcash", label: "GCash" },
-  { value: "paymaya", label: "PayMaya" },
-  { value: "qrph", label: "QrPH" },
+const PLAN_OPTIONS = [
+  { key: "starter", label: "Starter — ₱2,999 + ₱79/employee/mo" },
+  { key: "professional", label: "Professional — ₱4,999 + ₱109/employee/mo" },
+  { key: "enterprise", label: "Enterprise — ₱10,000 + ₱179/employee/mo" },
 ];
 
 const QR_CODE_BASE = "https://api.qrserver.com/v1/create-qr-code/";
@@ -92,6 +135,17 @@ const COUNTRY_CODES = [
   { code: "+82", iso: "kr", country: "South Korea", maxLength: 9 },
   { code: "+971", iso: "ae", country: "UAE", maxLength: 9 },
   { code: "+91", iso: "in", country: "India", maxLength: 10 },
+  { code: "+31", iso: "nl", country: "Netherlands", maxLength: 9 },
+  { code: "+977", iso: "np", country: "Nepal", maxLength: 10 },
+  { code: "+687", iso: "nc", country: "New Caledonia", maxLength: 6 },
+  { code: "+64", iso: "nz", country: "New Zealand", maxLength: 9 },
+  { code: "+49", iso: "de", country: "Germany", maxLength: 11 },
+  { code: "+33", iso: "fr", country: "France", maxLength: 9 },
+  { code: "+34", iso: "es", country: "Spain", maxLength: 9 },
+  { code: "+39", iso: "it", country: "Italy", maxLength: 10 },
+  { code: "+86", iso: "cn", country: "China", maxLength: 11 },
+  { code: "+60", iso: "my", country: "Malaysia", maxLength: 9 },
+  { code: "+66", iso: "th", country: "Thailand", maxLength: 9 },
 ];
 
 const FLAG_CDN = "https://flagcdn.com/w40";
@@ -99,320 +153,527 @@ const FLAG_CDN = "https://flagcdn.com/w40";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: "100vh",
-    background:
-      "linear-gradient(160deg, #f0f4ff 0%, #fef9f3 40%, #f5f7fa 100%)",
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(4),
+    overflow: "auto",
+    background: "#f4f6f8",
+    paddingTop: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     position: "relative",
-    overflow: "hidden",
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      top: -80,
-      right: -80,
-      width: 240,
-      height: 240,
-      borderRadius: "50%",
-      background:
-        "radial-gradient(circle, rgba(255,117,4,0.08) 0%, transparent 70%)",
-      pointerEvents: "none",
-    },
-    "&::after": {
-      content: '""',
-      position: "absolute",
-      bottom: -60,
-      left: -60,
-      width: 200,
-      height: 200,
-      borderRadius: "50%",
-      background:
-        "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)",
-      pointerEvents: "none",
-    },
+    boxSizing: "border-box",
   },
   container: {
     position: "relative",
     zIndex: 1,
-    maxWidth: 920,
+    maxWidth: "100%",
+    margin: "0 auto",
+    [theme.breakpoints.up("lg")]: { maxWidth: 1280 },
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: theme.spacing(2),
   },
   backLink: {
     display: "inline-flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
-    color: theme.palette.text.secondary,
+    color: theme.palette.primary.main,
     textDecoration: "none",
-    marginBottom: theme.spacing(2),
-    fontSize: "0.85rem",
+    margin: theme.spacing(1, 0, 1, 0),
+    fontSize: "0.8rem",
     fontWeight: 500,
+    fontFamily: theme.typography.body1.fontFamily,
     padding: theme.spacing(0.25, 0),
-    borderRadius: 6,
-    transition: "background-color 0.2s ease, color 0.2s ease",
-    "&:hover": {
-      color: theme.palette.primary.main,
-      backgroundColor: "rgba(255, 117, 4, 0.06)",
-    },
-    "&:hover *": {
-      color: "inherit",
-    },
+    borderRadius: 4,
   },
   header: {
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
     animation: "$fadeSlide 0.5s ease-out",
-  },
-  "@keyframes fadeSlide": {
-    from: { opacity: 0, transform: "translateY(-8px)" },
-    to: { opacity: 1, transform: "translateY(0)" },
+    textAlign: "center",
   },
   pageTitle: {
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 700,
-    marginBottom: theme.spacing(0.25),
+    marginBottom: 0,
     color: theme.palette.text.primary,
     letterSpacing: "-0.02em",
-    fontSize: "1.4rem",
+    fontSize: "3rem",
   },
   pageSubtitle: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     color: theme.palette.text.secondary,
-    fontSize: "0.85rem",
-    lineHeight: 1.45,
-    marginBottom: theme.spacing(0.5),
+    fontSize: "1rem",
+    lineHeight: 1.4,
+    marginBottom: theme.spacing(2),
   },
   steps: {
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1),
-    marginBottom: theme.spacing(1.5),
+    marginBottom: theme.spacing(1),
     flexWrap: "wrap",
   },
   step: {
+    fontFamily: theme.typography.body1.fontFamily,
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
-    fontSize: "0.75rem",
+    fontSize: "0.7rem",
     color: theme.palette.text.secondary,
   },
   stepDot: {
-    width: 5,
-    height: 5,
+    width: 4,
+    height: 4,
     borderRadius: "50%",
     backgroundColor: theme.palette.primary.main,
     opacity: 0.6,
   },
-  stepDotActive: {
-    opacity: 1,
-    transform: "scale(1.2)",
-    boxShadow: `0 0 0 2px ${theme.palette.primary.main}20`,
+  stepDotActive: { opacity: 1, transform: "scale(1.2)", boxShadow: `0 0 0 2px ${theme.palette.primary.main}20` },
+  "@keyframes fadeSlide": {
+    from: { opacity: 0, transform: "translateY(-8px)" },
+    to: { opacity: 1, transform: "translateY(0)" },
+  },
+  "@keyframes cardIn": {
+    from: { opacity: 0, transform: "translateY(8px)" },
+    to: { opacity: 1, transform: "translateY(0)" },
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "1fr 320px",
+    gridTemplateColumns: "1fr 280px",
+    gap: theme.spacing(1.5),
+    alignItems: "start",
+    [theme.breakpoints.down("md")]: { gridTemplateColumns: "1fr" },
+  },
+  unifiedCard: {
+    borderRadius: 4,
+    overflow: "hidden",
+    border: "1px solid rgba(0,0,0,0.12)",
+    backgroundColor: "#fff",
+    transition: "border-color 0.2s ease",
+    animation: "$cardIn 0.5s ease-out 0.1s both",
+  },
+  unifiedCardInner: {
+    display: "grid",
+    gridTemplateColumns: "1fr 380px",
     gap: theme.spacing(2.5),
     alignItems: "start",
-    [theme.breakpoints.down("md")]: {
-      gridTemplateColumns: "1fr",
-    },
+    [theme.breakpoints.down("md")]: { gridTemplateColumns: "1fr" },
+  },
+  unifiedBilling: {
+    padding: theme.spacing(1.5),
+    borderRight: "none",
+    minWidth: 0,
+    [theme.breakpoints.down("md")]: { borderRight: "none", borderBottom: "1px solid rgba(0,0,0,0.06)" },
+  },
+  unifiedSummary: {
+    padding: theme.spacing(1.5),
+    backgroundColor: "rgba(0,0,0,0.02)",
+    minWidth: 0,
   },
   billingCard: {
-    borderRadius: 12,
+    borderRadius: 4,
     overflow: "hidden",
-    boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     border: "1px solid rgba(0,0,0,0.06)",
     transition: "box-shadow 0.3s ease",
     animation: "$cardIn 0.5s ease-out 0.1s both",
-    "&:hover": {
-      boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-    },
+    "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.08)" },
   },
-  "@keyframes cardIn": {
-    from: { opacity: 0, transform: "translateY(12px)" },
-    to: { opacity: 1, transform: "translateY(0)" },
-  },
-  billingCardTop: {
-    height: 4,
-    background: `linear-gradient(90deg, ${theme.palette.primary.main}, #ff9f43)`,
-  },
-  billingCardContent: {
-    padding: theme.spacing(2.5),
-  },
+  billingCardTop: { height: 3, background: `linear-gradient(90deg, ${theme.palette.primary.main}, #ff9f43)` },
+  billingCardContent: { padding: theme.spacing(1.5) },
   sectionTitle: {
     display: "flex",
     alignItems: "center",
-    gap: theme.spacing(1),
+    gap: theme.spacing(0.75),
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
-    marginBottom: theme.spacing(2),
-    fontSize: "1rem",
+    marginBottom: theme.spacing(1.25),
+    fontSize: "0.8rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
     color: theme.palette.text.primary,
   },
   sectionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+    width: 38,
+    height: 38,
+    borderRadius: 4,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(255, 117, 4, 0.12)",
     color: theme.palette.primary.main,
   },
+  fieldRow: {
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+    gap: theme.spacing(1.5),
+    marginBottom: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: { gridTemplateColumns: "1fr" },
+  },
+  fieldWrap: {
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    minWidth: 0,
+  },
+  fieldLabel: {
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.8rem",
+    fontWeight: 500,
+    color: "rgba(0,0,0,0.72)",
+  },
   field: {
-    marginBottom: theme.spacing(1.5),
+    marginBottom: 0,
+    minWidth: 0,
     "& .MuiOutlinedInput-root": {
-      borderRadius: 10,
-      backgroundColor: "#fafbfc",
-      transition: "all 0.2s ease",
-      "&.Mui-focused": { backgroundColor: "#fff" },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderRadius: 4,
+      backgroundColor: "#fff",
+      border: "2px solid rgba(0,0,0,0.15)",
+      transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+      "& .MuiOutlinedInput-notchedOutline": {
+        border: "none",
+      },
+      "& .MuiOutlinedInput-input": {
+        fontFamily: theme.typography.body1.fontFamily,
+        padding: theme.spacing(1.25, 1.5),
+        fontSize: "0.9rem",
+      },
+      "&.Mui-focused": {
         borderColor: theme.palette.primary.main,
         borderWidth: 2,
+        boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
       },
+      "&.Mui-error": {
+        borderColor: theme.palette.error.main,
+        "&.Mui-focused": {
+          boxShadow: `0 0 0 1px ${theme.palette.error.main}`,
+        },
+      },
+    },
+    "& .MuiFormHelperText-root": {
+      fontFamily: theme.typography.body1.fontFamily,
+      fontSize: "0.7rem",
+      marginTop: 2,
     },
   },
   fieldHelper: {
-    marginTop: theme.spacing(0.25),
-    marginBottom: theme.spacing(1.25),
-    marginLeft: theme.spacing(1.5),
-    fontSize: "0.7rem",
+    marginTop: 2,
+    marginBottom: theme.spacing(0.75),
+    marginLeft: 0,
+    fontSize: "0.75rem",
+    fontFamily: theme.typography.body1.fontFamily,
     color: theme.palette.text.secondary,
-    lineHeight: 1.35,
+    lineHeight: 1.3,
     display: "block",
   },
   fieldHelperSecure: {
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
-    "& svg": {
-      fontSize: 14,
-      color: theme.palette.text.secondary,
-      flexShrink: 0,
+    "& svg": { fontSize: 12, color: theme.palette.text.secondary, flexShrink: 0 },
+  },
+  paymentMethodLabel: {
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.8rem",
+    fontWeight: 500,
+    color: "rgba(0,0,0,0.72)",
+    marginBottom: theme.spacing(0.75),
+    display: "block",
+  },
+  paymentMethodRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: theme.spacing(0.75),
+    marginBottom: theme.spacing(1),
+  },
+  paymentMethodBtn: {
+    flex: "1 1 0",
+    minWidth: 80,
+    padding: theme.spacing(0.75, 1),
+    borderRadius: 4,
+    border: "2px solid #e2e8f0",
+    backgroundColor: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing(0.5),
+    cursor: "pointer",
+    transition: "all 0.2s ease",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.8rem",
+    fontWeight: 500,
+    color: "#64748b",
+    "&:hover": { borderColor: "#cbd5e1", backgroundColor: "#f8fafc" },
+    "&$paymentMethodBtnActive": {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: "rgba(255, 117, 4, 0.08)",
+      color: theme.palette.primary.main,
     },
   },
+  paymentMethodBtnActive: {},
+  paymentMethodIcon: { fontSize: 18, flexShrink: 0 },
+  paymentMethodLogo: {
+    width: 24,
+    height: 24,
+    objectFit: "contain",
+    flexShrink: 0,
+  },
+  paymentMethodDetails: {
+    marginTop: theme.spacing(1),
+    padding: theme.spacing(1.25),
+    borderRadius: 4,
+    backgroundColor: "rgba(0,0,0,0.02)",
+    border: "1px solid rgba(0,0,0,0.08)",
+  },
+  paymentMethodDetailsLogo: {
+    width: 32,
+    height: 32,
+    objectFit: "contain",
+    marginBottom: theme.spacing(0.75),
+  },
   locationButtonWrap: {
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.25),
+    marginTop: 2,
+    marginBottom: 2,
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(1),
   },
-  locationError: {
-    fontSize: "0.7rem",
-    color: theme.palette.error.main,
-  },
+  locationError: { fontSize: "0.65rem", color: theme.palette.error.main },
   paymentNote: {
     display: "flex",
     alignItems: "flex-start",
-    gap: theme.spacing(0.75),
-    marginTop: theme.spacing(1.5),
-    padding: theme.spacing(1, 1.5),
-    borderRadius: 8,
-    backgroundColor: "rgba(34, 197, 94, 0.08)",
-    border: "1px solid rgba(34, 197, 94, 0.2)",
+    gap: theme.spacing(0.5),
+    marginTop: theme.spacing(1),
+    padding: theme.spacing(1, 1.25),
+    borderRadius: 4,
+    backgroundColor: "rgba(99, 102, 241, 0.08)",
+    border: "1px solid rgba(99, 102, 241, 0.2)",
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: "rgba(0,0,0,0.7)",
-    lineHeight: 1.45,
+    lineHeight: 1.4,
+  },
+  paymentNoteIcon: {
+    color: "#22c55e",
+    fontSize: 20,
+    flexShrink: 0,
+    marginTop: 2,
   },
   summaryCard: {
-    borderRadius: 12,
+    borderRadius: 4,
     overflow: "hidden",
-    boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
     border: "1px solid rgba(0,0,0,0.06)",
     position: "sticky",
-    top: theme.spacing(2),
+    top: theme.spacing(1.5),
     transition: "box-shadow 0.3s ease",
     animation: "$cardIn 0.5s ease-out 0.2s both",
-    "&:hover": {
-      boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-    },
-    [theme.breakpoints.down("md")]: {
-      position: "static",
-    },
+    "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.08)" },
+    [theme.breakpoints.down("md")]: { position: "static" },
   },
-  summaryCardTop: {
-    height: 4,
-    background: "linear-gradient(90deg, #64748b, #94a3b8)",
-  },
-  summaryContent: {
-    padding: theme.spacing(2),
-  },
+  summaryCardTop: { height: 3, background: "linear-gradient(90deg, #64748b, #94a3b8)" },
+  summaryContent: { padding: theme.spacing(1.25) },
   summaryTitle: {
     display: "flex",
     alignItems: "center",
-    gap: theme.spacing(0.75),
+    gap: theme.spacing(0.5),
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
-    marginBottom: theme.spacing(1.5),
-    fontSize: "1rem",
+    marginBottom: theme.spacing(1),
+    fontSize: "0.8rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
   },
   planSwitcherLabel: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
-    marginBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.25),
     fontWeight: 500,
   },
-  nativeSelectWrap: {
-    marginBottom: theme.spacing(1.5),
-    "& label": {
-      display: "block",
-      fontSize: "0.7rem",
-      color: theme.palette.text.secondary,
-      marginBottom: theme.spacing(0.25),
-      transform: "none",
-    },
-  },
+  nativeSelectWrap: { marginBottom: theme.spacing(1) },
   phoneRow: {
     display: "flex",
+    gap: 0,
+    marginBottom: theme.spacing(1),
+  },
+  phoneNumberWrapper: {
+    position: "relative",
+    width: "100%",
+    minWidth: 0,
+  },
+  phoneNumberRoot: {
+    display: "flex",
+    alignItems: "stretch",
+    width: "100%",
+    minWidth: 0,
+    minHeight: 40,
+    borderRadius: 4,
+    border: "2px solid rgba(0,0,0,0.15)",
+    backgroundColor: "#fff",
+    fontFamily: theme.typography.body1.fontFamily,
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+    boxSizing: "border-box",
+    "&:focus-within": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+      boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
+    },
+    "&$phoneNumberError": {
+      borderColor: theme.palette.error.main,
+      "&:focus-within": {
+        borderColor: theme.palette.error.main,
+        boxShadow: `0 0 0 1px ${theme.palette.error.main}`,
+      },
+    },
+    "&$phoneNumberRootOpen": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+      boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
+    },
+  },
+  phoneNumberError: {},
+  phoneNumberRootOpen: {},
+  phoneCountryTrigger: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+    padding: theme.spacing(0, 0.75),
+    border: "none",
+    borderRight: "1px solid rgba(0,0,0,0.12)",
+    borderRadius: "4px 0 0 4px",
+    background: "transparent",
+    cursor: "pointer",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+    minWidth: 72,
+    flexShrink: 0,
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+  },
+  phoneDropdown: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    marginTop: 4,
+    minWidth: 260,
+    maxHeight: 280,
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+    border: "1px solid rgba(0,0,0,0.08)",
+    zIndex: 1300,
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+  phoneDropdownSearchWrap: {
+    padding: theme.spacing(0.75),
+    borderBottom: "1px solid rgba(0,0,0,0.08)",
+    display: "flex",
+    alignItems: "center",
+    position: "relative",
+    backgroundColor: "#fafafa",
+  },
+  phoneDropdownSearch: {
+    flex: 1,
+    border: "1px solid rgba(0,0,0,0.15)",
+    borderRadius: 4,
+    padding: "8px 10px 8px 36px",
+    fontSize: "0.875rem",
+    fontFamily: theme.typography.body1.fontFamily,
+    outline: "none",
+    "&:focus": { borderColor: theme.palette.primary.main },
+  },
+  phoneDropdownSearchIcon: {
+    position: "absolute",
+    left: theme.spacing(1.5),
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: theme.palette.text.secondary,
+    fontSize: 18,
+    pointerEvents: "none",
+  },
+  phoneDropdownList: {
+    overflow: "auto",
+    maxHeight: 220,
+    padding: theme.spacing(0.5),
+  },
+  phoneDropdownItem: {
+    display: "flex",
+    alignItems: "center",
     gap: theme.spacing(1),
-    marginBottom: theme.spacing(1.5),
+    padding: theme.spacing(0.75, 1),
+    borderRadius: 4,
+    cursor: "pointer",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.06)" },
+  },
+  phoneNumberInputWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
+  phoneNumberInput: {
+    width: "100%",
+    height: "100%",
+    minHeight: 36,
+    border: "none",
+    padding: theme.spacing(0, 1.25),
+    borderRadius: "0 4px 4px 0",
+    fontSize: "0.9rem",
+    fontFamily: theme.typography.body1.fontFamily,
+    outline: "none",
+    boxSizing: "border-box",
+    "&::placeholder": { color: "rgba(0,0,0,0.4)" },
   },
   phoneCountryWrap: {
     display: "flex",
     alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: "#fafbfc",
-    border: "1px solid rgba(0,0,0,0.23)",
-    paddingLeft: theme.spacing(1),
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    border: "1px solid rgba(0,0,0,0.15)",
+    paddingLeft: theme.spacing(0.75),
     paddingRight: theme.spacing(0.5),
-    gap: theme.spacing(0.75),
+    gap: theme.spacing(0.5),
     flexShrink: 0,
-    minHeight: 48,
+    minHeight: 40,
     transition: "border-color 0.2s ease",
-    "&:focus-within": {
-      borderColor: theme.palette.primary.main,
-      borderWidth: 2,
-    },
+    "&:focus-within": { borderColor: theme.palette.primary.main, borderWidth: 2 },
   },
   phoneCountrySelect: {
     border: "none",
     background: "transparent",
-    padding: "8px 4px 8px 0",
-    fontSize: "0.9rem",
-    fontFamily: "inherit",
+    padding: "6px 2px 6px 0",
+    fontSize: "0.8rem",
+    fontFamily: theme.typography.body1.fontFamily,
     color: theme.palette.text.primary,
     cursor: "pointer",
     outline: "none",
-    minWidth: 52,
+    minWidth: 48,
   },
   phoneFlag: {
-    width: 28,
-    height: 21,
+    width: 24,
+    height: 18,
     objectFit: "cover",
     borderRadius: 2,
     flexShrink: 0,
     border: "1px solid rgba(0,0,0,0.1)",
   },
-  phoneInput: {
-    flex: 1,
-    minWidth: 0,
-  },
+  phoneInput: { flex: 1, minWidth: 0 },
   nativeSelect: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: 10,
+    padding: "8px 10px",
+    borderRadius: 4,
     backgroundColor: "#fafbfc",
-    border: "1px solid rgba(0,0,0,0.23)",
-    fontSize: "0.9rem",
-    fontFamily: "inherit",
+    border: "1px solid rgba(0,0,0,0.15)",
+    fontSize: "0.85rem",
+    fontFamily: theme.typography.body1.fontFamily,
     color: theme.palette.text.primary,
     cursor: "pointer",
     transition: "border-color 0.2s ease, background-color 0.2s ease",
@@ -420,25 +681,131 @@ const useStyles = makeStyles((theme) => ({
       outline: "none",
       borderColor: theme.palette.primary.main,
       borderWidth: 2,
-      padding: "9px 11px",
+      padding: "7px 9px",
     },
   },
   nativeSelectSmall: {
     padding: "6px 10px",
-    fontSize: "0.85rem",
-    borderRadius: 10,
-    backgroundColor: "#f8fafc",
-    "&:focus": {
-      padding: "5px 9px",
+    fontSize: "0.8rem",
+    fontFamily: theme.typography.body1.fontFamily,
+    borderRadius: 4,
+    backgroundColor: "#fafbfc",
+    border: "1px solid rgba(0,0,0,0.15)",
+    "&:focus": { padding: "5px 9px" },
+  },
+  planSwitcher: { marginBottom: theme.spacing(1) },
+  planSwitcherWrapper: {
+    position: "relative",
+    width: "100%",
+    minWidth: 0,
+    marginBottom: theme.spacing(1),
+  },
+  planSwitcherRoot: {
+    display: "flex",
+    alignItems: "stretch",
+    width: "100%",
+    minWidth: 0,
+    minHeight: 40,
+    borderRadius: 4,
+    border: "2px solid rgba(0,0,0,0.15)",
+    backgroundColor: "#fff",
+    fontFamily: theme.typography.body1.fontFamily,
+    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+    boxSizing: "border-box",
+    "&:focus-within": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+      boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
+    },
+    "&$planSwitcherRootOpen": {
+      borderColor: theme.palette.primary.main,
+      borderWidth: 2,
+      boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
     },
   },
-  planSwitcher: {
-    marginBottom: theme.spacing(1.5),
+  planSwitcherRootOpen: {},
+  planSwitcherTrigger: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    padding: theme.spacing(0, 1, 0, 1.25),
+    border: "none",
+    borderRadius: 4,
+    background: "transparent",
+    cursor: "pointer",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+    textAlign: "left",
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+  },
+  planDropdown: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    marginTop: 4,
+    maxHeight: 280,
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+    border: "1px solid rgba(0,0,0,0.08)",
+    zIndex: 1300,
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+  },
+  planDropdownSearchWrap: {
+    padding: theme.spacing(0.75),
+    borderBottom: "1px solid rgba(0,0,0,0.08)",
+    display: "flex",
+    alignItems: "center",
+    position: "relative",
+    backgroundColor: "#fafafa",
+  },
+  planDropdownSearch: {
+    flex: 1,
+    border: "1px solid rgba(0,0,0,0.15)",
+    borderRadius: 4,
+    padding: "8px 10px 8px 36px",
+    fontSize: "0.875rem",
+    fontFamily: theme.typography.body1.fontFamily,
+    outline: "none",
+    "&:focus": { borderColor: theme.palette.primary.main },
+  },
+  planDropdownSearchIcon: {
+    position: "absolute",
+    left: theme.spacing(1.5),
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: theme.palette.text.secondary,
+    fontSize: 18,
+    pointerEvents: "none",
+  },
+  planDropdownList: {
+    overflow: "auto",
+    maxHeight: 220,
+    padding: theme.spacing(0.5),
+  },
+  planDropdownItem: {
+    display: "block",
+    width: "100%",
+    padding: theme.spacing(0.75, 1),
+    borderRadius: 4,
+    cursor: "pointer",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.875rem",
+    color: theme.palette.text.primary,
+    textAlign: "left",
+    border: "none",
+    background: "none",
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.06)" },
   },
   planSummaryBox: {
-    padding: theme.spacing(1.5),
-    borderRadius: 10,
-    marginBottom: theme.spacing(1.5),
+    padding: theme.spacing(1),
+    borderRadius: 4,
+    marginBottom: theme.spacing(1),
     border: "2px solid transparent",
     transition: "all 0.2s ease",
     backgroundColor: "rgba(0,0,0,0.02)",
@@ -446,64 +813,122 @@ const useStyles = makeStyles((theme) => ({
   planBadge: {
     display: "inline-flex",
     alignItems: "center",
-    padding: "4px 10px",
-    borderRadius: 16,
+    padding: "3px 8px",
+    borderRadius: 4,
     color: "#fff",
     fontWeight: 600,
-    fontSize: "0.75rem",
-    marginBottom: theme.spacing(0.75),
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+    fontSize: "0.7rem",
+    marginBottom: theme.spacing(0.5),
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   },
   planName: {
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
-    fontSize: "0.95rem",
-    marginBottom: theme.spacing(0.25),
+    fontSize: "0.9rem",
+    marginBottom: 2,
   },
   planDescription: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
-    marginBottom: theme.spacing(0.75),
+    marginBottom: theme.spacing(0.5),
   },
   planPrice: {
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     color: theme.palette.text.primary,
   },
   totalRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: theme.spacing(1.5),
-    paddingBottom: theme.spacing(1.5),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     borderTop: "1px solid rgba(0,0,0,0.08)",
     marginBottom: theme.spacing(0.5),
   },
   totalLabel: {
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
-    fontSize: "0.9rem",
+    fontSize: "0.85rem",
   },
   totalAmount: {
     fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 700,
-    fontSize: "1.2rem",
+    fontSize: "1rem",
     color: theme.palette.primary.main,
     letterSpacing: "-0.02em",
   },
+  receiptBox: {
+    border: "1px solid rgba(0,0,0,0.12)",
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    overflow: "hidden",
+  },
+  receiptHeader: {
+    padding: theme.spacing(1.25, 1.5),
+    borderBottom: "1px dashed rgba(0,0,0,0.15)",
+    textAlign: "center",
+  },
+  receiptTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
+    fontWeight: 700,
+    fontSize: "0.95rem",
+    marginBottom: 2,
+  },
+  receiptSubtitle: {
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.7rem",
+    color: theme.palette.text.secondary,
+  },
+  receiptBody: { padding: theme.spacing(1, 1.5) },
+  receiptRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: theme.spacing(1),
+    padding: "4px 0",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.8rem",
+  },
+  receiptRowLabel: { color: theme.palette.text.secondary },
+  receiptRowValue: { fontWeight: 600, textAlign: "right" },
+  receiptDivider: {
+    borderTop: "1px dashed rgba(0,0,0,0.15)",
+    margin: theme.spacing(0.75, 0),
+  },
+  receiptSectionTitle: {
+    fontFamily: '"Fira Sans", sans-serif',
+    fontWeight: 600,
+    fontSize: "0.7rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    color: theme.palette.text.secondary,
+    marginBottom: theme.spacing(0.5),
+    marginTop: theme.spacing(0.5),
+  },
+  receiptFeatureItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(0.5),
+    padding: "2px 0",
+    fontFamily: theme.typography.body1.fontFamily,
+    fontSize: "0.75rem",
+    color: theme.palette.text.primary,
+    "& svg": { fontSize: 14, color: "#22c55e", flexShrink: 0 },
+  },
   confirmBtn: {
     width: "100%",
-    padding: theme.spacing(1.5, 2),
-    borderRadius: 10,
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(1.25, 2),
+    borderRadius: 4,
+    fontFamily: '"Fira Sans", sans-serif',
     fontWeight: 600,
     textTransform: "none",
-    fontSize: "0.95rem",
-    boxShadow: "0 4px 16px rgba(255, 117, 4, 0.35)",
+    fontSize: "0.9rem",
     transition: "all 0.2s ease",
     "&:hover:not(:disabled)": {
-      boxShadow: "0 6px 24px rgba(255, 117, 4, 0.45)",
       transform: "translateY(-1px)",
     },
     "&:active:not(:disabled)": { transform: "translateY(0)" },
@@ -513,46 +938,45 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     gap: theme.spacing(0.5),
-    marginTop: theme.spacing(1),
-    padding: theme.spacing(1),
+    marginTop: theme.spacing(0.75),
+    padding: theme.spacing(0.75),
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     backgroundColor: "rgba(0,0,0,0.02)",
-    borderRadius: 8,
+    borderRadius: 4,
   },
-  benefitsList: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-    marginTop: theme.spacing(1),
-  },
+  benefitsList: { listStyle: "none", padding: 0, margin: 0, marginTop: theme.spacing(0.75) },
   benefitItem: {
     display: "flex",
     alignItems: "center",
     gap: theme.spacing(0.5),
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
-    marginBottom: theme.spacing(0.5),
+    marginBottom: 2,
     "& svg": { fontSize: 14, color: "#22c55e", flexShrink: 0 },
   },
   paymentDetailsBox: {
-    marginTop: theme.spacing(1.5),
-    padding: theme.spacing(1.5),
-    borderRadius: 10,
-    backgroundColor: "rgba(0,0,0,0.03)",
+    marginTop: theme.spacing(1),
+    padding: theme.spacing(1.25),
+    borderRadius: 4,
+    backgroundColor: "rgba(0,0,0,0.02)",
     border: "1px solid rgba(0,0,0,0.08)",
   },
   paymentDetailsTitle: {
     fontFamily: '"Fira Sans", sans-serif',
     fontSize: "0.8rem",
     fontWeight: 600,
-    marginBottom: theme.spacing(1),
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    marginBottom: theme.spacing(0.75),
     color: theme.palette.text.primary,
   },
   qrBox: {
     marginTop: theme.spacing(1.5),
     padding: theme.spacing(2),
-    borderRadius: 10,
+    borderRadius: 4,
     backgroundColor: "#fff",
     border: "1px solid rgba(0,0,0,0.08)",
     textAlign: "center",
@@ -565,13 +989,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1.5),
   },
   qrLabel: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.85rem",
     fontWeight: 600,
     marginBottom: theme.spacing(0.25),
   },
   qrHint: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body1.fontFamily,
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
   },
@@ -590,7 +1014,7 @@ const useStyles = makeStyles((theme) => ({
   },
   qrModal: {
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: 4,
     padding: theme.spacing(3),
     maxWidth: 360,
     width: "100%",
@@ -604,7 +1028,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1.5),
   },
   qrModalAmount: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: '"Fira Sans", sans-serif',
     fontSize: "1.25rem",
     fontWeight: 700,
     color: theme.palette.primary.main,
@@ -639,6 +1063,8 @@ export default function Checkout() {
     cardExpiry: "",
     cardCvv: "",
     nameOnCard: "",
+    gcashNumber: "",
+    mayaContact: "",
   });
   const [errors, setErrors] = useState({});
   // eslint-disable-next-line
@@ -648,6 +1074,33 @@ export default function Checkout() {
   const [qrStepReceiptState, setQrStepReceiptState] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
+  const [phoneDropdownOpen, setPhoneDropdownOpen] = useState(false);
+  const [phoneCountrySearch, setPhoneCountrySearch] = useState("");
+  const phoneRef = useRef(null);
+  const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
+  const [planDropdownSearch, setPlanDropdownSearch] = useState("");
+  const planDropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!phoneDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (phoneRef.current && !phoneRef.current.contains(e.target)) {
+        setPhoneDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [phoneDropdownOpen]);
+
+  useEffect(() => {
+    if (!planDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (planDropdownRef.current && !planDropdownRef.current.contains(e.target))
+        setPlanDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [planDropdownOpen]);
 
   const handleChange = (field) => (e) => {
     const value = e?.target?.value;
@@ -735,11 +1188,6 @@ export default function Checkout() {
 
   const validate = () => {
     const next = {};
-    if (!form.fullName.trim()) next.fullName = "Please enter your full name";
-    if (!form.workEmail.trim()) next.workEmail = "Work email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.workEmail)) {
-      next.workEmail = "Please enter a valid email address";
-    }
     if (!form.companyName.trim())
       next.companyName = "Please enter your company name";
     if (form.paymentMethod === "card") {
@@ -751,6 +1199,16 @@ export default function Checkout() {
         next.payment_cardCvv = "CVV is required";
       if (!paymentDetails.nameOnCard?.trim())
         next.payment_nameOnCard = "Name on card is required";
+    }
+    if (form.paymentMethod === "gcash") {
+      if (!paymentDetails.gcashNumber?.trim())
+        next.payment_gcashNumber = "GCash mobile number is required";
+      else if (!/^09\d{9}$/.test(paymentDetails.gcashNumber.replace(/\s/g, "")))
+        next.payment_gcashNumber = "Enter a valid 11-digit mobile number (09XX XXX XXXX)";
+    }
+    if (form.paymentMethod === "paymaya") {
+      if (!paymentDetails.mayaContact?.trim())
+        next.payment_mayaContact = "Maya mobile or email is required";
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -791,9 +1249,15 @@ export default function Checkout() {
         setShowQrStep(true);
       }, 800);
     } else {
+      try {
+        sessionStorage.setItem(
+          PENDING_RECEIPT_KEY + receiptId,
+          JSON.stringify(receiptState),
+        );
+      } catch (_) {}
       setTimeout(() => {
         setSubmitting(false);
-        navigate("/reciept", { state: receiptState });
+        navigate(`/payment-complete?ref=${receiptId}`, { replace: true });
       }, 1800);
     }
   };
@@ -820,10 +1284,12 @@ export default function Checkout() {
   return (
     <Box className={classes.root}>
       <Container maxWidth="lg" className={classes.container}>
-        <RouterLink to="/pricing" className={classes.backLink}>
-          <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
-          <span>Back to plans</span>
-        </RouterLink>
+        <Box className={classes.topBar}>
+          <RouterLink to="/pricing" className={classes.backLink}>
+            <ArrowBack fontSize="small" style={{ flexShrink: 0 }} />
+            <span>Back </span>
+          </RouterLink>
+        </Box>
 
         <Box className={classes.header}>
           <Typography variant="h1" className={classes.pageTitle}>
@@ -833,203 +1299,157 @@ export default function Checkout() {
             Enter your billing details to subscribe to UlapPayroll. We’ll send
             your receipt and next steps to your email.
           </Typography>
-          <Box className={classes.steps}>
-            <Box className={classes.step}>
-              <Box className={`${classes.stepDot} ${classes.stepDotActive}`} />
-              <span>Your details</span>
-            </Box>
-            <Box className={classes.step}>
-              <Box className={classes.stepDot} />
-              <span>Review & pay</span>
-            </Box>
-          </Box>
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Box className={classes.grid}>
-            {/* Billing Information */}
-            <Paper className={classes.billingCard} elevation={0}>
-              <Box className={classes.billingCardTop} />
-              <Box className={classes.billingCardContent}>
+          <Paper className={classes.unifiedCard} elevation={0}>
+            <Box className={classes.unifiedCardInner}>
+              <Box className={classes.unifiedBilling}>
                 <Typography component="div" className={classes.sectionTitle}>
                   <Box className={classes.sectionIcon}>
                     <Person fontSize="small" />
                   </Box>
                   Billing Information
                 </Typography>
-
-                <TextField
-                  className={classes.field}
-                  fullWidth
-                  variant="outlined"
-                  label="Full Name"
-                  placeholder="e.g. Juan Dela Cruz"
-                  value={form.fullName}
-                  onChange={handleChange("fullName")}
-                  onBlur={handleBlur("fullName")}
-                  error={!!errors.fullName}
-                  helperText={errors.fullName}
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person
-                          fontSize="small"
-                          style={{ color: "rgba(0,0,0,0.35)" }}
-                        />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                <TextField
-                  className={classes.field}
-                  fullWidth
-                  variant="outlined"
-                  type="email"
-                  label="Work Email"
-                  placeholder="you@company.com"
-                  value={form.workEmail}
-                  onChange={handleChange("workEmail")}
-                  onBlur={handleBlur("workEmail")}
-                  error={!!errors.workEmail}
-                  helperText={errors.workEmail}
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Email
-                          fontSize="small"
-                          style={{ color: "rgba(0,0,0,0.35)" }}
-                        />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Typography className={classes.fieldHelper}>
-                  We’ll use this for your receipt and account login.
-                </Typography>
-
-                <TextField
-                  className={classes.field}
-                  fullWidth
-                  variant="outlined"
-                  label="Company Name"
-                  placeholder="e.g. Acme Inc."
-                  value={form.companyName}
-                  onChange={handleChange("companyName")}
-                  onBlur={handleBlur("companyName")}
-                  error={!!errors.companyName}
-                  helperText={errors.companyName}
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Business
-                          fontSize="small"
-                          style={{ color: "rgba(0,0,0,0.35)" }}
-                        />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                <Box className={classes.phoneRow}>
-                  {(() => {
-                    const current = COUNTRY_CODES.find(
-                      (c) => c.code === form.phoneCountryCode,
-                    );
-                    return (
-                      <Box className={classes.phoneCountryWrap}>
-                        <img
-                          src={`${FLAG_CDN}/${current ? current.iso : "ph"}.png`}
-                          alt=""
-                          className={classes.phoneFlag}
-                          aria-hidden
-                        />
-                        <select
-                          className={classes.phoneCountrySelect}
+                <Box className={classes.fieldRow}>
+                  <Box className={classes.fieldWrap}>
+                    <Typography className={classes.fieldLabel}>Company Name</Typography>
+                    <TextField
+                      className={classes.field}
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      placeholder="e.g. Acme Inc."
+                      value={form.companyName}
+                      onChange={handleChange("companyName")}
+                      onBlur={handleBlur("companyName")}
+                      error={!!errors.companyName}
+                      helperText={errors.companyName}
+                      required
+                    />
+                  </Box>
+                  <Box className={classes.fieldWrap}>
+                    <Typography className={classes.fieldLabel}>Phone number</Typography>
+                    <Box ref={phoneRef} className={classes.phoneNumberWrapper}>
+                      <Box
+                        className={`${classes.phoneNumberRoot} ${errors.phone ? classes.phoneNumberError : ""} ${phoneDropdownOpen ? classes.phoneNumberRootOpen : ""}`}
+                      >
+                        <button
+                          type="button"
+                          className={classes.phoneCountryTrigger}
+                          onClick={() => setPhoneDropdownOpen((o) => !o)}
+                          aria-expanded={phoneDropdownOpen}
+                          aria-haspopup="listbox"
                           aria-label="Country code"
-                          value={form.phoneCountryCode}
-                          onChange={handleChange("phoneCountryCode")}
                         >
-                          {COUNTRY_CODES.map(({ code, iso }) => (
-                            <option key={code} value={code}>
-                              {code} {iso.toUpperCase()}
-                            </option>
-                          ))}
-                        </select>
+                          {(() => {
+                            const current = COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode);
+                            return (
+                              <>
+                                <img
+                                  src={`${FLAG_CDN}/${current ? current.iso : "ph"}.png`}
+                                  alt=""
+                                  className={classes.phoneFlag}
+                                  aria-hidden
+                                />
+                                <span>{current ? current.code : "+63"}</span>
+                                <ArrowDropDown style={{ fontSize: 20, marginLeft: "auto" }} />
+                              </>
+                            );
+                          })()}
+                        </button>
+                        <Box className={classes.phoneNumberInputWrap}>
+                          <input
+                            type="tel"
+                            className={classes.phoneNumberInput}
+                            placeholder={form.phoneCountryCode === "+63" ? "912 345 6789" : "Enter number"}
+                            value={form.phone}
+                            onChange={handlePhoneChange}
+                            onBlur={handleBlur("phone")}
+                            maxLength={COUNTRY_CODES.find((c) => c.code === form.phoneCountryCode)?.maxLength ?? 11}
+                            inputMode="numeric"
+                            aria-label="Phone number"
+                          />
+                        </Box>
                       </Box>
-                    );
-                  })()}
+                      {phoneDropdownOpen && (
+                        <Box className={classes.phoneDropdown}>
+                          <Box className={classes.phoneDropdownSearchWrap}>
+                            <SearchIcon className={classes.phoneDropdownSearchIcon} />
+                            <input
+                              type="text"
+                              className={classes.phoneDropdownSearch}
+                              placeholder="Search country"
+                              value={phoneCountrySearch}
+                              onChange={(e) => setPhoneCountrySearch(e.target.value)}
+                              autoFocus
+                            />
+                          </Box>
+                          <Box className={classes.phoneDropdownList} role="listbox">
+                            {COUNTRY_CODES.filter(
+                              (c) =>
+                                !phoneCountrySearch ||
+                                c.country.toLowerCase().includes(phoneCountrySearch.toLowerCase()) ||
+                                c.code.includes(phoneCountrySearch),
+                            ).map((c) => (
+                              <div
+                                key={c.code}
+                                role="option"
+                                aria-selected={form.phoneCountryCode === c.code}
+                                className={classes.phoneDropdownItem}
+                                onClick={() => {
+                                  setForm((prev) => {
+                                    const next = { ...prev, phoneCountryCode: c.code };
+                                    const maxLen = c.maxLength ?? 11;
+                                    next.phone = (prev.phone || "").replace(/\D/g, "").slice(0, maxLen);
+                                    return next;
+                                  });
+                                  setPhoneDropdownOpen(false);
+                                  setPhoneCountrySearch("");
+                                }}
+                              >
+                                <img
+                                  src={`${FLAG_CDN}/${c.iso}.png`}
+                                  alt=""
+                                  className={classes.phoneFlag}
+                                  aria-hidden
+                                />
+                                <span>{c.country} ({c.code})</span>
+                              </div>
+                            ))}
+                          </Box>
+                        </Box>
+                      )}
+                      {errors.phone && (
+                        <Typography style={{ fontFamily: "inherit", fontSize: "0.7rem", color: "#d32f2f", marginTop: 4 }}>
+                          {errors.phone}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </Box>
+
+                <Box className={classes.fieldWrap}>
+                  <Typography className={classes.fieldLabel}>Billing Address</Typography>
                   <TextField
-                    className={`${classes.field} ${classes.phoneInput}`}
+                    className={classes.field}
                     fullWidth
                     variant="outlined"
-                    label="Phone Number"
-                    placeholder={
-                      form.phoneCountryCode === "+63"
-                        ? "912 345 6789"
-                        : "Phone number"
-                    }
-                    value={form.phone}
-                    onChange={handlePhoneChange}
-                    onBlur={handleBlur("phone")}
+                    size="small"
+                    placeholder="Street, Barangay, City, Province, ZIP Code"
+                    multiline
+                    minRows={2}
+                    maxRows={4}
+                    value={form.billingAddress}
+                    onChange={handleChange("billingAddress")}
+                    onBlur={handleBlur("billingAddress")}
                     inputProps={{
-                      maxLength:
-                        COUNTRY_CODES.find(
-                          (c) => c.code === form.phoneCountryCode,
-                        )?.maxLength ?? 11,
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Phone
-                            fontSize="small"
-                            style={{ color: "rgba(0,0,0,0.35)" }}
-                          />
-                        </InputAdornment>
-                      ),
+                      maxLength: 500,
+                      autoComplete: "billing street-address",
+                      "aria-describedby": "billing-address-helper",
                     }}
                   />
                 </Box>
-                <Typography className={classes.fieldHelper}>
-                  Optional. For delivery updates and support.
-                </Typography>
-
-                <TextField
-                  className={classes.field}
-                  fullWidth
-                  variant="outlined"
-                  label="Billing Address"
-                  placeholder="Street, Barangay, City, Province, ZIP Code"
-                  multiline
-                  minRows={3}
-                  maxRows={6}
-                  value={form.billingAddress}
-                  onChange={handleChange("billingAddress")}
-                  onBlur={handleBlur("billingAddress")}
-                  inputProps={{
-                    maxLength: 500,
-                    autoComplete: "billing street-address",
-                    "aria-describedby": "billing-address-helper",
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        style={{ alignSelf: "flex-start", marginTop: 12 }}
-                      >
-                        <LocationOn
-                          fontSize="small"
-                          style={{ color: "rgba(0,0,0,0.35)" }}
-                        />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
                 <Box className={classes.locationButtonWrap}>
                   <Button
                     size="small"
@@ -1044,14 +1464,12 @@ export default function Checkout() {
                     onClick={getBillingAddressFromGPS}
                     disabled={locationLoading}
                     aria-label="Use my current location for billing address"
+                    style={{ minWidth: 0, padding: "4px 8px", fontSize: "0.75rem" }}
                   >
                     Use my location
                   </Button>
                   {locationError && (
-                    <Typography
-                      className={classes.locationError}
-                      component="span"
-                    >
+                    <Typography className={classes.locationError} component="span">
                       {locationError}
                     </Typography>
                   )}
@@ -1061,30 +1479,35 @@ export default function Checkout() {
                   className={`${classes.fieldHelper} ${classes.fieldHelperSecure}`}
                 >
                   <Lock fontSize="inherit" />
-                  Optional. Used only for official invoices and tax records.
-                  Your address is kept confidential and transmitted securely.
-                  {form.billingAddress.length > 0 && (
-                    <span style={{ marginLeft: 4 }}>
-                      ({form.billingAddress.length}/500)
-                    </span>
-                  )}
+                  Optional. For invoices and tax records. ({form.billingAddress.length}/500)
                 </Typography>
 
-                <Box className={`${classes.field} ${classes.nativeSelectWrap}`}>
-                  <label htmlFor="payment-method">Payment Method</label>
-                  <select
-                    id="payment-method"
-                    className={classes.nativeSelect}
-                    value={form.paymentMethod}
-                    onChange={handleChange("paymentMethod")}
-                    aria-label="Payment Method"
-                  >
-                    {PAYMENT_METHODS.map((pm) => (
-                      <option key={pm.value} value={pm.value}>
-                        {pm.label}
-                      </option>
-                    ))}
-                  </select>
+                <label id="payment-method-label" className={classes.paymentMethodLabel}>
+                  Payment Method
+                </label>
+                <Box className={classes.paymentMethodRow} role="group" aria-labelledby="payment-method-label">
+                  {PAYMENT_METHODS.map((pm) => (
+                    <button
+                      key={pm.value}
+                      type="button"
+                      className={`${classes.paymentMethodBtn} ${form.paymentMethod === pm.value ? classes.paymentMethodBtnActive : ""}`}
+                      onClick={() => {
+                        setForm((prev) => ({ ...prev, paymentMethod: pm.value }));
+                        if (errors.paymentMethod) setErrors((prev) => ({ ...prev, paymentMethod: "" }));
+                      }}
+                      aria-pressed={form.paymentMethod === pm.value}
+                      aria-label={pm.label}
+                    >
+                      {pm.logo ? (
+                        <img src={pm.logo} alt="" className={classes.paymentMethodLogo} />
+                      ) : pm.icon === "card" ? (
+                        <CreditCard className={classes.paymentMethodIcon} />
+                      ) : (
+                        <Payment className={classes.paymentMethodIcon} />
+                      )}
+                      {pm.label}
+                    </button>
+                  ))}
                 </Box>
 
                 {form.paymentMethod === "card" && (
@@ -1092,37 +1515,46 @@ export default function Checkout() {
                     <Typography className={classes.paymentDetailsTitle}>
                       Card information
                     </Typography>
-                    <>
+                    <Box style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <img src={visaLogo} alt="Visa" style={{ height: 20, objectFit: "contain" }} />
+                      <img src={mastercardLogo} alt="Mastercard" style={{ height: 20, objectFit: "contain" }} />
+                    </Box>
+                    <Box className={classes.fieldWrap}>
+                      <Typography className={classes.fieldLabel}>Card number</Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
                         variant="outlined"
-                        label="Card number"
+                        size="small"
                         placeholder="1234 5678 9012 3456"
                         value={paymentDetails.cardNumber}
                         onChange={handlePaymentDetailsChange("cardNumber")}
                         error={!!errors.payment_cardNumber}
                         helperText={errors.payment_cardNumber}
                       />
-                      <Box
-                        style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
-                      >
+                    </Box>
+                    <Box style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <Box className={classes.fieldWrap} style={{ flex: "1 1 90px" }}>
+                        <Typography className={classes.fieldLabel}>Expiry (MM/YY)</Typography>
                         <TextField
                           className={classes.field}
-                          style={{ flex: "1 1 120px" }}
+                          fullWidth
                           variant="outlined"
-                          label="Expiry (MM/YY)"
+                          size="small"
                           placeholder="MM/YY"
                           value={paymentDetails.cardExpiry}
                           onChange={handlePaymentDetailsChange("cardExpiry")}
                           error={!!errors.payment_cardExpiry}
                           helperText={errors.payment_cardExpiry}
                         />
+                      </Box>
+                      <Box className={classes.fieldWrap} style={{ flex: "1 1 80px" }}>
+                        <Typography className={classes.fieldLabel}>CVV</Typography>
                         <TextField
                           className={classes.field}
-                          style={{ flex: "1 1 100px" }}
+                          fullWidth
                           variant="outlined"
-                          label="CVV"
+                          size="small"
                           placeholder="123"
                           value={paymentDetails.cardCvv}
                           onChange={handlePaymentDetailsChange("cardCvv")}
@@ -1130,30 +1562,108 @@ export default function Checkout() {
                           helperText={errors.payment_cardCvv}
                         />
                       </Box>
+                    </Box>
+                    <Box className={classes.fieldWrap}>
+                      <Typography className={classes.fieldLabel}>Name on card</Typography>
                       <TextField
                         className={classes.field}
                         fullWidth
                         variant="outlined"
-                        label="Name on card"
+                        size="small"
                         placeholder="As shown on card"
                         value={paymentDetails.nameOnCard}
                         onChange={handlePaymentDetailsChange("nameOnCard")}
                         error={!!errors.payment_nameOnCard}
                         helperText={errors.payment_nameOnCard}
                       />
-                    </>
+                    </Box>
+                  </Box>
+                )}
+
+                {form.paymentMethod === "gcash" && (
+                  <Box className={classes.paymentDetailsBox}>
+                    <Box className={classes.paymentMethodDetails}>
+                      <img src={PAYMENT_METHODS.find((p) => p.value === "gcash").logo} alt="" className={classes.paymentMethodDetailsLogo} />
+                      <Typography className={classes.paymentDetailsTitle}>Pay with GCash</Typography>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
+                      Enter the mobile number registered with your GCash account. We'll send a payment link to complete the transaction.
+                    </Typography>
+                    <Box className={classes.fieldWrap}>
+                      <Typography className={classes.fieldLabel}>GCash-registered mobile number</Typography>
+                      <TextField
+                        className={classes.field}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        placeholder="09XX XXX XXXX"
+                        value={paymentDetails.gcashNumber || ""}
+                        onChange={handlePaymentDetailsChange("gcashNumber")}
+                        error={!!errors.payment_gcashNumber}
+                        helperText={errors.payment_gcashNumber}
+                        inputProps={{ maxLength: 11, inputMode: "numeric" }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+
+                {form.paymentMethod === "paymaya" && (
+                  <Box className={classes.paymentDetailsBox}>
+                    <Box className={classes.paymentMethodDetails}>
+                      <img src={PAYMENT_METHODS.find((p) => p.value === "paymaya").logo} alt="" className={classes.paymentMethodDetailsLogo} />
+                      <Typography className={classes.paymentDetailsTitle}>Pay with Maya</Typography>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
+                      Enter the mobile number or email linked to your Maya account. You'll receive instructions to complete the payment.
+                    </Typography>
+                    <Box className={classes.fieldWrap}>
+                      <Typography className={classes.fieldLabel}>Maya mobile or email</Typography>
+                      <TextField
+                        className={classes.field}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        placeholder="09XX XXX XXXX or email@example.com"
+                        value={paymentDetails.mayaContact || ""}
+                        onChange={handlePaymentDetailsChange("mayaContact")}
+                        error={!!errors.payment_mayaContact}
+                        helperText={errors.payment_mayaContact}
+                      />
+                    </Box>
+                  </Box>
+                )}
+
+                {form.paymentMethod === "qrph" && (
+                  <Box className={classes.paymentDetailsBox}>
+                    <Box className={classes.paymentMethodDetails}>
+                      <img src={PAYMENT_METHODS.find((p) => p.value === "qrph").logo} alt="" className={classes.paymentMethodDetailsLogo} />
+                      <Typography className={classes.paymentDetailsTitle}>Pay via InstaPay / QR PH</Typography>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary" style={{ marginBottom: 12 }}>
+                      After you confirm, we'll show a QR code and bank details. Scan with your bank app or e-wallet (GCash, Maya, or any InstaPay/QR PH–enabled app) to complete payment.
+                    </Typography>
+                    <Box className={classes.fieldWrap}>
+                      <Typography className={classes.fieldLabel}>
+                        Mobile for payment instructions (optional)
+                      </Typography>
+                      <TextField
+                        className={classes.field}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        placeholder="09XX XXX XXXX or email@example.com"
+                        value={paymentDetails.qrphContact || ""}
+                        onChange={handlePaymentDetailsChange("qrphContact")}
+                        error={!!errors.payment_qrphContact}
+                        helperText={errors.payment_qrphContact}
+                        inputProps={{ type: "text" }}
+                      />
+                    </Box>
                   </Box>
                 )}
 
                 <Box className={classes.paymentNote}>
-                  <CheckCircle
-                    style={{
-                      color: "#22c55e",
-                      fontSize: 20,
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}
-                  />
+                  <CheckCircleOutline className={classes.paymentNoteIcon} />
                   <span>
                     Payment instructions will be sent to your email after you
                     confirm. You can pay via e-wallet or card depending on your
@@ -1161,12 +1671,9 @@ export default function Checkout() {
                   </span>
                 </Box>
               </Box>
-            </Paper>
 
-            {/* Order Summary */}
-            <Paper className={classes.summaryCard} elevation={0}>
-              <Box className={classes.summaryCardTop} />
-              <Box className={classes.summaryContent}>
+              {/* Order Summary - Receipt style */}
+              <Box className={classes.unifiedSummary}>
                 <Typography component="div" className={classes.sectionTitle}>
                   <Box
                     className={classes.sectionIcon}
@@ -1183,53 +1690,117 @@ export default function Checkout() {
                 <Typography className={classes.planSwitcherLabel}>
                   Selected plan — change anytime below
                 </Typography>
-                <Box className={classes.planSwitcher}>
-                  <select
-                    id="change-plan"
-                    className={`${classes.nativeSelect} ${classes.nativeSelectSmall}`}
-                    value={planKey}
-                    onChange={handlePlanChange}
-                    aria-label="Change plan"
+                <Box ref={planDropdownRef} className={classes.planSwitcherWrapper}>
+                  <Box
+                    className={`${classes.planSwitcherRoot} ${planDropdownOpen ? classes.planSwitcherRootOpen : ""}`}
                   >
-                    <option value="starter">Starter — ₱2,999 + ₱79/employee/mo</option>
-                    <option value="professional">
-                      Professional — ₱4,999 + ₱109/employee/mo
-                    </option>
-                    <option value="enterprise">Enterprise — ₱10,000 + ₱179/employee/mo</option>
-                  </select>
+                    <button
+                      type="button"
+                      id="change-plan"
+                      className={classes.planSwitcherTrigger}
+                      onClick={() => setPlanDropdownOpen((o) => !o)}
+                      aria-expanded={planDropdownOpen}
+                      aria-haspopup="listbox"
+                      aria-label="Change plan"
+                    >
+                    <span>
+                      {PLAN_OPTIONS.find((o) => o.key === planKey)?.label ?? "Starter — ₱2,999 + ₱79/employee/mo"}
+                    </span>
+                      <ArrowDropDown style={{ fontSize: 20, flexShrink: 0 }} />
+                    </button>
+                  </Box>
+                  {planDropdownOpen && (
+                    <Box className={classes.planDropdown} role="listbox" aria-labelledby="change-plan">
+                      <Box className={classes.planDropdownSearchWrap}>
+                        <SearchIcon className={classes.planDropdownSearchIcon} />
+                        <input
+                          type="text"
+                          className={classes.planDropdownSearch}
+                          placeholder="Search plan"
+                          value={planDropdownSearch}
+                          onChange={(e) => setPlanDropdownSearch(e.target.value)}
+                          autoFocus
+                        />
+                      </Box>
+                      <Box className={classes.planDropdownList}>
+                        {PLAN_OPTIONS.filter(
+                          (p) =>
+                            !planDropdownSearch ||
+                            p.label.toLowerCase().includes(planDropdownSearch.toLowerCase()) ||
+                            p.key.toLowerCase().includes(planDropdownSearch.toLowerCase()),
+                        ).map((p) => (
+                          <button
+                            key={p.key}
+                            type="button"
+                            role="option"
+                            aria-selected={planKey === p.key}
+                            className={classes.planDropdownItem}
+                            onClick={() => {
+                              navigate({ pathname: "/checkout", search: `?plan=${p.key}` });
+                              setPlanDropdownOpen(false);
+                              setPlanDropdownSearch("");
+                            }}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
 
-                <Box
-                  className={classes.planSummaryBox}
-                  style={{
-                    backgroundColor: plan.lightColor,
-                    borderColor: plan.lightColor,
-                  }}
-                >
-                  <Chip
-                    size="small"
-                    label={plan.name}
-                    className={classes.planBadge}
-                    style={{ backgroundColor: plan.color }}
-                  />
-                  <Typography className={classes.planName}>
-                    {plan.label}
-                  </Typography>
-                  <Typography className={classes.planDescription}>
-                    {plan.description}
-                  </Typography>
-                  <Typography className={classes.planPrice}>
-                    ₱{plan.basePrice.toLocaleString("en-PH")} + ₱{plan.perEmployee}/employee/month
-                  </Typography>
-                </Box>
+                <Box className={classes.receiptBox}>
+                  <Box className={classes.receiptHeader}>
+                    <Typography className={classes.receiptTitle}>UlapPayroll</Typography>
+                    <Typography className={classes.receiptSubtitle}>Subscription summary</Typography>
+                  </Box>
+                  <Box className={classes.receiptBody}>
+                    <Box className={classes.receiptRow}>
+                      <span className={classes.receiptRowLabel}>Plan</span>
+                      <span className={classes.receiptRowValue}>{plan.label}</span>
+                    </Box>
+                    <Box className={classes.receiptRow}>
+                      <span className={classes.receiptRowLabel}>Base (monthly)</span>
+                      <span className={classes.receiptRowValue}>₱{plan.basePrice.toLocaleString("en-PH")}</span>
+                    </Box>
+                    <Box className={classes.receiptRow}>
+                      <span className={classes.receiptRowLabel}>Per employee / mo</span>
+                      <span className={classes.receiptRowValue}>₱{plan.perEmployee}</span>
+                    </Box>
+                    <Box className={classes.receiptDivider} />
+                    <Box className={classes.receiptRow}>
+                      <span className={classes.totalLabel}>Total due today (base)</span>
+                      <span className={classes.totalAmount}>
+                        ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱{plan.perEmployee}/employee
+                      </span>
+                    </Box>
 
-                <Box className={classes.totalRow}>
-                  <Typography className={classes.totalLabel}>
-                    Total due today (base)
-                  </Typography>
-                  <Typography className={classes.totalAmount}>
-                    ₱{plan.basePrice.toLocaleString("en-PH")}/mo + ₱{plan.perEmployee}/employee
-                  </Typography>
+                    {plan.features && plan.features.length > 0 && (
+                      <>
+                        <Box className={classes.receiptDivider} />
+                        <Typography className={classes.receiptSectionTitle}>Included in this plan</Typography>
+                        {plan.features.map((feature, i) => (
+                          <Box key={i} className={classes.receiptFeatureItem}>
+                            <CheckCircleOutline fontSize="small" />
+                            {feature}
+                          </Box>
+                        ))}
+                      </>
+                    )}
+
+                    {plan.benefits && plan.benefits.length > 0 && (
+                      <>
+                        <Box className={classes.receiptDivider} />
+                        <Typography className={classes.receiptSectionTitle}>Benefits</Typography>
+                        {plan.benefits.map((benefit, i) => (
+                          <Box key={i} className={classes.receiptFeatureItem}>
+                            <CheckCircleOutline fontSize="small" />
+                            {benefit}
+                          </Box>
+                        ))}
+                      </>
+                    )}
+                  </Box>
                 </Box>
 
                 <Button
@@ -1251,18 +1822,9 @@ export default function Checkout() {
                   <Lock fontSize="small" />
                   Secure checkout · Your data is protected
                 </Box>
-
-                <ul className={classes.benefitsList}>
-                  {BENEFITS.map((benefit, i) => (
-                    <li key={i} className={classes.benefitItem}>
-                      <CheckCircle />
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
               </Box>
-            </Paper>
-          </Box>
+            </Box>
+          </Paper>
         </form>
 
         {showQrStep && qrStepReceiptState && (

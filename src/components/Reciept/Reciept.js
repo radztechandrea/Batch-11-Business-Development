@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f5f7fa",
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(6),
+    fontFamily: theme.typography.body1.fontFamily,
     "@media print": {
       minHeight: "auto",
       backgroundColor: "#fff",
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     fontSize: "0.9rem",
     fontWeight: 500,
+    fontFamily: theme.typography.body1.fontFamily,
     "&:hover": { color: theme.palette.primary.main },
   },
   receiptPaper: {
@@ -48,20 +50,21 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
     overflow: "hidden",
     padding: theme.spacing(4),
+    fontFamily: theme.typography.body1.fontFamily,
     "@media print": {
       boxShadow: "none",
       pageBreakInside: "avoid",
     },
   },
   logo: {
-    fontFamily: '"Fira Sans", sans-serif',
+    fontFamily: theme.typography.fontFamily,
     fontSize: "1.5rem",
     fontWeight: 700,
     color: theme.palette.primary.main,
     marginBottom: theme.spacing(1),
   },
   title: {
-    fontFamily: '"Fira Sans", sans-serif',
+    fontFamily: theme.typography.fontFamily,
     fontSize: "1.25rem",
     fontWeight: 600,
     marginBottom: theme.spacing(3),
@@ -73,11 +76,12 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     marginBottom: theme.spacing(1.5),
     fontSize: "0.9rem",
+    fontFamily: theme.typography.body1.fontFamily,
   },
   label: { color: theme.palette.text.secondary, marginRight: theme.spacing(2) },
   value: { fontWeight: 500 },
   sectionTitle: {
-    fontFamily: '"Roboto", sans-serif',
+    fontFamily: theme.typography.body2.fontFamily,
     fontSize: "0.75rem",
     fontWeight: 700,
     textTransform: "uppercase",
@@ -93,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "1.1rem",
     fontWeight: 700,
     color: theme.palette.primary.main,
+    fontFamily: theme.typography.body1.fontFamily,
   },
   footer: {
     marginTop: theme.spacing(3),
@@ -101,9 +106,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "0.75rem",
     color: theme.palette.text.secondary,
     textAlign: "center",
+    fontFamily: theme.typography.body2.fontFamily,
   },
   noDataTitle: {
-    fontFamily: '"Fira Sans", sans-serif',
+    fontFamily: theme.typography.fontFamily,
   },
 }));
 
@@ -193,7 +199,6 @@ export default function Reciept() {
             Print
           </Button>
           <Button
-            x
             startIcon={<Image />}
             onClick={handleDownloadImage}
             variant="outlined"
