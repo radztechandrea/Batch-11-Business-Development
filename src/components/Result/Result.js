@@ -1,5 +1,14 @@
 import React from "react";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  makeStyles,
+} from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
+import { PricingCardGrid } from "../Pricing/PricingCardGrid";
 
 // --- Data Configuration (Same as Quiz) — key matches Checkout ?plan= ---
 const plans = [
@@ -99,169 +108,239 @@ const KEYFRAMES = `
   }
 `;
 
-// --- Styles ---
-const styles = {
+const useStyles = makeStyles((theme) => ({
   wrapper: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    fontFamily: theme.typography.body1.fontFamily,
     minHeight: "100vh",
-    background:
-      "linear-gradient(160deg, #f8f9fc 0%, #f0f2f5 50%, #e8ecf1 100%)",
-    fontFamily: "'Segoe UI', 'Roboto', Tahoma, Geneva, Verdana, sans-serif",
-    padding: "24px 16px",
+    background: "#f7f9fc",
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(6),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
     boxSizing: "border-box",
+    animation: "$pageEnter 0.4s ease-out forwards",
+    [theme.breakpoints.down("xs")]: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+    },
+  },
+  "@keyframes pageEnter": {
+    "0%": { opacity: 0 },
+    "100%": { opacity: 1 },
   },
   container: {
     width: "100%",
-    maxWidth: "900px",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "24px",
-    alignItems: "start",
+    maxWidth: 1100,
+    margin: "0 auto",
   },
-  planColumn: {
-    backgroundColor: "#ffffff",
-    borderRadius: "24px",
-    boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-    padding: "40px 36px 36px",
-    overflow: "hidden",
-  },
-  answersColumn: {
-    backgroundColor: "#ffffff",
-    borderRadius: "24px",
-    boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-    padding: "28px 24px 32px",
-    overflow: "hidden",
-  },
-  resultCard: (color, lightBg) => ({
-    padding: "32px 28px",
-    borderRadius: "20px",
-    borderTop: `4px solid ${color}`,
-    backgroundColor: lightBg,
-    transition: "box-shadow 0.3s ease",
-  }),
-  planPill: (color) => ({
-    display: "inline-block",
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#fff",
-    backgroundColor: color,
-    padding: "8px 18px",
-    borderRadius: "999px",
-    marginBottom: "16px",
-  }),
-  planTitle: {
-    fontSize: "24px",
-    fontWeight: "700",
-    color: "#1e293b",
-    letterSpacing: "-0.02em",
-    marginBottom: "8px",
+  card: {
+    background: "#fff",
+    borderRadius: 12,
+    border: "1px solid #e2e8f0",
+    padding: theme.spacing(4, 3),
+    marginBottom: theme.spacing(5),
+    animation: "resultCardIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+    position: "relative",
+    [theme.breakpoints.down("xs")]: {
+      padding: theme.spacing(3, 2),
+    },
   },
   partialNote: {
-    fontSize: "13px",
+    fontSize: "0.8125rem",
     color: "#94a3b8",
-    marginBottom: "16px",
+    marginBottom: theme.spacing(2),
   },
-  planPrice: {
-    fontSize: "18px",
-    fontWeight: "600",
-    color: "#334155",
-    marginBottom: "12px",
+  planPill: {
+    display: "inline-block",
+    fontSize: "0.8125rem",
+    fontWeight: 700,
+    color: "#fff",
+    padding: theme.spacing(0.75, 2),
+    borderRadius: 4,
+    marginBottom: theme.spacing(2),
+  },
+  mainRow: {
+    display: "flex",
+    alignItems: "stretch",
+    gap: theme.spacing(4),
+    marginBottom: theme.spacing(3),
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      gap: theme.spacing(3),
+    },
+  },
+  leftCol: {
+    flex: "0 0 58%",
+    minWidth: 0,
+    [theme.breakpoints.down("sm")]: { flex: "1 1 auto" },
+  },
+  rightCol: {
+    flex: "1 1 auto",
+    minWidth: 0,
+    borderLeft: "1px solid #e2e8f0",
+    paddingLeft: theme.spacing(3),
+    [theme.breakpoints.down("sm")]: {
+      borderLeft: "none",
+      paddingLeft: 0,
+      borderTop: "1px solid #e2e8f0",
+      paddingTop: theme.spacing(3),
+    },
+  },
+  planTitleRow: {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(0.5),
+    flexWrap: "wrap",
+  },
+  planTitleLeft: {
+    flex: "1 1 auto",
+    minWidth: 0,
+  },
+  planTitle: {
+    fontSize: "1.25rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    letterSpacing: "-0.02em",
+  },
+  planPriceBig: {
+    fontSize: "3rem",
+    fontWeight: 800,
+    letterSpacing: "-0.02em",
+    lineHeight: 1.2,
+    marginBottom: theme.spacing(0.5),
+  },
+  planPriceSub: {
+    fontSize: "0.75rem",
+    color: "#64748b",
+    marginBottom: theme.spacing(2),
+  },
+  planPriceSmall: {
+    fontSize: "1rem",
+    fontWeight: 600,
+    opacity: 0.95,
   },
   planDescription: {
-    fontSize: "14px",
+    fontSize: "0.875rem",
+    fontweight: 400,
     color: "#64748b",
     lineHeight: 1.5,
-    marginBottom: "24px",
+  },
+  planPrice: {
+    fontSize: "1.375rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    textAlign: "right",
+    whiteSpace: "nowrap",
+    flexShrink: 0,
   },
   sectionLabel: {
-    fontSize: "12px",
-    fontWeight: "600",
+    fontSize: "0.6875rem",
+    fontWeight: 700,
     color: "#475569",
     textTransform: "uppercase",
-    letterSpacing: "0.04em",
-    marginBottom: "10px",
+    letterSpacing: "0.06em",
+    marginBottom: theme.spacing(1.5),
   },
   featuresList: {
     listStyle: "none",
     padding: 0,
-    margin: "0 0 20px 0",
+    margin: "0 0 0 0",
   },
-  featureItem: (color) => ({
-    fontSize: "14px",
-    color: "#334155",
-    padding: "6px 0",
-    paddingLeft: "22px",
-    position: "relative",
+  featureItem: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: theme.spacing(1.5),
+    fontSize: "0.8125rem",
+    color: "#475569",
+    marginBottom: theme.spacing(1.5),
     lineHeight: 1.4,
-  }),
-  featureCheck: (color) => ({
-    position: "absolute",
-    left: 0,
-    color,
-    fontWeight: "700",
-  }),
+  },
+  checkIconWrap: {
+    width: 14,
+    height: 14,
+    borderRadius: "50%",
+    border: "1.5px solid #22c55e",
+    color: "#22c55e",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 2,
+  },
+  divider: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
+    borderTop: "1px solid #e2e8f0",
+  },
+  whyHeading: {
+    fontSize: "1.5rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(1.5),
+    lineHeight: 1.4,
+  },
+  whyParagraph: {
+    fontSize: "0.875rem",
+    color: "#475569",
+    lineHeight: 1.65,
+    fontweight: 400,
+    marginBottom: theme.spacing(3),
+  },
   benefitsList: {
     listStyle: "none",
     padding: 0,
-    margin: "0 0 24px 0",
+    margin: 0,
   },
   benefitItem: {
-    fontSize: "14px",
-    color: "#334155",
-    padding: "6px 0",
-    paddingLeft: "22px",
-    position: "relative",
+    display: "flex",
+    alignItems: "flex-start",
+    gap: theme.spacing(1.5),
+    fontSize: "0.8125rem",
+    color: "#475569",
+    marginBottom: theme.spacing(1.5),
     lineHeight: 1.4,
   },
-  benefitCheck: {
-    position: "absolute",
-    left: 0,
-    color: "#22c55e",
-    fontWeight: "700",
+  ctaRow: {
+    marginTop: theme.spacing(4),
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(1.5),
   },
-  button: (color) => ({
+  primaryBtn: {
+    padding: theme.spacing(1.25, 2),
+    fontWeight: 600,
+    fontSize: "0.9375rem",
+    textTransform: "none",
+    borderRadius: 8,
+    backgroundColor: "#FF7704",
+    color: "#fff",
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: "#FF7704",
+      boxShadow: "none",
+    },
+  },
+  retakeLink: {
     display: "block",
     textAlign: "center",
-    textDecoration: "none",
-    backgroundColor: color,
-    color: "white",
-    border: "none",
-    padding: "14px 28px",
-    fontSize: "15px",
-    fontWeight: "600",
-    borderRadius: "14px",
-    cursor: "pointer",
-    width: "100%",
-    transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: `0 2px 10px ${color}40`,
-  }),
-  linkSecondary: {
-    display: "block",
-    marginTop: "16px",
-    fontSize: "14px",
+    fontSize: "0.875rem",
     color: "#64748b",
     textDecoration: "none",
-    transition: "color 0.2s ease",
+    "&:hover": { color: "#0f172a" },
   },
-  answersTitle: {
-    fontSize: "15px",
-    fontWeight: "600",
-    color: "#64748b",
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-    marginBottom: "12px",
+  compareTitle: {
+    fontSize: "3rem",
+    fontWeight: 700,
+    color: "#0f172a",
+    marginBottom: theme.spacing(3),
+    textAlign: "center",
   },
-  answersParagraph: {
-    fontSize: "14px",
-    color: "#334155",
-    lineHeight: 1.65,
-    marginBottom: "24px",
-  },
-};
+}));
 
 function Result() {
+  const classes = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
   const totalScore = location.state?.totalScore ?? null;
@@ -276,7 +355,6 @@ function Result() {
   const hasAnswers =
     questionsSummary.length > 0 && Object.keys(answers).length > 0;
 
-  // Determine plan based on score (default to first plan if no score)
   const getRecommendedPlan = () => {
     const score = totalScore != null ? totalScore : 0;
     return (
@@ -291,7 +369,6 @@ function Result() {
     navigate(`/checkout?plan=${recommended.key}`);
   };
 
-  // Format answer value for display (single option or array of options)
   const getAnswerLabels = (q) => {
     const val = answers[q.id];
     if (val == null) return null;
@@ -299,7 +376,6 @@ function Result() {
     return val.label || val;
   };
 
-  // Build paragraph text from questionnaire answers (natural flow)
   const answersParagraph = hasAnswers
     ? questionsSummary
         .filter((q) => getAnswerLabels(q))
@@ -318,132 +394,145 @@ function Result() {
         .join(" ")
     : "";
 
-  // Landed without questionnaire state — still show recommended (default) and allow checkout or retake
   return (
-    <div style={styles.wrapper}>
+    <div className={classes.wrapper}>
       <style>{KEYFRAMES}</style>
-      <div
-        style={{
-          ...styles.container,
-          gridTemplateColumns: hasAnswers ? "1fr 1fr" : "1fr",
-          maxWidth: hasAnswers ? 900 : 440,
-          animation: "resultCardIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards",
-        }}
-        className="result-layout"
-      >
-        <div style={styles.planColumn}>
-          <div
-            style={styles.resultCard(recommended.color, recommended.lightBg)}
-          >
-            {isPartial && (
-              <p style={styles.partialNote}>
-                Answer more questions for a more accurate recommendation.
-              </p>
-            )}
+      <Container maxWidth="lg" className={classes.container} disableGutters>
+        <Box className={classes.card}>
+          {isPartial && (
+            <Typography className={classes.partialNote}>
+              Answer more questions for a more accurate recommendation.
+            </Typography>
+          )}
 
-            <div style={styles.planPill(recommended.color)}>
-              {recommended.name}
+          <Box className={classes.mainRow}>
+            <div className={classes.leftCol}>
+              <span
+                className={classes.planPill}
+                style={{ backgroundColor: recommended.color }}
+              >
+                {recommended.name}
+              </span>
+              <Typography component="h2" className={classes.planTitle}>
+                {recommended.talkToSales
+                  ? recommended.name
+                  : `${recommended.name} Plan`}
+              </Typography>
+              {recommended.price != null && (
+                <>
+                  <Typography
+                    className={classes.planPriceBig}
+                    style={{ color: recommended.color }}
+                    component="span"
+                  >
+                    {recommended.price.replace(/\/employee\/month/i, "")}
+                    <span className={classes.planPriceSmall} style={{ color: recommended.color }}>
+                      /employee/month
+                    </span>
+                  </Typography>
+                  <Typography className={classes.planPriceSub}>
+                    Base + per employee / month
+                  </Typography>
+                </>
+              )}
+              <Typography className={classes.planDescription}>
+                {recommended.description}
+              </Typography>
+              {recommended.features && recommended.features.length > 0 && (
+                <>
+                  <Typography className={classes.sectionLabel} style={{ marginTop: 16 }}>
+                    What’s included
+                  </Typography>
+                  <ul className={classes.featuresList}>
+                    {recommended.features.map((feature, i) => (
+                      <li key={i} className={classes.featureItem}>
+                        <span
+                          className={classes.checkIconWrap}
+                        >
+                          <CheckIcon style={{ fontSize: 9 }} />
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
-            <h2 style={styles.planTitle}>
-              {recommended.talkToSales ? recommended.name : `${recommended.name} Plan`}
-            </h2>
-            {recommended.price != null && (
-              <div style={styles.planPrice}>{recommended.price}</div>
-            )}
-            <p style={styles.planDescription}>{recommended.description}</p>
+            <div className={classes.rightCol}>
+              {(hasAnswers || recommended.benefits?.length) > 0 && (
+                <>
+                  {hasAnswers && (
+                    <>
+                      <Typography component="h3" className={classes.whyHeading}>
+                        Why this is for you?
+                      </Typography>
+                      <Typography className={classes.whyParagraph}>
+                        {answersParagraph}
+                      </Typography>
+                    </>
+                  )}
+                  {recommended.benefits && recommended.benefits.length > 0 && (
+                    <>
+                      <Typography className={classes.sectionLabel}>
+                        Benefits for you
+                      </Typography>
+                      <ul className={classes.benefitsList}>
+                        {recommended.benefits.map((benefit, i) => (
+                          <li key={i} className={classes.benefitItem}>
+                            <span className={classes.checkIconWrap}>
+                              <CheckIcon style={{ fontSize: 9 }} />
+                            </span>
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </Box>
 
-            {recommended.features && recommended.features.length > 0 && (
-              <>
-                <div style={styles.sectionLabel}>What’s included</div>
-                <ul style={styles.featuresList}>
-                  {recommended.features.map((feature, i) => (
-                    <li key={i} style={styles.featureItem(recommended.color)}>
-                      <span style={styles.featureCheck(recommended.color)}>
-                        ✓
-                      </span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-
+          <div className={classes.ctaRow}>
             {recommended.talkToSales ? (
-              <RouterLink
+              <Button
+                component={RouterLink}
                 to="/contact-us"
-                style={styles.button(recommended.color)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.boxShadow = `0 4px 16px ${recommended.color}50`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = `0 2px 10px ${recommended.color}40`;
-                }}
+                variant="contained"
+                className={classes.primaryBtn}
+                style={{ backgroundColor: recommended.color }}
               >
                 Talk to Sales
-              </RouterLink>
+              </Button>
             ) : (
-              <button
-                type="button"
-                style={styles.button(recommended.color)}
+              <Button
+                variant="contained"
+                className={classes.primaryBtn}
                 onClick={handleCheckout}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                  e.currentTarget.style.boxShadow = `0 4px 16px ${recommended.color}50`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = `0 2px 10px ${recommended.color}40`;
-                }}
               >
                 Proceed to checkout
-              </button>
+              </Button>
             )}
-            <RouterLink
+            <Typography
+              component={RouterLink}
               to="/questionnaire"
-              style={styles.linkSecondary}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "#1e293b";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "#64748b";
-              }}
+              className={classes.retakeLink}
             >
               Retake questionnaire
-            </RouterLink>
+            </Typography>
           </div>
-        </div>
+        </Box>
 
-        {hasAnswers && (
-          <div style={styles.answersColumn}>
-            <div style={styles.answersTitle}>Your answers</div>
-            <p style={styles.answersParagraph}>{answersParagraph}</p>
-
-            {recommended.benefits && recommended.benefits.length > 0 && (
-              <>
-                <div style={styles.sectionLabel}>Benefits for you</div>
-                <ul style={styles.benefitsList}>
-                  {recommended.benefits.map((benefit, i) => (
-                    <li key={i} style={styles.benefitItem}>
-                      <span style={styles.benefitCheck}>✓</span>
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-
-      <style>{`
-        @media (max-width: 720px) {
-          .result-layout {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+        <Typography component="h2" className={classes.compareTitle}>
+          Compare with other plans
+        </Typography>
+        <PricingCardGrid
+          billingPeriod="monthly"
+          showToggle={false}
+          recommendedPlanKey={recommended.key}
+          recommendedPlanColor={recommended.color}
+        />
+      </Container>
     </div>
   );
 }
